@@ -1,0 +1,15 @@
+/* 
+    Theme Name : jaGame
+    Author: abolfazl Mohseni & pooyan davoodi
+    Version:1.0.0
+*/
+@font-face {
+    font-family: "iransans";
+    src: url(./IRANSansWeb_Medium.woff2);
+}
+
+
+body {
+    font-family: "iransans";
+
+}
