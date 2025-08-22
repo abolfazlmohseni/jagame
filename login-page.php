@@ -12,6 +12,7 @@ $login_nonce = wp_create_nonce('ajax_login_nonce');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>جاگیم - ورود به حساب کاربری</title>
     <?php wp_head() ?>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -46,7 +47,7 @@ $login_nonce = wp_create_nonce('ajax_login_nonce');
                 <!-- شماره موبایل -->
                 <div>
                     <label class="block text-sm font-medium text-text-dark mb-2">شماره موبایل</label>
-                    <input name="username" type="tel" placeholder="09123456789"
+                    <input name="username" type="tel" placeholder="09123456789" dir="rtl"
                         class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-text-dark placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all duration-200">
                 </div>
 
@@ -56,7 +57,7 @@ $login_nonce = wp_create_nonce('ajax_login_nonce');
                     <div class="flex items-center">
                         <input name="password" type="password" placeholder="رمز عبور خود را وارد کنید"
                             class="passwordinput w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-text-dark placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all duration-200">
-                        <button type="button" id="toggle-password" class="mr-2 text-muted">👁</button>
+                       
                     </div>
                 </div>
 

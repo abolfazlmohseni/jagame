@@ -216,6 +216,7 @@
                 <nav class="hidden md:flex gap-3">
                     <a href="#" class="hover:text-accent transition-colors text-sm lg:text-base">درباره ما</a>
                     <a href="#" class="hover:text-accent transition-colors text-sm lg:text-base">تماس</a>
+                    <a href=<?= home_url('/login/')?> class="hover:text-accent transition-colors text-sm lg:text-base">ورود اپراتور</a>
                 </nav>
                 <button class="md:hidden text-text-on-dark">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
