@@ -314,3 +314,114 @@ function debug_update_game_net_info() {
     }
 }
 add_action('wp_ajax_update_game_net_info', 'debug_update_game_net_info', 1);
+
+
+
+
+// 
+
+// AJAX برای گرفتن لیست گیم نت‌ها
+add_action('wp_ajax_get_game_nets_list', 'get_game_nets_list_handler');
+add_action('wp_ajax_nopriv_get_game_nets_list', 'get_game_nets_list_handler');
+
+function get_game_nets_list_handler() {
+    // بررسی nonce برای امنیت
+    if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'game_nets_list_nonce')) {
+        wp_send_json_error('امنیت نامعتبر است');
+        wp_die();
+    }
+
+    // پارامترهای pagination
+    $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+    $per_page = isset($_POST['per_page']) ? intval($_POST['per_page']) : 10;
+    $offset = ($page - 1) * $per_page;
+
+    // گرفتن گیم نت‌ها
+    $args = array(
+        'post_type' => 'game_net',
+        'post_status' => 'publish',
+        'posts_per_page' => $per_page,
+        'offset' => $offset,
+        'orderby' => 'title',
+        'order' => 'ASC'
+    );
+
+    // فیلتر بر اساس جنسیت (اگر وجود دارد)
+    if (isset($_POST['gender']) && !empty($_POST['gender'])) {
+        $args['meta_query'] = array(
+            array(
+                'key' => '_gender',
+                'value' => sanitize_text_field($_POST['gender']),
+                'compare' => '='
+            )
+        );
+    }
+
+    // فیلتر بر اساس شرایط سنی (اگر وجود دارد)
+    if (isset($_POST['age']) && !empty($_POST['age'])) {
+        $args['meta_query'] = array(
+            array(
+                'key' => '_age',
+                'value' => sanitize_text_field($_POST['age']),
+                'compare' => 'LIKE'
+            )
+        );
+    }
+
+    $query = new WP_Query($args);
+    $game_nets = array();
+
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $post_id = get_the_ID();
+
+            $game_nets[] = array(
+                'id' => $post_id,
+                'name' => get_the_title(),
+                'phone' => get_post_meta($post_id, '_phone', true),
+                'gender' => get_post_meta($post_id, '_gender', true),
+                'age' => get_post_meta($post_id, '_age', true),
+                'hours' => get_post_meta($post_id, '_hours', true),
+                'holiday' => get_post_meta($post_id, '_holiday', true),
+                'bio' => get_post_meta($post_id, '_bio', true),
+                'thumbnail' => get_the_post_thumbnail_url($post_id, 'medium') ?: get_template_directory_uri() . '/images/default-game-net.jpg'
+            );
+        }
+        wp_reset_postdata();
+    }
+
+    // اطلاعات pagination
+    $total_posts = $query->found_posts;
+    $total_pages = ceil($total_posts / $per_page);
+
+    wp_send_json_success(array(
+        'game_nets' => $game_nets,
+        'pagination' => array(
+            'current_page' => $page,
+            'total_pages' => $total_pages,
+            'total_items' => $total_posts,
+            'per_page' => $per_page
+        )
+    ));
+    
+    wp_die();
+}
+
+
+// اضافه کردن rewrite rule برای URL زیباتر
+add_action('init', 'custom_game_net_rewrite_rules');
+function custom_game_net_rewrite_rules() {
+    add_rewrite_rule(
+        '^game-net/([0-9]+)/?$',
+        'index.php?p=$matches[1]&post_type=game_net',
+        'top'
+    );
+}
+
+// اضافه کردن query var
+add_filter('query_vars', 'custom_game_net_query_vars');
+function custom_game_net_query_vars($vars) {
+    $vars[] = 'game_net_id';
+    return $vars;
+}
