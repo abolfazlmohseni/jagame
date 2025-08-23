@@ -8,8 +8,6 @@
 </head>
 
 <body>
-<a href="<?php echo home_url('/login/'); ?>" class="login-button">لاگین</a>
-
 
 </body>
 

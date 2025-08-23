@@ -1,16 +1,27 @@
 <?php
 /*
-Template Name:Device Management
+Template Name: Device Management
 */
-include_once "PanelHeader.php"
+include_once "PanelHeader.php";
+
+// دریافت اطلاعات کاربر و گیم‌نت
+$user_id = get_current_user_id();
+$game_net_id = get_user_meta($user_id, '_game_net_id', true);
+
+// اگر کاربر لاگین نکرده یا گیم‌نت مرتبط ندارد، به صفحه لاگین هدایت شود
+if (!$user_id || !$game_net_id) {
+    wp_redirect(home_url('/login'));
+    exit;
+}
+
+// دریافت اطلاعات گیم‌نت
+$game_net_name = get_the_title($game_net_id);
 ?>
-
-
 
 <!-- بخش مدیریت دستگاه‌ها -->
 <div class="w-full bg-white rounded-xl shadow-md p-6 mb-8">
     <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-bold text-gray-800">مدیریت دستگاه‌ها</h2>
+        <h2 class="text-xl font-bold text-gray-800">مدیریت دستگاه‌ها - <?php echo esc_html($game_net_name); ?></h2>
         <button id="addNewDeviceBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
             + دستگاه جدید
         </button>
@@ -30,80 +41,20 @@ include_once "PanelHeader.php"
                 </tr>
             </thead>
             <tbody id="devicesTable">
-                <tr class="border-b border-gray-100 hover:bg-gray-50">
-                    <td class="py-3 px-4 font-medium">PC-1</td>
-                    <td class="py-3 px-4">PC</td>
-                    <td class="py-3 px-4 text-sm">i7-12700K, RTX 3070, 32GB RAM</td>
-                    <td class="py-3 px-4">۲۰,۰۰۰ تومان</td>
-                    <td class="py-3 px-4">
-                        <select class="status-select bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm border-none" data-device="PC-1">
-                            <option value="free" selected>آزاد</option>
-                            <option value="busy">اشغال</option>
-                            <option value="maintenance">در تعمیر</option>
-                            <option value="offline">خاموش</option>
-                        </select>
-                    </td>
-                    <td class="py-3 px-4">
-                        <button class="edit-device text-blue-600 hover:text-blue-800 ml-2" data-device="PC-1">ویرایش</button>
-                        <button class="delete-device text-red-600 hover:text-red-800" data-device="PC-1">حذف</button>
-                    </td>
-                </tr>
-                <tr class="border-b border-gray-100 hover:bg-gray-50">
-                    <td class="py-3 px-4 font-medium">PS5-1</td>
-                    <td class="py-3 px-4">PS5</td>
-                    <td class="py-3 px-4 text-sm">کنسول PS5، دسته DualSense، 4K Gaming</td>
-                    <td class="py-3 px-4">۳۵,۰۰۰ تومان</td>
-                    <td class="py-3 px-4">
-                        <select class="status-select bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-sm border-none" data-device="PS5-1">
-                            <option value="free">آزاد</option>
-                            <option value="busy" selected>اشغال</option>
-                            <option value="maintenance">در تعمیر</option>
-                            <option value="offline">خاموش</option>
-                        </select>
-                    </td>
-                    <td class="py-3 px-4">
-                        <button class="edit-device text-blue-600 hover:text-blue-800 ml-2" data-device="PS5-1">ویرایش</button>
-                        <button class="delete-device text-red-600 hover:text-red-800" data-device="PS5-1">حذف</button>
-                    </td>
-                </tr>
-                <tr class="border-b border-gray-100 hover:bg-gray-50">
-                    <td class="py-3 px-4 font-medium">PS4-1</td>
-                    <td class="py-3 px-4">PS4</td>
-                    <td class="py-3 px-4 text-sm">کنسول PS4 Pro، دسته DualShock 4</td>
-                    <td class="py-3 px-4">۱۲,۰۰۰ تومان</td>
-                    <td class="py-3 px-4">
-                        <select class="status-select bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm border-none" data-device="PS4-1">
-                            <option value="free">آزاد</option>
-                            <option value="busy">اشغال</option>
-                            <option value="maintenance" selected>در تعمیر</option>
-                            <option value="offline">خاموش</option>
-                        </select>
-                    </td>
-                    <td class="py-3 px-4">
-                        <button class="edit-device text-blue-600 hover:text-blue-800 ml-2" data-device="PS4-1">ویرایش</button>
-                        <button class="delete-device text-red-600 hover:text-red-800" data-device="PS4-1">حذف</button>
-                    </td>
-                </tr>
-                <tr class="border-b border-gray-100 hover:bg-gray-50">
-                    <td class="py-3 px-4 font-medium">Xbox-1</td>
-                    <td class="py-3 px-4">Xbox</td>
-                    <td class="py-3 px-4 text-sm">Xbox Series X، دسته Wireless Controller</td>
-                    <td class="py-3 px-4">۱۸,۰۰۰ تومان</td>
-                    <td class="py-3 px-4">
-                        <select class="status-select bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm border-none" data-device="Xbox-1">
-                            <option value="free" selected>آزاد</option>
-                            <option value="busy">اشغال</option>
-                            <option value="maintenance">در تعمیر</option>
-                            <option value="offline">خاموش</option>
-                        </select>
-                    </td>
-                    <td class="py-3 px-4">
-                        <button class="edit-device text-blue-600 hover:text-blue-800 ml-2" data-device="Xbox-1">ویرایش</button>
-                        <button class="delete-device text-red-600 hover:text-red-800" data-device="Xbox-1">حذف</button>
+                <!-- محتوای داینامیک توسط JavaScript پر خواهد شد -->
+                <tr class="border-b border-gray-100 hover:bg-gray-50 text-center">
+                    <td colspan="6" class="py-8 text-gray-500">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+                        در حال بارگذاری دستگاه‌ها...
                     </td>
                 </tr>
             </tbody>
         </table>
+    </div>
+
+    <!-- Pagination -->
+    <div id="pagination" class="mt-6 flex justify-center items-center space-x-2 space-x-reverse">
+        <!-- Pagination will be populated by JavaScript -->
     </div>
 </div>
 
@@ -120,22 +71,22 @@ include_once "PanelHeader.php"
         </div>
 
         <form id="deviceModalForm" class="space-y-4">
-            <input type="hidden" id="editingDevice" value="">
+            <input type="hidden" id="editingDeviceId" value="">
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">نوع دستگاه</label>
-                <select id="modalDeviceName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
-                    <option value="">انتخاب کنید</option>
-                    <option value="PS4">PS4</option>
-                    <option value="PS5">PS5</option>
-                    <option value="PC">PC</option>
-                    <option value="Xbox">Xbox</option>
-                </select>
+                <label class="block text-sm font-medium text-gray-700 mb-2">نام دستگاه</label>
+                <input type="text" id="modalDeviceName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="مثال: PC-1" required>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">شماره دستگاه</label>
-                <input type="number" id="modalDeviceType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="مثال: 1" min="1" required>
+                <label class="block text-sm font-medium text-gray-700 mb-2">نوع دستگاه</label>
+                <select id="modalDeviceType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                    <option value="">انتخاب کنید</option>
+                    <option value="pc">کامپیوتر</option>
+                    <option value="console">کنسول</option>
+                    <option value="vr">VR</option>
+                    <option value="other">سایر</option>
+                </select>
             </div>
 
             <div>
@@ -151,10 +102,10 @@ include_once "PanelHeader.php"
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">وضعیت</label>
                 <select id="modalDeviceStatus" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    <option value="free">آزاد</option>
-                    <option value="busy">اشغال</option>
-                    <option value="maintenance">در تعمیر</option>
-                    <option value="offline">خاموش</option>
+                    <option value="available">قابل استفاده</option>
+                    <option value="maintenance">در حال تعمیر</option>
+                    <option value="reserved">رزرو شده</option>
+                    <option value="inactive">غیرفعال</option>
                 </select>
             </div>
 
@@ -170,224 +121,346 @@ include_once "PanelHeader.php"
     </div>
 </div>
 
-<div class="confirm fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+<!-- مودال تأیید حذف -->
+<div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
     <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4">
-        <p class="text-lg text-center">آیا از پاک کردن این دستگاه اطمینان دارید؟</p>
-        <div class="flex gap-2  mt-4">
-            <button class="cansel block rounded-md px-4 py-2 text-white w-1/2 bg-gray-500">لغو</button>
-            <button class="delete block rounded-md px-4 py-2 text-white w-1/2 bg-red-600">حذف</button>
+        <p class="text-lg text-center">آیا از حذف این دستگاه اطمینان دارید؟</p>
+        <div class="flex gap-2 mt-4">
+            <button id="cancelDelete" class="block rounded-md px-4 py-2 text-white w-1/2 bg-gray-500">لغو</button>
+            <button id="confirmDelete" class="block rounded-md px-4 py-2 text-white w-1/2 bg-red-600">حذف</button>
         </div>
     </div>
 </div>
 
 <script>
-    // مدیریت دستگاه‌ها
-    const deviceModal = document.getElementById('deviceModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const deviceModalForm = document.getElementById('deviceModalForm');
-    const addNewDeviceBtn = document.getElementById('addNewDeviceBtn');
-    const closeModal = document.getElementById('closeModal');
-    const cancelModal = document.getElementById('cancelModal');
+// تعریف متغیر ajax_object برای دسترسی به آدرس AJAX
+var ajax_object = {
+    ajax_url: '<?php echo admin_url("admin-ajax.php"); ?>'
+};
+
+jQuery(document).ready(function($) {
+    // متغیرهای全局
+    let currentPage = 1;
+    let perPage = 10;
+    let currentDeviceId = null;
+    const nonce = '<?php echo wp_create_nonce("device_management_nonce"); ?>';
+
+    // مدیریت مودال
+    const deviceModal = $('#deviceModal');
+    const confirmModal = $('#confirmModal');
+    const modalTitle = $('#modalTitle');
+    const deviceModalForm = $('#deviceModalForm');
 
     // باز کردن مودال برای اضافه کردن دستگاه جدید
-    addNewDeviceBtn.addEventListener('click', function() {
-        modalTitle.textContent = 'اضافه کردن دستگاه جدید';
-        document.getElementById('editingDevice').value = '';
-        deviceModalForm.reset();
-        deviceModal.classList.remove('hidden');
+    $('#addNewDeviceBtn').on('click', function() {
+        modalTitle.text('اضافه کردن دستگاه جدید');
+        $('#editingDeviceId').val('');
+        deviceModalForm[0].reset();
+        deviceModal.removeClass('hidden');
     });
 
     // بستن مودال
     function closeDeviceModal() {
-        deviceModal.classList.add('hidden');
-        deviceModalForm.reset();
+        deviceModal.addClass('hidden');
+        deviceModalForm[0].reset();
     }
 
-    closeModal.addEventListener('click', closeDeviceModal);
-    cancelModal.addEventListener('click', closeDeviceModal);
+    $('#closeModal, #cancelModal').on('click', closeDeviceModal);
 
     // بستن مودال با کلیک روی پس‌زمینه
-    deviceModal.addEventListener('click', function(e) {
-        if (e.target === deviceModal) {
+    deviceModal.on('click', function(e) {
+        if (e.target === deviceModal[0]) {
             closeDeviceModal();
         }
     });
 
-    // تابع به‌روزرسانی رنگ وضعیت
-    function updateStatusColor(selectElement, status) {
-        selectElement.className = 'status-select px-2 py-1 rounded-full text-sm border-none ';
-        switch (status) {
-            case 'free':
-                selectElement.className += 'bg-green-100 text-green-800';
-                break;
-            case 'busy':
-                selectElement.className += 'bg-orange-100 text-orange-800';
-                break;
-            case 'maintenance':
-                selectElement.className += 'bg-red-100 text-red-800';
-                break;
-            case 'offline':
-                selectElement.className += 'bg-gray-100 text-gray-800';
-                break;
+    // مدیریت مودال تأیید حذف
+    $('#cancelDelete').on('click', function() {
+        confirmModal.addClass('hidden');
+    });
+
+    // بارگذاری دستگاه‌ها
+    function loadDevices(page = 1) {
+        currentPage = page;
+        
+        $.ajax({
+            url: ajax_object.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'get_devices',
+                security: nonce,
+                page: page,
+                per_page: perPage
+            },
+            beforeSend: function() {
+                $('#devicesTable').html(`
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 text-center">
+                        <td colspan="6" class="py-8 text-gray-500">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+                            در حال بارگذاری دستگاه‌ها...
+                        </td>
+                    </tr>
+                `);
+            },
+            success: function(response) {
+                if (response.success) {
+                    renderDevicesTable(response.data.devices);
+                    renderPagination(response.data.pagination);
+                } else {
+                    $('#devicesTable').html(`
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td colspan="6" class="py-4 px-4 text-center text-red-500">
+                                خطا در بارگذاری دستگاه‌ها: ${response.data}
+                            </td>
+                        </tr>
+                    `);
+                }
+            },
+            error: function() {
+                $('#devicesTable').html(`
+                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                        <td colspan="6" class="py-4 px-4 text-center text-red-500">
+                            خطا در ارتباط با سرور
+                        </td>
+                    </tr>
+                `);
+            }
+        });
+    }
+
+    // نمایش دستگاه‌ها در جدول
+    function renderDevicesTable(devices) {
+        if (devices.length === 0) {
+            $('#devicesTable').html(`
+                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                    <td colspan="6" class="py-4 px-4 text-center text-gray-500">
+                        هیچ دستگاهی یافت نشد. اولین دستگاه را اضافه کنید.
+                    </td>
+                </tr>
+            `);
+            return;
+        }
+
+        let tableContent = '';
+        devices.forEach(device => {
+            const statusClass = getStatusClass(device.status);
+            const statusText = getStatusText(device.status);
+            
+            tableContent += `
+                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                    <td class="py-3 px-4 font-medium">${device.name}</td>
+                    <td class="py-3 px-4">${getDeviceTypeText(device.type)}</td>
+                    <td class="py-3 px-4 text-sm">${device.specs}</td>
+                    <td class="py-3 px-4">${parseInt(device.price).toLocaleString('fa-IR')} تومان</td>
+                    <td class="py-3 px-4">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">
+                            ${statusText}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <button class="edit-device text-blue-600 hover:text-blue-800 ml-2" data-id="${device.id}">ویرایش</button>
+                        <button class="delete-device text-red-600 hover:text-red-800" data-id="${device.id}">حذف</button>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        $('#devicesTable').html(tableContent);
+    }
+
+    // نمایش pagination
+    function renderPagination(pagination) {
+        if (pagination.total_pages <= 1) {
+            $('#pagination').html('');
+            return;
+        }
+
+        let paginationHtml = '';
+        
+        // دکمه قبلی
+        if (pagination.current_page > 1) {
+            paginationHtml += `
+                <button class="pagination-btn bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 px-3 py-2 rounded-md" data-page="${pagination.current_page - 1}">
+                    قبلی
+                </button>
+            `;
+        }
+        
+        // صفحات
+        for (let i = 1; i <= pagination.total_pages; i++) {
+            if (i === pagination.current_page) {
+                paginationHtml += `
+                    <button class="pagination-btn bg-blue-500 border border-blue-500 text-white px-3 py-2 rounded-md" data-page="${i}">
+                        ${i}
+                    </button>
+                `;
+            } else {
+                paginationHtml += `
+                    <button class="pagination-btn bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 px-3 py-2 rounded-md" data-page="${i}">
+                        ${i}
+                    </button>
+                `;
+            }
+        }
+        
+        // دکمه بعدی
+        if (pagination.current_page < pagination.total_pages) {
+            paginationHtml += `
+                <button class="pagination-btn bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 px-3 py-2 rounded-md" data-page="${pagination.current_page + 1}">
+                    بعدی
+                </button>
+            `;
+        }
+        
+        $('#pagination').html(paginationHtml);
+    }
+
+    // کلاس وضعیت بر اساس مقدار
+    function getStatusClass(status) {
+        switch(status) {
+            case 'available': return 'bg-green-100 text-green-800';
+            case 'maintenance': return 'bg-yellow-100 text-yellow-800';
+            case 'reserved': return 'bg-blue-100 text-blue-800';
+            case 'inactive': return 'bg-red-100 text-red-800';
+            default: return 'bg-gray-100 text-gray-800';
         }
     }
 
-    // تغییر وضعیت دستگاه
-    document.addEventListener('change', function(e) {
-        if (e.target.classList.contains('status-select')) {
-            const deviceName = e.target.dataset.device;
-            const newStatus = e.target.value;
-            updateStatusColor(e.target, newStatus);
-
-            alert(`وضعیت ${deviceName} به "${e.target.options[e.target.selectedIndex].text}" تغییر یافت`);
+    // متن وضعیت بر اساس مقدار
+    function getStatusText(status) {
+        switch(status) {
+            case 'available': return 'قابل استفاده';
+            case 'maintenance': return 'در حال تعمیر';
+            case 'reserved': return 'رزرو شده';
+            case 'inactive': return 'غیرفعال';
+            default: return status;
         }
+    }
+
+    // متن نوع دستگاه بر اساس مقدار
+    function getDeviceTypeText(type) {
+        switch(type) {
+            case 'pc': return 'کامپیوتر';
+            case 'console': return 'کنسول';
+            case 'vr': return 'VR';
+            case 'other': return 'سایر';
+            default: return type;
+        }
+    }
+
+    // کلیک روی pagination
+    $(document).on('click', '.pagination-btn', function() {
+        const page = $(this).data('page');
+        loadDevices(page);
     });
 
     // ویرایش دستگاه
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('edit-device')) {
-            const deviceName = e.target.dataset.device;
-            const row = e.target.closest('tr');
-            const cells = row.querySelectorAll('td');
-
-            modalTitle.textContent = 'ویرایش دستگاه';
-            document.getElementById('editingDevice').value = deviceName;
-
-            // تجزیه نام دستگاه (مثال: PC-1 -> PC و 1)
-            const deviceParts = cells[0].textContent.split('-');
-            document.getElementById('modalDeviceName').value = deviceParts[0];
-            document.getElementById('modalDeviceType').value = deviceParts[1] || '';
-            document.getElementById('modalDeviceSpecs').value = cells[2].textContent;
-            document.getElementById('modalDevicePrice').value = cells[3].textContent.replace(/[^\d]/g, '');
-
-            const statusSelect = row.querySelector('.status-select');
-            document.getElementById('modalDeviceStatus').value = statusSelect.value;
-
-            deviceModal.classList.remove('hidden');
-        }
+    $(document).on('click', '.edit-device', function() {
+        const deviceId = $(this).data('id');
+        
+        $.ajax({
+            url: ajax_object.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'get_device',
+                security: nonce,
+                device_id: deviceId
+            },
+            success: function(response) {
+                if (response.success) {
+                    const device = response.data;
+                    modalTitle.text('ویرایش دستگاه');
+                    $('#editingDeviceId').val(device.id);
+                    $('#modalDeviceName').val(device.name);
+                    $('#modalDeviceType').val(device.type);
+                    $('#modalDeviceSpecs').val(device.specs);
+                    $('#modalDevicePrice').val(device.price);
+                    $('#modalDeviceStatus').val(device.status);
+                    deviceModal.removeClass('hidden');
+                } else {
+                    alert('خطا در دریافت اطلاعات دستگاه: ' + response.data);
+                }
+            },
+            error: function() {
+                alert('خطا در ارتباط با سرور');
+            }
+        });
     });
-    const canselBtn = document.querySelector('.cansel')
-    const deleteBtn = document.querySelector('.delete')
-    const confirmBox = document.querySelector('.confirm')
 
     // حذف دستگاه
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('delete-device')) {
-            let deviceName = e.target.dataset.device;
-            confirmBox.classList.remove("hidden")
-            deleteBtn.addEventListener("click", () => {
-                const row = e.target.closest('tr');
-                row.remove();
-                confirmBox.classList.add("hidden")
+    $(document).on('click', '.delete-device', function() {
+        currentDeviceId = $(this).data('id');
+        confirmModal.removeClass('hidden');
+    });
 
-            })
-            canselBtn.addEventListener("click", () => {
-                confirmBox.classList.add("hidden")
-                const row = null
-
-            })
-        }
+    // تأیید حذف
+    $('#confirmDelete').on('click', function() {
+        $.ajax({
+            url: ajax_object.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'delete_device',
+                security: nonce,
+                device_id: currentDeviceId
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert('دستگاه با موفقیت حذف شد');
+                    loadDevices(currentPage);
+                } else {
+                    alert('خطا در حذف دستگاه: ' + response.data);
+                }
+                confirmModal.addClass('hidden');
+            },
+            error: function() {
+                alert('خطا در ارتباط با سرور');
+                confirmModal.addClass('hidden');
+            }
+        });
     });
 
     // ذخیره دستگاه (اضافه یا ویرایش)
-    deviceModalForm.addEventListener('submit', function(e) {
+    deviceModalForm.on('submit', function(e) {
         e.preventDefault();
-
-        const editingDevice = document.getElementById('editingDevice').value;
-        const deviceType = document.getElementById('modalDeviceName').value;
-        const deviceNumber = document.getElementById('modalDeviceType').value;
-        const deviceSpecs = document.getElementById('modalDeviceSpecs').value;
-        const devicePrice = document.getElementById('modalDevicePrice').value;
-        const deviceStatus = document.getElementById('modalDeviceStatus').value;
-
-        const deviceName = deviceType + '-' + deviceNumber;
-
-        const statusText = {
-            'free': 'آزاد',
-            'busy': 'اشغال',
-            'maintenance': 'در تعمیر',
-            'offline': 'خاموش'
+        
+        const editingDeviceId = $('#editingDeviceId').val();
+        const deviceData = {
+            name: $('#modalDeviceName').val(),
+            type: $('#modalDeviceType').val(),
+            specs: $('#modalDeviceSpecs').val(),
+            price: $('#modalDevicePrice').val(),
+            status: $('#modalDeviceStatus').val(),
+            security: nonce
         };
-
-        if (editingDevice) {
-            // ویرایش دستگاه موجود
-            const rows = document.querySelectorAll('#devicesTable tr');
-            for (let row of rows) {
-                const editBtn = row.querySelector('.edit-device');
-                if (editBtn && editBtn.dataset.device === editingDevice) {
-                    const cells = row.querySelectorAll('td');
-                    cells[0].textContent = deviceName;
-                    cells[1].textContent = deviceType;
-                    cells[2].textContent = deviceSpecs;
-                    cells[3].textContent = parseInt(devicePrice).toLocaleString('fa-IR') + ' تومان';
-
-                    const statusSelect = row.querySelector('.status-select');
-                    statusSelect.value = deviceStatus;
-                    statusSelect.dataset.device = deviceName;
-                    updateStatusColor(statusSelect, deviceStatus);
-
-                    // به‌روزرسانی data-device در دکمه‌ها
-                    editBtn.dataset.device = deviceName;
-                    row.querySelector('.delete-device').dataset.device = deviceName;
-
-                    break;
-                }
-            }
-            alert(`${deviceName} با موفقیت ویرایش شد!`);
-        } else {
-            // اضافه کردن دستگاه جدید
-            const devicesTable = document.getElementById('devicesTable');
-            const newRow = document.createElement('tr');
-            newRow.className = 'border-b border-gray-100 hover:bg-gray-50';
-
-            let statusClass = '';
-            switch (deviceStatus) {
-                case 'free':
-                    statusClass = 'bg-green-100 text-green-800';
-                    break;
-                case 'busy':
-                    statusClass = 'bg-orange-100 text-orange-800';
-                    break;
-                case 'maintenance':
-                    statusClass = 'bg-red-100 text-red-800';
-                    break;
-                case 'offline':
-                    statusClass = 'bg-gray-100 text-gray-800';
-                    break;
-            }
-
-            newRow.innerHTML = `
-                    <td class="py-3 px-4 font-medium">${deviceName}</td>
-                    <td class="py-3 px-4">${deviceType}</td>
-                    <td class="py-3 px-4 text-sm">${deviceSpecs}</td>
-                    <td class="py-3 px-4">${parseInt(devicePrice).toLocaleString('fa-IR')} تومان</td>
-                    <td class="py-3 px-4">
-                        <select class="status-select ${statusClass} px-2 py-1 rounded-full text-sm border-none" data-device="${deviceName}">
-                            <option value="free" ${deviceStatus === 'free' ? 'selected' : ''}>آزاد</option>
-                            <option value="busy" ${deviceStatus === 'busy' ? 'selected' : ''}>اشغال</option>
-                            <option value="maintenance" ${deviceStatus === 'maintenance' ? 'selected' : ''}>در تعمیر</option>
-                            <option value="offline" ${deviceStatus === 'offline' ? 'selected' : ''}>خاموش</option>
-                        </select>
-                    </td>
-                    <td class="py-3 px-4">
-                        <button class="edit-device text-blue-600 hover:text-blue-800 ml-2" data-device="${deviceName}">ویرایش</button>
-                        <button class="delete-device text-red-600 hover:text-red-800" data-device="${deviceName}">حذف</button>
-                    </td>
-                `;
-
-            devicesTable.appendChild(newRow);
-            // دستگاه با  موفقعیت اضافه شده
-            closeDeviceModal()
+        
+        const action = editingDeviceId ? 'update_device' : 'add_device';
+        if (editingDeviceId) {
+            deviceData.device_id = editingDeviceId;
         }
-
-
-
-        // بستن مودال
-        closeDeviceModal();
+        
+        $.ajax({
+            url: ajax_object.ajax_url,
+            type: 'POST',
+            data: {
+                action: action,
+                ...deviceData
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert(editingDeviceId ? 'دستگاه با موفقیت ویرایش شد' : 'دستگاه با موفقیت اضافه شد');
+                    closeDeviceModal();
+                    loadDevices(currentPage);
+                } else {
+                    alert('خطا: ' + response.data);
+                }
+            },
+            error: function() {
+                alert('خطا در ارتباط با سرور');
+            }
+        });
     });
-</script>
-<!-- تکرار بشه توی هر صفحه -->
-</div>
-</body>
 
-</html>
+    // بارگذاری اولیه دستگاه‌ها
+    loadDevices();
+});
+</script>
