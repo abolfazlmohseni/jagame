@@ -23,6 +23,7 @@
             }
         }
     </script>
+    <?php wp_head() ?>
 </head>
 <body class="bg-gray-50 text-text-dark">
     <!-- Header -->
