@@ -25,18 +25,20 @@
     </script>
     <?php wp_head() ?>
 </head>
+
 <body class="bg-gray-50 text-text-dark">
     <!-- Header -->
     <header class="gradient-bg text-text-on-dark shadow-lg">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-3 space-x-reverse">
+                <a class="flex items-center space-x-3 space-x-reverse" href=<?php home_url('/') ?>>
                     <div class="w-8 h-8 sm:w-10 sm:h-10 bg-accent rounded-lg flex items-center justify-center">
                         <span class="text-lg sm:text-2xl">🎮</span>
                     </div>
                     <h1 class="text-xl sm:text-2xl font-bold">جاگیم</h1>
-                </div>
+                </a>
                 <nav class="hidden md:flex gap-3">
+                    <a href="<?= home_url('/') ?>" class="hover:text-accent transition-colors text-sm lg:text-base">خانه</a>
                     <a href="<?= home_url('/about/') ?>" class="hover:text-accent transition-colors text-sm lg:text-base">درباره ما</a>
                     <a href="#" class="hover:text-accent transition-colors text-sm lg:text-base">تماس</a>
                     <a href=<?= home_url('/login/') ?> class="hover:text-accent transition-colors text-sm lg:text-base">ورود اپراتور</a>
