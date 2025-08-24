@@ -196,7 +196,7 @@ get_header();
         </div>
 
         <!-- Pagination -->
-        <div id="pagination" class="flex justify-center items-center space-x-2 mt-8">
+        <div id="pagination" class="flex justify-center items-center gap-x-2 mt-8">
             <!-- pagination buttons -->
         </div>
     </div>
