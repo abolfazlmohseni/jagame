@@ -37,7 +37,7 @@
                     <h1 class="text-xl sm:text-2xl font-bold">جاگیم</h1>
                 </div>
                 <nav class="hidden md:flex gap-3">
-                    <a href="#" class="hover:text-accent transition-colors text-sm lg:text-base">درباره ما</a>
+                    <a href="<?= home_url('/about/') ?>" class="hover:text-accent transition-colors text-sm lg:text-base">درباره ما</a>
                     <a href="#" class="hover:text-accent transition-colors text-sm lg:text-base">تماس</a>
                     <a href=<?= home_url('/login/') ?> class="hover:text-accent transition-colors text-sm lg:text-base">ورود اپراتور</a>
                 </nav>
