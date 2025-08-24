@@ -15,7 +15,7 @@
                 <ul class="space-y-2 opacity-90 text-sm sm:text-base">
                     <li><a href="<?= home_url('/') ?>" class="hover:text-accent transition-colors">خانه</a></li>
                     <li><a href="<?= home_url('/about/') ?>" class="hover:text-accent transition-colors">درباره ما</a></li>
-                    <li><a href="#" class="hover:text-accent transition-colors">تماس با ما</a></li>
+                <li><a href="<?= home_url('/contact/') ?>" class="hover:text-accent transition-colors">تماس با ما</a></li>
                 </ul>
             </div>
             <div>
