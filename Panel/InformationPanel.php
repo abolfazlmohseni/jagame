@@ -166,7 +166,7 @@ if (!empty($user_info['gallery_images'])) {
         <!-- فرم آپلود عکس -->
         <form id="galleryUploadForm" class="mb-6" enctype="multipart/form-data">
             <div class="flex flex-col md:flex-row gap-4 items-start">
-                <div class="flex-1">
+                <div class="flex-1 w-full">
                     <input type="file" id="gallery_images" name="gallery_images[]" multiple accept="image/*" 
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 outline-none">
                     <p class="text-xs text-gray-500 mt-1">می‌توانید چندین تصویر را انتخاب کنید</p>
@@ -179,7 +179,7 @@ if (!empty($user_info['gallery_images'])) {
         </form>
 
         <!-- نمایش گالری -->
-        <div id="galleryContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div id="galleryContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             <?php if (!empty($gallery_images) && count($gallery_images) > 0): ?>
                 <?php foreach ($gallery_images as $image_id): ?>
                     <?php 
