@@ -95,6 +95,7 @@ function game_net_meta_boxes()
 {
     add_meta_box('game_net_info', 'اطلاعات گیم نت', 'game_net_meta_box_callback', 'game_net', 'normal', 'high');
     add_meta_box('game_net_additional', 'اطلاعات تکمیلی', 'game_net_additional_meta_box', 'game_net', 'normal', 'high');
+    add_meta_box('game_net_gallery', 'گالری تصاویر', 'game_net_gallery_meta_box', 'game_net', 'normal', 'high');
 }
 add_action('add_meta_boxes', 'game_net_meta_boxes');
 
@@ -139,10 +140,129 @@ function game_net_additional_meta_box($post)
     }
 }
 
+function game_net_gallery_meta_box($post)
+{
+    wp_nonce_field('save_game_net_gallery', 'game_net_gallery_nonce');
+
+    // دریافت عکس‌های موجود
+    $gallery_images = get_post_meta($post->ID, '_gallery_images', true);
+    $gallery_images = !empty($gallery_images) ? explode(',', $gallery_images) : array();
+?>
+
+    <div id="game_net_gallery_container">
+        <div id="game_net_gallery_images">
+            <?php foreach ($gallery_images as $image_id): ?>
+                <?php if ($image_url = wp_get_attachment_image_url($image_id, 'thumbnail')): ?>
+                    <div class="gallery-image" data-image-id="<?php echo $image_id; ?>">
+                        <img src="<?php echo $image_url; ?>" style="width: 100px; height: 100px; object-fit: cover;">
+                        <button type="button" class="remove-image">حذف</button>
+                    </div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
+
+        <input type="hidden" id="game_net_gallery_ids" name="game_net_gallery_ids" value="<?php echo implode(',', $gallery_images); ?>">
+
+        <button type="button" id="game_net_add_image" class="button" style="margin-top: 10px;">
+            افزودن تصویر
+        </button>
+
+        <p class="description">حداکثر ۱۰ تصویر قابل آپلود است</p>
+    </div>
+
+    <style>
+        .gallery-image {
+            display: inline-block;
+            margin: 5px;
+            text-align: center;
+            position: relative;
+        }
+
+        .remove-image {
+            display: block;
+            margin-top: 5px;
+            background: #dc3232;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+        jQuery(document).ready(function($) {
+            var frame;
+            var maxImages = 10;
+
+            // افزودن تصویر
+            $('#game_net_add_image').click(function(e) {
+                e.preventDefault();
+
+                var currentImages = $('#game_net_gallery_ids').val().split(',').filter(Boolean);
+                if (currentImages.length >= maxImages) {
+                    alert('حداکثر ' + maxImages + ' تصویر قابل آپلود است');
+                    return;
+                }
+
+                if (frame) {
+                    frame.open();
+                    return;
+                }
+
+                frame = wp.media({
+                    title: 'انتخاب تصویر',
+                    button: {
+                        text: 'استفاده از تصویر'
+                    },
+                    multiple: true
+                });
+
+                frame.on('select', function() {
+                    var attachments = frame.state().get('selection').toJSON();
+                    var currentIds = $('#game_net_gallery_ids').val().split(',').filter(Boolean);
+
+                    attachments.forEach(function(attachment) {
+                        if (currentIds.length < maxImages) {
+                            currentIds.push(attachment.id);
+
+                            $('#game_net_gallery_images').append(
+                                '<div class="gallery-image" data-image-id="' + attachment.id + '">' +
+                                '<img src="' + attachment.sizes.thumbnail.url + '" style="width: 100px; height: 100px; object-fit: cover;">' +
+                                '<button type="button" class="remove-image">حذف</button>' +
+                                '</div>'
+                            );
+                        }
+                    });
+
+                    $('#game_net_gallery_ids').val(currentIds.join(','));
+                });
+
+                frame.open();
+            });
+
+            // حذف تصویر
+            $(document).on('click', '.remove-image', function() {
+                var imageDiv = $(this).closest('.gallery-image');
+                var imageId = imageDiv.data('image-id');
+                var currentIds = $('#game_net_gallery_ids').val().split(',').filter(Boolean);
+
+                currentIds = currentIds.filter(function(id) {
+                    return id != imageId;
+                });
+
+                $('#game_net_gallery_ids').val(currentIds.join(','));
+                imageDiv.remove();
+            });
+        });
+    </script>
+<?php
+}
+
 function save_game_net_meta($post_id)
 {
     if (!isset($_POST['game_net_meta_nonce']) || !wp_verify_nonce($_POST['game_net_meta_nonce'], 'save_game_net_meta')) return;
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!isset($_POST['game_net_gallery_nonce']) || !wp_verify_nonce($_POST['game_net_gallery_nonce'], 'save_game_net_gallery')) return;
 
     $fields = array('phone', 'password', 'gender', 'age', 'hours', 'holiday', 'bio');
 
@@ -151,9 +271,41 @@ function save_game_net_meta($post_id)
             update_post_meta($post_id, '_' . $field, sanitize_text_field($_POST['game_net_' . $field]));
         }
     }
+
+    // ذخیره گالری تصاویر
+    if (isset($_POST['game_net_gallery_ids'])) {
+        $gallery_ids = array_filter(explode(',', $_POST['game_net_gallery_ids']));
+        $gallery_ids = array_slice($gallery_ids, 0, 10); // محدودیت ۱۰ تصویر
+        update_post_meta($post_id, '_gallery_images', implode(',', $gallery_ids));
+    }
 }
 add_action('save_post', 'save_game_net_meta');
 
+function game_net_admin_styles()
+{
+    echo '<style>
+        .gallery-image {
+            display: inline-block;
+            margin: 5px;
+            text-align: center;
+            position: relative;
+        }
+        .remove-image {
+            display: block;
+            margin-top: 5px;
+            background: #dc3232;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .remove-image:hover {
+            background: #a00;
+        }
+    </style>';
+}
+add_action('admin_head', 'game_net_admin_styles');
 // متاباکس‌های دستگاه
 function device_meta_boxes()
 {
@@ -312,8 +464,7 @@ function ajax_login_handler()
 
     wp_die();
 }
-
-// AJAX برای ذخیره اطلاعات گیم نت
+// AJAX برای ذخیره اطلاعات گیم نت و آپلود عکس‌ها
 add_action('wp_ajax_update_game_net_info', 'update_game_net_info_handler');
 
 function update_game_net_info_handler()
@@ -352,10 +503,143 @@ function update_game_net_info_handler()
         }
     }
 
+    // پردازش آپلود عکس‌ها
+    if (!empty($_FILES['gallery_images'])) {
+        $uploaded_images = handle_gallery_upload($game_net_id, $_FILES['gallery_images']);
+
+        if (is_wp_error($uploaded_images)) {
+            wp_send_json_error('خطا در آپلود عکس‌ها: ' . $uploaded_images->get_error_message());
+            wp_die();
+        }
+    }
+
     wp_send_json_success('اطلاعات با موفقیت بروزرسانی شد');
     wp_die();
 }
 
+// تابع برای پردازش آپلود عکس‌های گالری
+function handle_gallery_upload($post_id, $files)
+{
+    require_once(ABSPATH . 'wp-admin/includes/image.php');
+    require_once(ABSPATH . 'wp-admin/includes/file.php');
+    require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+    $uploaded_ids = array();
+    $existing_images = get_post_meta($post_id, '_gallery_images', true);
+    $existing_images = !empty($existing_images) ? explode(',', $existing_images) : array();
+
+    // بررسی تعداد کل عکس‌ها (موجود + جدید)
+    $total_images = count($existing_images);
+    $max_images = 10;
+
+    foreach ($files['name'] as $key => $value) {
+        if ($files['name'][$key]) {
+            // بررسی محدودیت تعداد عکس‌ها
+            if ($total_images >= $max_images) {
+                return new WP_Error('limit_exceeded', 'حداکثر ' . $max_images . ' تصویر قابل آپلود است');
+            }
+
+            $file = array(
+                'name'     => $files['name'][$key],
+                'type'     => $files['type'][$key],
+                'tmp_name' => $files['tmp_name'][$key],
+                'error'    => $files['error'][$key],
+                'size'     => $files['size'][$key]
+            );
+
+            // آپلود فایل
+            $upload = wp_handle_upload($file, array('test_form' => false));
+
+            if (isset($upload['error'])) {
+                return new WP_Error('upload_error', $upload['error']);
+            }
+
+            // ایجاد attachment
+            $attachment = array(
+                'post_mime_type' => $upload['type'],
+                'post_title'     => preg_replace('/\.[^.]+$/', '', basename($upload['file'])),
+                'post_content'   => '',
+                'post_status'    => 'inherit',
+                'guid'           => $upload['url']
+            );
+
+            $attach_id = wp_insert_attachment($attachment, $upload['file'], $post_id);
+
+            if (is_wp_error($attach_id)) {
+                return $attach_id;
+            }
+
+            // ایجاد متادیتاهای attachment
+            $attach_data = wp_generate_attachment_metadata($attach_id, $upload['file']);
+            wp_update_attachment_metadata($attach_id, $attach_data);
+
+            $uploaded_ids[] = $attach_id;
+            $total_images++;
+        }
+    }
+
+    // ادغام عکس‌های جدید با عکس‌های موجود
+    $all_images = array_merge($existing_images, $uploaded_ids);
+
+    // محدود کردن به حداکثر ۱۰ عکس
+    $all_images = array_slice($all_images, 0, $max_images);
+
+    // ذخیره در متا
+    update_post_meta($post_id, '_gallery_images', implode(',', $all_images));
+
+    return $uploaded_ids;
+}
+
+// AJAX برای حذف عکس از گالری
+add_action('wp_ajax_delete_game_net_image', 'delete_game_net_image_handler');
+
+function delete_game_net_image_handler()
+{
+    // بررسی nonce
+    if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'update_game_net_nonce')) {
+        wp_send_json_error('امنیت نامعتبر است');
+        wp_die();
+    }
+
+    $user_id = get_current_user_id();
+    if (!$user_id) {
+        wp_send_json_error('لطفاً ابتدا وارد شوید');
+        wp_die();
+    }
+
+    $game_net_id = get_user_meta($user_id, '_game_net_id', true);
+    if (!$game_net_id) {
+        wp_send_json_error('گیم نت پیدا نشد');
+        wp_die();
+    }
+
+    if (!isset($_POST['image_id'])) {
+        wp_send_json_error('شناسه تصویر ارسال نشده است');
+        wp_die();
+    }
+
+    $image_id = intval($_POST['image_id']);
+
+    // دریافت عکس‌های موجود
+    $gallery_images = get_post_meta($game_net_id, '_gallery_images', true);
+    $gallery_images = !empty($gallery_images) ? explode(',', $gallery_images) : array();
+
+    // حذف عکس از آرایه
+    $gallery_images = array_filter($gallery_images, function ($id) use ($image_id) {
+        return $id != $image_id;
+    });
+
+    // حذف فایل فیزیکی
+    if (wp_attachment_is_image($image_id)) {
+        wp_delete_attachment($image_id, true);
+    }
+
+    // ذخیره لیست جدید
+    update_post_meta($game_net_id, '_gallery_images', implode(',', $gallery_images));
+
+    wp_send_json_success('تصویر با موفقیت حذف شد');
+    wp_die();
+}
 // AJAX برای اضافه کردن دستگاه جدید
 add_action('wp_ajax_add_device', 'add_device_handler');
 function add_device_handler()
@@ -649,18 +933,20 @@ function get_current_user_game_net_info()
     $game_net_id = get_user_meta($user_id, '_game_net_id', true);
     if (!$game_net_id) return false;
 
-    $info = array(
-        'id' => $game_net_id,
-        'name' => get_the_title($game_net_id),
+    $post = get_post($game_net_id);
+    if (!$post) return false;
+
+    return array(
+        'name' => $post->post_title,
         'phone' => get_post_meta($game_net_id, '_phone', true),
+        'password' => get_post_meta($game_net_id, '_password', true),
         'gender' => get_post_meta($game_net_id, '_gender', true),
         'age' => get_post_meta($game_net_id, '_age', true),
         'hours' => get_post_meta($game_net_id, '_hours', true),
         'holiday' => get_post_meta($game_net_id, '_holiday', true),
-        'bio' => get_post_meta($game_net_id, '_bio', true)
+        'bio' => get_post_meta($game_net_id, '_bio', true),
+        'gallery_images' => get_post_meta($game_net_id, '_gallery_images', true) // اضافه شد
     );
-
-    return $info;
 }
 
 // Debug function to check what's happening
@@ -781,7 +1067,8 @@ function get_game_nets_list_handler()
                 'hours' => get_post_meta($post_id, '_hours', true),
                 'holiday' => get_post_meta($post_id, '_holiday', true),
                 'bio' => get_post_meta($post_id, '_bio', true),
-                'thumbnail' => get_the_post_thumbnail_url($post_id, 'medium') ?: get_template_directory_uri() . '/images/default-game-net.jpg'
+                'thumbnail' => get_the_post_thumbnail_url($post_id, 'medium') ?: get_template_directory_uri() . '/images/default-game-net.jpg',
+                'gallery_images' => get_post_meta($post_id, '_gallery_images', true)
             );
         }
         wp_reset_postdata();
