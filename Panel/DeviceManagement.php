@@ -20,9 +20,9 @@ $game_net_name = get_the_title($game_net_id);
 
 <!-- بخش مدیریت دستگاه‌ها -->
 <div class="w-full bg-white rounded-xl shadow-md p-6 mb-8">
-    <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-bold text-gray-800">مدیریت دستگاه‌ها - <?php echo esc_html($game_net_name); ?></h2>
-        <button id="addNewDeviceBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+    <div class="flex flex-col gap-3 md:flex-row md:items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-gray-800">مدیریت دستگاه‌ها</h2>
+        <button id="addNewDeviceBtn" class="w-fit bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
             + دستگاه جدید
         </button>
     </div>
@@ -31,10 +31,10 @@ $game_net_name = get_the_title($game_net_id);
     <div class="overflow-x-auto">
         <table class="w-full">
             <thead>
-                <tr class="border-b border-gray-200">
+                <tr class="border-b border-gray-200 hidden md:table-row">
                     <th class="text-right py-3 px-4 font-semibold text-gray-700">نام دستگاه</th>
                     <th class="text-right py-3 px-4 font-semibold text-gray-700">نوع</th>
-                    <th class="text-right py-3 px-4 font-semibold text-gray-700">مشخصات</th>
+                    <th class="text-right py-3 px-4 font-semibold text-gray-700 hidden lg:table-cell">مشخصات</th>
                     <th class="text-right py-3 px-4 font-semibold text-gray-700">قیمت/ساعت</th>
                     <th class="text-right py-3 px-4 font-semibold text-gray-700">وضعیت</th>
                     <th class="text-right py-3 px-4 font-semibold text-gray-700">عملیات</th>
@@ -133,67 +133,67 @@ $game_net_name = get_the_title($game_net_id);
 </div>
 
 <script>
-// تعریف متغیر ajax_object برای دسترسی به آدرس AJAX
-var ajax_object = {
-    ajax_url: '<?php echo admin_url("admin-ajax.php"); ?>'
-};
+    // تعریف متغیر ajax_object برای دسترسی به آدرس AJAX
+    var ajax_object = {
+        ajax_url: '<?php echo admin_url("admin-ajax.php"); ?>'
+    };
 
-jQuery(document).ready(function($) {
-    // متغیرهای全局
-    let currentPage = 1;
-    let perPage = 10;
-    let currentDeviceId = null;
-    const nonce = '<?php echo wp_create_nonce("device_management_nonce"); ?>';
+    jQuery(document).ready(function($) {
+        // متغیر های کلی
+        let currentPage = 1;
+        let perPage = 10;
+        let currentDeviceId = null;
+        const nonce = '<?php echo wp_create_nonce("device_management_nonce"); ?>';
 
-    // مدیریت مودال
-    const deviceModal = $('#deviceModal');
-    const confirmModal = $('#confirmModal');
-    const modalTitle = $('#modalTitle');
-    const deviceModalForm = $('#deviceModalForm');
+        // مدیریت مودال
+        const deviceModal = $('#deviceModal');
+        const confirmModal = $('#confirmModal');
+        const modalTitle = $('#modalTitle');
+        const deviceModalForm = $('#deviceModalForm');
 
-    // باز کردن مودال برای اضافه کردن دستگاه جدید
-    $('#addNewDeviceBtn').on('click', function() {
-        modalTitle.text('اضافه کردن دستگاه جدید');
-        $('#editingDeviceId').val('');
-        deviceModalForm[0].reset();
-        deviceModal.removeClass('hidden');
-    });
+        // باز کردن مودال برای اضافه کردن دستگاه جدید
+        $('#addNewDeviceBtn').on('click', function() {
+            modalTitle.text('اضافه کردن دستگاه جدید');
+            $('#editingDeviceId').val('');
+            deviceModalForm[0].reset();
+            deviceModal.removeClass('hidden');
+        });
 
-    // بستن مودال
-    function closeDeviceModal() {
-        deviceModal.addClass('hidden');
-        deviceModalForm[0].reset();
-    }
-
-    $('#closeModal, #cancelModal').on('click', closeDeviceModal);
-
-    // بستن مودال با کلیک روی پس‌زمینه
-    deviceModal.on('click', function(e) {
-        if (e.target === deviceModal[0]) {
-            closeDeviceModal();
+        // بستن مودال
+        function closeDeviceModal() {
+            deviceModal.addClass('hidden');
+            deviceModalForm[0].reset();
         }
-    });
 
-    // مدیریت مودال تأیید حذف
-    $('#cancelDelete').on('click', function() {
-        confirmModal.addClass('hidden');
-    });
+        $('#closeModal, #cancelModal').on('click', closeDeviceModal);
 
-    // بارگذاری دستگاه‌ها
-    function loadDevices(page = 1) {
-        currentPage = page;
-        
-        $.ajax({
-            url: ajax_object.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'get_devices',
-                security: nonce,
-                page: page,
-                per_page: perPage
-            },
-            beforeSend: function() {
-                $('#devicesTable').html(`
+        // بستن مودال با کلیک روی پس‌زمینه
+        deviceModal.on('click', function(e) {
+            if (e.target === deviceModal[0]) {
+                closeDeviceModal();
+            }
+        });
+
+        // مدیریت مودال تأیید حذف
+        $('#cancelDelete').on('click', function() {
+            confirmModal.addClass('hidden');
+        });
+
+        // بارگذاری دستگاه‌ها
+        function loadDevices(page = 1) {
+            currentPage = page;
+
+            $.ajax({
+                url: ajax_object.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'get_devices',
+                    security: nonce,
+                    page: page,
+                    per_page: perPage
+                },
+                beforeSend: function() {
+                    $('#devicesTable').html(`
                     <tr class="border-b border-gray-100 hover:bg-gray-50 text-center">
                         <td colspan="6" class="py-8 text-gray-500">
                             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
@@ -201,60 +201,61 @@ jQuery(document).ready(function($) {
                         </td>
                     </tr>
                 `);
-            },
-            success: function(response) {
-                if (response.success) {
-                    renderDevicesTable(response.data.devices);
-                    renderPagination(response.data.pagination);
-                } else {
-                    $('#devicesTable').html(`
+                },
+                success: function(response) {
+                    if (response.success) {
+                        renderDevicesTable(response.data.devices);
+                        renderPagination(response.data.pagination);
+                    } else {
+                        $('#devicesTable').html(`
                         <tr class="border-b border-gray-100 hover:bg-gray-50">
                             <td colspan="6" class="py-4 px-4 text-center text-red-500">
                                 خطا در بارگذاری دستگاه‌ها: ${response.data}
                             </td>
                         </tr>
                     `);
-                }
-            },
-            error: function() {
-                $('#devicesTable').html(`
+                    }
+                },
+                error: function() {
+                    $('#devicesTable').html(`
                     <tr class="border-b border-gray-100 hover:bg-gray-50">
                         <td colspan="6" class="py-4 px-4 text-center text-red-500">
                             خطا در ارتباط با سرور
                         </td>
                     </tr>
                 `);
-            }
-        });
-    }
+                }
+            });
+        }
 
-    // نمایش دستگاه‌ها در جدول
-    function renderDevicesTable(devices) {
-        if (devices.length === 0) {
-            $('#devicesTable').html(`
+        // نمایش دستگاه‌ها در جدول
+        function renderDevicesTable(devices) {
+            if (devices.length === 0) {
+                $('#devicesTable').html(`
                 <tr class="border-b border-gray-100 hover:bg-gray-50">
                     <td colspan="6" class="py-4 px-4 text-center text-gray-500">
                         هیچ دستگاهی یافت نشد. اولین دستگاه را اضافه کنید.
                     </td>
                 </tr>
             `);
-            return;
-        }
+                return;
+            }
 
-        let tableContent = '';
-        devices.forEach(device => {
-            const statusClass = getStatusClass(device.status);
-            const statusText = getStatusText(device.status);
-            
-            tableContent += `
+            let tableContent = '';
+            devices.forEach(device => {
+                const statusClass = getStatusClass(device.status);
+                const statusText = getStatusText(device.status);
+
+                tableContent += `
                 <tr class="border-b border-gray-100 hover:bg-gray-50">
                     <td class="py-3 px-4 font-medium">${device.name}</td>
                     <td class="py-3 px-4">${getDeviceTypeText(device.type)}</td>
-                    <td class="py-3 px-4 text-sm">${device.specs}</td>
-                    <td class="py-3 px-4">${parseInt(device.price).toLocaleString('fa-IR')} تومان</td>
+                    <td class="py-3 px-4 text-sm hidden lg:table-cell">${device.specs}</td>
+                    <td class="py-3 px-4">${parseInt(device.price).toLocaleString('fa-IR')} <span class="hidden md:inline">تومان</span></td>
                     <td class="py-3 px-4">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">
-                            ${statusText}
+                        <span class="inline-flex items-center lg:px-2.5 lg:py-0.5 rounded-full text-xs font-medium ${statusClass}">
+                          <p class="hidden lg:table-cell">${statusText}</p>
+                          <div class="lg:hidden w-6 h-6"></div>
                         </span>
                     </td>
                     <td class="py-3 px-4">
@@ -263,204 +264,219 @@ jQuery(document).ready(function($) {
                     </td>
                 </tr>
             `;
-        });
-        
-        $('#devicesTable').html(tableContent);
-    }
+            });
 
-    // نمایش pagination
-    function renderPagination(pagination) {
-        if (pagination.total_pages <= 1) {
-            $('#pagination').html('');
-            return;
+            $('#devicesTable').html(tableContent);
         }
 
-        let paginationHtml = '';
-        
-        // دکمه قبلی
-        if (pagination.current_page > 1) {
-            paginationHtml += `
+        // نمایش pagination
+        function renderPagination(pagination) {
+            if (pagination.total_pages <= 1) {
+                $('#pagination').html('');
+                return;
+            }
+
+            let paginationHtml = '';
+
+            // دکمه قبلی
+            if (pagination.current_page > 1) {
+                paginationHtml += `
                 <button class="pagination-btn bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 px-3 py-2 rounded-md" data-page="${pagination.current_page - 1}">
                     قبلی
                 </button>
             `;
-        }
-        
-        // صفحات
-        for (let i = 1; i <= pagination.total_pages; i++) {
-            if (i === pagination.current_page) {
-                paginationHtml += `
+            }
+
+            // صفحات
+            for (let i = 1; i <= pagination.total_pages; i++) {
+                if (i === pagination.current_page) {
+                    paginationHtml += `
                     <button class="pagination-btn bg-blue-500 border border-blue-500 text-white px-3 py-2 rounded-md" data-page="${i}">
                         ${i}
                     </button>
                 `;
-            } else {
-                paginationHtml += `
+                } else {
+                    paginationHtml += `
                     <button class="pagination-btn bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 px-3 py-2 rounded-md" data-page="${i}">
                         ${i}
                     </button>
                 `;
+                }
             }
-        }
-        
-        // دکمه بعدی
-        if (pagination.current_page < pagination.total_pages) {
-            paginationHtml += `
+
+            // دکمه بعدی
+            if (pagination.current_page < pagination.total_pages) {
+                paginationHtml += `
                 <button class="pagination-btn bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 px-3 py-2 rounded-md" data-page="${pagination.current_page + 1}">
                     بعدی
                 </button>
             `;
-        }
-        
-        $('#pagination').html(paginationHtml);
-    }
-
-    // کلاس وضعیت بر اساس مقدار
-    function getStatusClass(status) {
-        switch(status) {
-            case 'available': return 'bg-green-100 text-green-800';
-            case 'maintenance': return 'bg-yellow-100 text-yellow-800';
-            case 'reserved': return 'bg-blue-100 text-blue-800';
-            case 'inactive': return 'bg-red-100 text-red-800';
-            default: return 'bg-gray-100 text-gray-800';
-        }
-    }
-
-    // متن وضعیت بر اساس مقدار
-    function getStatusText(status) {
-        switch(status) {
-            case 'available': return 'قابل استفاده';
-            case 'maintenance': return 'در حال تعمیر';
-            case 'reserved': return 'رزرو شده';
-            case 'inactive': return 'غیرفعال';
-            default: return status;
-        }
-    }
-
-    // متن نوع دستگاه بر اساس مقدار
-    function getDeviceTypeText(type) {
-        switch(type) {
-            case 'pc': return 'کامپیوتر';
-            case 'console': return 'کنسول';
-            case 'vr': return 'VR';
-            case 'other': return 'سایر';
-            default: return type;
-        }
-    }
-
-    // کلیک روی pagination
-    $(document).on('click', '.pagination-btn', function() {
-        const page = $(this).data('page');
-        loadDevices(page);
-    });
-
-    // ویرایش دستگاه
-    $(document).on('click', '.edit-device', function() {
-        const deviceId = $(this).data('id');
-        
-        $.ajax({
-            url: ajax_object.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'get_device',
-                security: nonce,
-                device_id: deviceId
-            },
-            success: function(response) {
-                if (response.success) {
-                    const device = response.data;
-                    modalTitle.text('ویرایش دستگاه');
-                    $('#editingDeviceId').val(device.id);
-                    $('#modalDeviceName').val(device.name);
-                    $('#modalDeviceType').val(device.type);
-                    $('#modalDeviceSpecs').val(device.specs);
-                    $('#modalDevicePrice').val(device.price);
-                    $('#modalDeviceStatus').val(device.status);
-                    deviceModal.removeClass('hidden');
-                } else {
-                    alert('خطا در دریافت اطلاعات دستگاه: ' + response.data);
-                }
-            },
-            error: function() {
-                alert('خطا در ارتباط با سرور');
             }
-        });
-    });
 
-    // حذف دستگاه
-    $(document).on('click', '.delete-device', function() {
-        currentDeviceId = $(this).data('id');
-        confirmModal.removeClass('hidden');
-    });
-
-    // تأیید حذف
-    $('#confirmDelete').on('click', function() {
-        $.ajax({
-            url: ajax_object.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'delete_device',
-                security: nonce,
-                device_id: currentDeviceId
-            },
-            success: function(response) {
-                if (response.success) {
-                    alert('دستگاه با موفقیت حذف شد');
-                    loadDevices(currentPage);
-                } else {
-                    alert('خطا در حذف دستگاه: ' + response.data);
-                }
-                confirmModal.addClass('hidden');
-            },
-            error: function() {
-                alert('خطا در ارتباط با سرور');
-                confirmModal.addClass('hidden');
-            }
-        });
-    });
-
-    // ذخیره دستگاه (اضافه یا ویرایش)
-    deviceModalForm.on('submit', function(e) {
-        e.preventDefault();
-        
-        const editingDeviceId = $('#editingDeviceId').val();
-        const deviceData = {
-            name: $('#modalDeviceName').val(),
-            type: $('#modalDeviceType').val(),
-            specs: $('#modalDeviceSpecs').val(),
-            price: $('#modalDevicePrice').val(),
-            status: $('#modalDeviceStatus').val(),
-            security: nonce
-        };
-        
-        const action = editingDeviceId ? 'update_device' : 'add_device';
-        if (editingDeviceId) {
-            deviceData.device_id = editingDeviceId;
+            $('#pagination').html(paginationHtml);
         }
-        
-        $.ajax({
-            url: ajax_object.ajax_url,
-            type: 'POST',
-            data: {
-                action: action,
-                ...deviceData
-            },
-            success: function(response) {
-                if (response.success) {
-                    alert(editingDeviceId ? 'دستگاه با موفقیت ویرایش شد' : 'دستگاه با موفقیت اضافه شد');
-                    closeDeviceModal();
-                    loadDevices(currentPage);
-                } else {
-                    alert('خطا: ' + response.data);
-                }
-            },
-            error: function() {
-                alert('خطا در ارتباط با سرور');
-            }
-        });
-    });
 
-    // بارگذاری اولیه دستگاه‌ها
-    loadDevices();
-});
+        // کلاس وضعیت بر اساس مقدار
+        function getStatusClass(status) {
+            switch (status) {
+                case 'available':
+                    return 'bg-green-100 text-green-800';
+                case 'maintenance':
+                    return 'bg-yellow-100 text-yellow-800';
+                case 'reserved':
+                    return 'bg-blue-100 text-blue-800';
+                case 'inactive':
+                    return 'bg-red-100 text-red-800';
+                default:
+                    return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        // متن وضعیت بر اساس مقدار
+        function getStatusText(status) {
+            switch (status) {
+                case 'available':
+                    return 'قابل استفاده';
+                case 'maintenance':
+                    return 'در حال تعمیر';
+                case 'reserved':
+                    return 'رزرو شده';
+                case 'inactive':
+                    return 'غیرفعال';
+                default:
+                    return status;
+            }
+        }
+
+        // متن نوع دستگاه بر اساس مقدار
+        function getDeviceTypeText(type) {
+            switch (type) {
+                case 'pc':
+                    return 'کامپیوتر';
+                case 'console':
+                    return 'کنسول';
+                case 'vr':
+                    return 'VR';
+                case 'other':
+                    return 'سایر';
+                default:
+                    return type;
+            }
+        }
+
+        // کلیک روی pagination
+        $(document).on('click', '.pagination-btn', function() {
+            const page = $(this).data('page');
+            loadDevices(page);
+        });
+
+        // ویرایش دستگاه
+        $(document).on('click', '.edit-device', function() {
+            const deviceId = $(this).data('id');
+
+            $.ajax({
+                url: ajax_object.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'get_device',
+                    security: nonce,
+                    device_id: deviceId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        const device = response.data;
+                        modalTitle.text('ویرایش دستگاه');
+                        $('#editingDeviceId').val(device.id);
+                        $('#modalDeviceName').val(device.name);
+                        $('#modalDeviceType').val(device.type);
+                        $('#modalDeviceSpecs').val(device.specs);
+                        $('#modalDevicePrice').val(device.price);
+                        $('#modalDeviceStatus').val(device.status);
+                        deviceModal.removeClass('hidden');
+                    } else {
+                        alert('خطا در دریافت اطلاعات دستگاه: ' + response.data);
+                    }
+                },
+                error: function() {
+                    alert('خطا در ارتباط با سرور');
+                }
+            });
+        });
+
+        // حذف دستگاه
+        $(document).on('click', '.delete-device', function() {
+            currentDeviceId = $(this).data('id');
+            confirmModal.removeClass('hidden');
+        });
+
+        // تأیید حذف
+        $('#confirmDelete').on('click', function() {
+            $.ajax({
+                url: ajax_object.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'delete_device',
+                    security: nonce,
+                    device_id: currentDeviceId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('دستگاه با موفقیت حذف شد');
+                        loadDevices(currentPage);
+                    } else {
+                        alert('خطا در حذف دستگاه: ' + response.data);
+                    }
+                    confirmModal.addClass('hidden');
+                },
+                error: function() {
+                    alert('خطا در ارتباط با سرور');
+                    confirmModal.addClass('hidden');
+                }
+            });
+        });
+
+        // ذخیره دستگاه (اضافه یا ویرایش)
+        deviceModalForm.on('submit', function(e) {
+            e.preventDefault();
+
+            const editingDeviceId = $('#editingDeviceId').val();
+            const deviceData = {
+                name: $('#modalDeviceName').val(),
+                type: $('#modalDeviceType').val(),
+                specs: $('#modalDeviceSpecs').val(),
+                price: $('#modalDevicePrice').val(),
+                status: $('#modalDeviceStatus').val(),
+                security: nonce
+            };
+
+            const action = editingDeviceId ? 'update_device' : 'add_device';
+            if (editingDeviceId) {
+                deviceData.device_id = editingDeviceId;
+            }
+
+            $.ajax({
+                url: ajax_object.ajax_url,
+                type: 'POST',
+                data: {
+                    action: action,
+                    ...deviceData
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert(editingDeviceId ? 'دستگاه با موفقیت ویرایش شد' : 'دستگاه با موفقیت اضافه شد');
+                        closeDeviceModal();
+                        loadDevices(currentPage);
+                    } else {
+                        alert('خطا: ' + response.data);
+                    }
+                },
+                error: function() {
+                    alert('خطا در ارتباط با سرور');
+                }
+            });
+        });
+
+        // بارگذاری اولیه دستگاه‌ها
+        loadDevices();
+    });
 </script>
