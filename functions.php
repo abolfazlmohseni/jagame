@@ -913,7 +913,7 @@ function delete_device_handler()
         wp_die();
     }
 
-    // حذف دستگاه
+
     $result = wp_delete_post($device_id, true);
 
     if ($result) {
@@ -924,7 +924,6 @@ function delete_device_handler()
     wp_die();
 }
 
-// کوتاه‌نمای اطلاعات کاربر
 function get_current_user_game_net_info()
 {
     $user_id = get_current_user_id();
