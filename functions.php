@@ -1067,7 +1067,8 @@ function get_game_nets_list_handler()
                 'holiday' => get_post_meta($post_id, '_holiday', true),
                 'bio' => get_post_meta($post_id, '_bio', true),
                 'thumbnail' => get_the_post_thumbnail_url($post_id, 'medium') ?: get_template_directory_uri() . '/images/default-game-net.jpg',
-                'gallery_images' => get_post_meta($post_id, '_gallery_images', true)
+                'gallery_images' => get_post_meta($post_id, '_gallery_images', true),
+                'permalink' => esc_url( get_permalink($post_id) ),
             );
         }
         wp_reset_postdata();

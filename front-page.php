@@ -299,59 +299,84 @@ function loadGameNets(page = 1) {
 }
 
 // تابع برای نمایش گیم نت‌ها
+function escapeHtml(unsafe) {
+    if (!unsafe && unsafe !== 0) return '';
+    return String(unsafe)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 function displayGameNets(gameNets) {
     const gameNetsGrid = document.getElementById('gameNetsGrid');
     const noResults = document.getElementById('noResults');
 
-    if (gameNets.length === 0) {
+    if (!Array.isArray(gameNets) || gameNets.length === 0) {
         showNoResults();
         return;
     }
 
     let html = '';
     gameNets.forEach((gameNet, index) => {
+        // permalink safe fallback: از مسیر پیش‌فرض استفاده کن اگر سرور فرستاده نباشه
+        const permalink = (gameNet.permalink && gameNet.permalink !== 'undefined')
+            ? gameNet.permalink
+            : "<?php echo esc_url( home_url('/game-net/') ); ?>" + encodeURIComponent(gameNet.id) + "/";
+
+        const name = escapeHtml(gameNet.name);
+        const phone = escapeHtml(gameNet.phone || 'ثبت نشده');
+        const gender = escapeHtml(gameNet.gender || 'ثبت نشده');
+        const age = escapeHtml(gameNet.age || 'ثبت نشده');
+        const hours = escapeHtml(gameNet.hours || 'ثبت نشده');
+        const holiday = escapeHtml(gameNet.holiday || 'بدون تعطیلی');
+        const bio = escapeHtml(gameNet.bio || '');
+
         html += `
             <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover card-stagger" style="animation-delay: ${index * 0.1}s">
                 <div class="p-4 sm:p-6">
                     <div class="mb-3 sm:mb-4">
-                        <h4 class="text-lg sm:text-xl font-bold text-text-dark">${gameNet.name}</h4>
+                        <h4 class="text-lg sm:text-xl font-bold text-text-dark">${name}</h4>
                     </div>
                     
                     <div class="space-y-2 mb-3 sm:mb-4">
                         <div class="flex items-center space-x-2 space-x-reverse text-xs sm:text-sm text-muted">
                             <span>📞</span>
-                            <span class="line-clamp-1">${gameNet.phone || 'ثبت نشده'}</span>
+                            <span class="line-clamp-1">${phone}</span>
                         </div>
                         <div class="flex items-center space-x-3 sm:space-x-4 space-x-reverse text-xs sm:text-sm">
                             <div class="flex items-center space-x-1 space-x-reverse">
                                 <span>👥</span>
-                                <span>${gameNet.gender || 'ثبت نشده'}</span>
+                                <span>${gender}</span>
                             </div>
                             <div class="flex items-center space-x-1 space-x-reverse">
                                 <span>🎮</span>
-                                <span>${gameNet.age || 'ثبت نشده'}</span>
+                                <span>${age}</span>
                             </div>
                         </div>
                         <div class="flex items-center space-x-2 space-x-reverse text-xs sm:text-sm text-muted">
                             <span>🕒</span>
-                            <span>${gameNet.hours || 'ثبت نشده'}</span>
+                            <span>${hours}</span>
                         </div>
                         <div class="flex items-center space-x-2 space-x-reverse text-xs sm:text-sm text-muted">
                             <span>📅</span>
-                            <span>${gameNet.holiday || 'بدون تعطیلی'}</span>
+                            <span>${holiday}</span>
                         </div>
                     </div>
                     
-                    ${gameNet.bio ? `
+                    ${bio ? `
                     <div class="mb-3 sm:mb-4">
-                        <p class="text-sm text-gray-600 line-clamp-2">${gameNet.bio}</p>
+                        <p class="text-sm text-gray-600 line-clamp-2">${bio}</p>
                     </div>
                     ` : ''}
-                    
+
                     <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 sm:space-x-reverse">
-                        <button onclick="showGameNetDetails(${gameNet.id})" class="flex-1 bg-primary text-text-on-dark py-2 sm:py-2 rounded-lg font-semibold text-sm sm:text-base hover:bg-opacity-90 transition-colors">
+                        <a href="${permalink}" 
+                            class="flex-1 bg-primary text-text-on-dark py-2 sm:py-2 rounded-lg font-semibold text-sm sm:text-base hover:bg-opacity-90 transition-colors text-center">
                             مشاهده جزئیات
-                        </button>
+                        </a>
+
                         <button class="flex-1 bg-accent text-text-dark py-2 sm:py-2 rounded-lg font-semibold text-sm sm:text-base hover:bg-yellow-400 transition-colors">
                             تماس سریع
                         </button>
@@ -364,6 +389,7 @@ function displayGameNets(gameNets) {
     gameNetsGrid.innerHTML = html;
     noResults.classList.add('hidden');
 }
+
 
 // تابع برای pagination
 function updatePagination(pagination) {
