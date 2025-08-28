@@ -131,7 +131,16 @@ $game_net_name = get_the_title($game_net_id);
         </div>
     </div>
 </div>
+<!-- مودال اعلان دستگاه ها -->
 
+<div id="alertModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4">
+        <p class="textalert text-lg text-center"></p>
+        <div class="flex gap-2 mt-4">
+            <button class="closealert w-full text-center text-white bg-green-600 hover:bg-green-700 transition-colors rounded-md py-2">تایید</button>
+        </div>
+    </div>
+</div>
 <script>
     // تعریف متغیر ajax_object برای دسترسی به آدرس AJAX
     var ajax_object = {
@@ -453,7 +462,9 @@ $game_net_name = get_the_title($game_net_id);
             if (editingDeviceId) {
                 deviceData.device_id = editingDeviceId;
             }
-
+            const alertModal = document.querySelector("#alertModal");
+            const closealert = document.querySelector(".closealert");
+            const textalert = document.querySelector(".textalert");
             $.ajax({
                 url: ajax_object.ajax_url,
                 type: 'POST',
@@ -463,8 +474,9 @@ $game_net_name = get_the_title($game_net_id);
                 },
                 success: function(response) {
                     if (response.success) {
-                        alert(editingDeviceId ? 'دستگاه با موفقیت ویرایش شد' : 'دستگاه با موفقیت اضافه شد');
                         closeDeviceModal();
+                        textalert.textContent = editingDeviceId ? 'دستگاه با موفقیت ویرایش شد' : 'دستگاه با موفقیت اضافه شد'
+                        alertModal.classList.remove("hidden");
                         loadDevices(currentPage);
                     } else {
                         alert('خطا: ' + response.data);
@@ -474,9 +486,12 @@ $game_net_name = get_the_title($game_net_id);
                     alert('خطا در ارتباط با سرور');
                 }
             });
+            closealert.addEventListener("click", () => {
+                alertModal.classList.add("hidden")
+            })
         });
-
         // بارگذاری اولیه دستگاه‌ها
         loadDevices();
+
     });
 </script>
