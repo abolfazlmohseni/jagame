@@ -54,7 +54,7 @@ $game_net_name = get_the_title($game_net_id);
 
     <!-- Pagination -->
     <div id="pagination" class="mt-6 flex justify-center items-center space-x-2 space-x-reverse">
-        <!-- Pagination will be populated by JavaScript -->
+
     </div>
 </div>
 
@@ -402,15 +402,17 @@ $game_net_name = get_the_title($game_net_id);
                         $('#modalDevicePrice').val(device.price);
                         $('#modalDeviceStatus').val(device.status);
                         deviceModal.removeClass('hidden');
-                    } else {
-                        alert('خطا در دریافت اطلاعات دستگاه: ' + response.data);
                     }
-                },
-                error: function() {
-                    alert('خطا در ارتباط با سرور');
                 }
             });
         });
+        const alertModal = document.querySelector("#alertModal");
+        const closealert = document.querySelector(".closealert");
+        const textalert = document.querySelector(".textalert");
+
+        closealert.addEventListener("click", () => {
+            alertModal.classList.add("hidden")
+        })
 
         // حذف دستگاه
         $(document).on('click', '.delete-device', function() {
@@ -430,15 +432,10 @@ $game_net_name = get_the_title($game_net_id);
                 },
                 success: function(response) {
                     if (response.success) {
-                        alert('دستگاه با موفقیت حذف شد');
+                        alertModal.classList.remove('hidden')
+                        textalert.textContent = 'دستگاه با موفقیت حذف شد'
                         loadDevices(currentPage);
-                    } else {
-                        alert('خطا در حذف دستگاه: ' + response.data);
                     }
-                    confirmModal.addClass('hidden');
-                },
-                error: function() {
-                    alert('خطا در ارتباط با سرور');
                     confirmModal.addClass('hidden');
                 }
             });
@@ -462,9 +459,7 @@ $game_net_name = get_the_title($game_net_id);
             if (editingDeviceId) {
                 deviceData.device_id = editingDeviceId;
             }
-            const alertModal = document.querySelector("#alertModal");
-            const closealert = document.querySelector(".closealert");
-            const textalert = document.querySelector(".textalert");
+
             $.ajax({
                 url: ajax_object.ajax_url,
                 type: 'POST',
@@ -486,9 +481,7 @@ $game_net_name = get_the_title($game_net_id);
                     alert('خطا در ارتباط با سرور');
                 }
             });
-            closealert.addEventListener("click", () => {
-                alertModal.classList.add("hidden")
-            })
+
         });
         // بارگذاری اولیه دستگاه‌ها
         loadDevices();
