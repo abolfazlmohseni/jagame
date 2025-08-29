@@ -54,7 +54,7 @@ $game_net_name = get_the_title($game_net_id);
 
     <!-- Pagination -->
     <div id="pagination" class="mt-6 flex justify-center items-center space-x-2 space-x-reverse">
-        <!-- Pagination will be populated by JavaScript -->
+
     </div>
 </div>
 
@@ -131,7 +131,16 @@ $game_net_name = get_the_title($game_net_id);
         </div>
     </div>
 </div>
+<!-- مودال اعلان دستگاه ها -->
 
+<div id="alertModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4">
+        <p class="textalert text-lg text-center"></p>
+        <div class="flex gap-2 mt-4">
+            <button class="closealert w-full text-center text-white bg-green-600 hover:bg-green-700 transition-colors rounded-md py-2">تایید</button>
+        </div>
+    </div>
+</div>
 <script>
     // تعریف متغیر ajax_object برای دسترسی به آدرس AJAX
     var ajax_object = {
@@ -393,15 +402,17 @@ $game_net_name = get_the_title($game_net_id);
                         $('#modalDevicePrice').val(device.price);
                         $('#modalDeviceStatus').val(device.status);
                         deviceModal.removeClass('hidden');
-                    } else {
-                        alert('خطا در دریافت اطلاعات دستگاه: ' + response.data);
                     }
-                },
-                error: function() {
-                    alert('خطا در ارتباط با سرور');
                 }
             });
         });
+        const alertModal = document.querySelector("#alertModal");
+        const closealert = document.querySelector(".closealert");
+        const textalert = document.querySelector(".textalert");
+
+        closealert.addEventListener("click", () => {
+            alertModal.classList.add("hidden")
+        })
 
         // حذف دستگاه
         $(document).on('click', '.delete-device', function() {
@@ -421,15 +432,10 @@ $game_net_name = get_the_title($game_net_id);
                 },
                 success: function(response) {
                     if (response.success) {
-                        alert('دستگاه با موفقیت حذف شد');
+                        alertModal.classList.remove('hidden')
+                        textalert.textContent = 'دستگاه با موفقیت حذف شد'
                         loadDevices(currentPage);
-                    } else {
-                        alert('خطا در حذف دستگاه: ' + response.data);
                     }
-                    confirmModal.addClass('hidden');
-                },
-                error: function() {
-                    alert('خطا در ارتباط با سرور');
                     confirmModal.addClass('hidden');
                 }
             });
@@ -463,8 +469,9 @@ $game_net_name = get_the_title($game_net_id);
                 },
                 success: function(response) {
                     if (response.success) {
-                        alert(editingDeviceId ? 'دستگاه با موفقیت ویرایش شد' : 'دستگاه با موفقیت اضافه شد');
                         closeDeviceModal();
+                        textalert.textContent = editingDeviceId ? 'دستگاه با موفقیت ویرایش شد' : 'دستگاه با موفقیت اضافه شد'
+                        alertModal.classList.remove("hidden");
                         loadDevices(currentPage);
                     } else {
                         alert('خطا: ' + response.data);
@@ -474,9 +481,10 @@ $game_net_name = get_the_title($game_net_id);
                     alert('خطا در ارتباط با سرور');
                 }
             });
-        });
 
+        });
         // بارگذاری اولیه دستگاه‌ها
         loadDevices();
+
     });
 </script>

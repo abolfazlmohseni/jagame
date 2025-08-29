@@ -73,3 +73,4 @@ jQuery(document).ready(function($) {
         input.attr('type', input.attr('type') === 'password' ? 'text' : 'password');
     });
 });
+

@@ -14,10 +14,10 @@ include_once "PanelHeader.php"
     <div>
         <p class="font-bold text-2xl">نمای کلی</p>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="stat-card p-5 rounded-lg w-full shadow-lg ">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 mt-4">
+        <div class="bg-white p-5 rounded-lg w-full shadow-lg">
             <p class="text-sm">تعداد کل دستگاه‌ها</p>
-            <p id="totalDevices" class="text-2xl font-bold mt-2">0</p>
+            <p id="totalDevices" class="text-2xl font-bold mt-2 text-text   -dark">0</p>
         </div>
         <div class="bg-white p-5 rounded-lg w-full shadow-lg">
             <p class="text-sm text-gray-600">دستگاه‌های فعال</p>
@@ -25,11 +25,11 @@ include_once "PanelHeader.php"
         </div>
         <div class="bg-white p-5 rounded-lg w-full shadow-lg">
             <p class="text-sm text-gray-600">دستگاه‌های در تعمیر</p>
-            <p id="maintenanceDevices" class="text-2xl font-bold mt-2 text-yellow-600">0</p>
+            <p id="maintenanceDevices" class="text-2xl font-bold mt-2 text-accent">0</p>
         </div>
         <div class="bg-white p-5 rounded-lg w-full shadow-lg">
             <p class="text-sm text-gray-600">دستگاه‌های رزرو شده</p>
-            <p id="reservedDevices" class="text-2xl font-bold mt-2 text-blue-600">0</p>
+            <p id="reservedDevices" class="text-2xl font-bold mt-2 text-secondary">0</p>
         </div>
     </div>
 
