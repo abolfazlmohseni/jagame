@@ -28,7 +28,7 @@
             <div>
                 <h5 class="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">تماس با ما</h5>
                 <div class="space-y-2 opacity-90 text-sm sm:text-base">
-                    <p>📧 info@jagim.com</p>
+                    <p>📧 jagame.ir@gmail.com</p>
                     <p>📍 مشهد،ایران</p>
                 </div>
             </div>
