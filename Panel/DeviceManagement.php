@@ -82,8 +82,10 @@ $game_net_name = get_the_title($game_net_id);
                 <label class="block text-sm font-medium text-gray-700 mb-2">نوع دستگاه</label>
                 <select id="modalDeviceType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
                     <option value="">انتخاب کنید</option>
-                    <option value="pc">کامپیوتر</option>
-                    <option value="console">کنسول</option>
+                    <option value="pc">PC</option>
+                    <option value="xbox">XBOX</option>
+                    <option value="ps4">PS4</option>
+                    <option value="ps5">PS5</option>
                     <option value="vr">VR</option>
                     <option value="other">سایر</option>
                 </select>
@@ -91,7 +93,7 @@ $game_net_name = get_the_title($game_net_id);
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">مشخصات</label>
-                <textarea id="modalDeviceSpecs" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="CPU، RAM، کارت گرافیک و..." required></textarea>
+                <textarea id="modalDeviceSpecs" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="CPU، RAM، کارت گرافیک و..."></textarea>
             </div>
 
             <div>
@@ -361,11 +363,15 @@ $game_net_name = get_the_title($game_net_id);
         function getDeviceTypeText(type) {
             switch (type) {
                 case 'pc':
-                    return 'کامپیوتر';
-                case 'console':
-                    return 'کنسول';
+                    return 'PC';
+                case 'xbox':
+                    return 'XBOX';
                 case 'vr':
                     return 'VR';
+                case 'ps4':
+                    return 'PS4';
+                case 'ps5':
+                    return 'PS5';
                 case 'other':
                     return 'سایر';
                 default:

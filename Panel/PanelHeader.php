@@ -27,7 +27,7 @@
     </script>
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-100 overflow-hidden">
     <!-- هدر -->
     <header class="p-4 bg-primary text-white flex justify-between items-center shadow-md">
         <!-- دکمه منوی موبایل -->
