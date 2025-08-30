@@ -1,3 +1,4 @@
+<<
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
@@ -28,6 +29,7 @@
             background: linear-gradient(135deg, #4B3F72 0%, #8E7CC3 100%);
         }
     </style>
+    <?php wp_head() ?>
 </head>
 
 <body class="bg-gray-50 text-text-dark">
@@ -35,7 +37,7 @@
     <header class="gradient-bg text-text-on-dark shadow-lg">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex justify-between items-center">
-                <a class="flex items-center space-x-3 space-x-reverse" href="#">
+                <a class="flex items-center space-x-3 space-x-reverse" href=<?php home_url('/') ?>>
                     <div class="w-8 h-8 sm:w-10 sm:h-10 bg-accent rounded-lg flex items-center justify-center">
                         <span class="text-lg sm:text-2xl">🎮</span>
                     </div>
@@ -53,7 +55,6 @@
                     </svg>
                 </button>
             </div>
-            
             <!-- منوی موبایل -->
             <div id="mobile-menu" class="hidden md:hidden mt-4 pb-2">
                 <a href="<?= home_url('/') ?>" class="block py-2 hover:text-accent transition-colors">خانه</a>
@@ -72,3 +73,5 @@
             menu.classList.toggle('hidden');
         });
     </script>
+        </div>
+    </header>

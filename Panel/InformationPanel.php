@@ -44,8 +44,8 @@ if (!empty($user_info['gallery_images'])) {
 $profile_picture_id = get_post_meta(get_user_meta(get_current_user_id(), '_game_net_id', true), '_profile_picture_id', true);
 $profile_picture_url = $profile_picture_id ? wp_get_attachment_image_url($profile_picture_id, 'medium') : '';
     ?>
-
     <div class="pb-[6rem] w-full mx-auto p-4 max-w-6xl overflow-auto h-screen">
+
         <!-- پیام موفقیت -->
         <div id="successMessage" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4"></div>
 
@@ -99,6 +99,7 @@ $profile_picture_url = $profile_picture_id ? wp_get_attachment_image_url($profil
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                             value="<?= esc_attr($user_info['name']) ?>">
                     </div>
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">نوع جنسیت *</label>
                         <select name="gender" id="genderType" required
