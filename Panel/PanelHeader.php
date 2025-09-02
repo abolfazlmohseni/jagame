@@ -6,25 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>اپراتور گیم نت</title>
     <?php wp_head() ?>
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#4B3F72',
-                        secondary: '#8E7CC3',
-                        accent: '#FFD447',
-                        surface: '#FFFFFF',
-                        'text-dark': '#111827',
-                        'text-on-dark': '#FFFFFF',
-                        muted: '#6B7280'
-                    },
-                }
-            }
-        }
-    </script>
 </head>
 
 <body class="bg-gray-100 overflow-hidden">
