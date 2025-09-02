@@ -1,9 +1,5 @@
 <?php
-
-/**
- * Template Name: Game Net Single
- * Template Post Type: game_net
- */
+/* Template Name: Single Game Net */
 get_header();
 ?>
 
@@ -180,9 +176,6 @@ get_header();
                             <span class="bg-accent text-dark px-3 py-1 rounded-full text-sm">۴.۲</span>
                             <span>امتیاز</span>
                         </div>
-                        <p class="text-lg">
-                            <?php echo $bio ? nl2br(esc_html($bio)) : 'توضیحی ثبت نشده است'; ?>
-                        </p>
                     </div>
                 </div>
             </section>
@@ -229,6 +222,26 @@ get_header();
                                         $specs = get_post_meta($device_id, '_specs', true);
                                         $price = get_post_meta($device_id, '_price', true);
                                         $status = get_post_meta($device_id, '_status', true);
+                                        
+                                        // رنگ هر وضعیت
+                                        $status_colors = [
+                                            'available'   => 'bg-green-100 text-green-800',
+                                            'reserved'    => 'bg-yellow-100 text-yellow-800',
+                                            'maintenance' => 'bg-red-100 text-red-800',
+                                            'disabled'    => 'bg-gray-100 text-gray-800'
+                                        ];
+
+                                        // برچسب فارسی هر وضعیت
+                                        $status_labels = [
+                                            'available'   => 'قابل استفاده',
+                                            'reserved'    => 'رزرو شده',
+                                            'maintenance' => 'در حال تعمیر',
+                                            'disabled'    => 'غیرفعال'
+                                        ];
+
+                                        $status_class = $status_colors[$status] ?? 'bg-gray-100 text-gray-800';
+                                        $status_label = $status_labels[$status] ?? $status;
+
 
                                         // Status badge colors
                                         $status_colors = [
@@ -242,7 +255,10 @@ get_header();
                                             <h3 class="text-xl font-bold mb-2"><?php the_title(); ?></h3>
                                             <div class="flex gap-2 mb-3">
                                                 <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm"><?php echo esc_html($type); ?></span>
-                                                <span class="<?php echo esc_attr($status_class); ?> px-2 py-1 rounded text-sm"><?php echo esc_html($status); ?></span>
+                                                <span class="<?php echo esc_attr($status_class); ?> px-2 py-1 rounded text-sm">
+                                                    <?php echo esc_html($status_label); ?>
+                                                </span>
+
                                             </div>
                                             <p class="text-muted text-sm mb-3"><?php echo esc_html($specs); ?></p>
                                             <p class="text-lg font-bold"><?php echo number_format((float)$price); ?> تومان</p>
