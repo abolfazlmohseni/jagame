@@ -2,16 +2,18 @@
 // بارگذاری CSS و Tailwind
 function hodcode_enqueue_styles()
 {
+    wp_enqueue_style(
+        'jagame-tailwind',
+        get_template_directory_uri() . '/asset/css/tailwind.css',
+    );
     wp_enqueue_style('hodkode-style', get_stylesheet_uri());
-    wp_enqueue_style('tailwind', 'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css');
-    wp_enqueue_script('hodkode-script', get_template_directory_uri() . '/js/script.js', array('jquery'), null, true);
 
-    // Localize script for AJAX
+    wp_enqueue_script('hodkode-script', get_template_directory_uri() . '/js/script.js', array('jquery'), null, true);
     wp_localize_script('hodkode-script', 'ajax_object', array(
         'ajax_url' => admin_url('admin-ajax.php'),
         'login_nonce' => wp_create_nonce('ajax_login_nonce'),
         'update_nonce' => wp_create_nonce('update_game_net_nonce'),
-        'device_nonce' => wp_create_nonce('device_management_nonce') // اضافه کردن nonce برای مدیریت دستگاه‌ها
+        'device_nonce' => wp_create_nonce('device_management_nonce')
     ));
 }
 add_action('wp_enqueue_scripts', 'hodcode_enqueue_styles');
@@ -347,10 +349,12 @@ function device_meta_box_callback($post)
     <p>
         <label>نوع دستگاه:</label>
         <select name="device_type" class="widefat">
-            <option value="pc" <?php selected($type, 'pc'); ?>>کامپیوتر</option>
-            <option value="console" <?php selected($type, 'console'); ?>>کنسول</option>
-            <option value="vr" <?php selected($type, 'vr'); ?>>VR</option>
-            <option value="other" <?php selected($type, 'other'); ?>>سایر</option>
+            <option value="pc" <?php selected($type, 'pc') ?>>PC</option>
+            <option value="xbox" <?php selected($type, 'xbox') ?>>XBOX</option>
+            <option value="ps4" <?php selected($type, 'ps4') ?>>PS4</option>
+            <option value="ps5" <?php selected($type, 'ps5') ?>>PS5</option>
+            <option value="vr" <?php selected($type, 'vr') ?>>VR</option>
+            <option value="other" <?php selected($type, 'other') ?>>سایر</option>
         </select>
     </p>
     <p>
@@ -364,10 +368,10 @@ function device_meta_box_callback($post)
     <p>
         <label>وضعیت:</label>
         <select name="device_status" class="widefat">
-            <option value="available" <?php selected($status, 'available'); ?>>قابل استفاده</option>
-            <option value="maintenance" <?php selected($status, 'maintenance'); ?>>در حال تعمیر</option>
-            <option value="reserved" <?php selected($status, 'reserved'); ?>>رزرو شده</option>
-            <option value="inactive" <?php selected($status, 'inactive'); ?>>غیرفعال</option>
+            <option value="قابل استفاده" <?php selected($status, 'قابل استفاده'); ?>>قابل استفاده</option>
+            <option value="در حال تعمیر" <?php selected($status, 'در حال تعمیر'); ?>>در حال تعمیر</option>
+            <option value="رزومه شده" <?php selected($status, 'رزومه شده'); ?>>رزرو شده</option>
+            <option value="غیرفعال" <?php selected($status, 'غیرفعال'); ?>>غیرفعال</option>
         </select>
     </p>
 <?php
@@ -431,16 +435,6 @@ function ajax_login_handler()
     if ($game_net_id) {
         $user_id = get_current_user_id();
 
-        // اگر کاربر لاگین نبوده، یک کاربر ایجاد کن
-        if (!$user_id) {
-            $user_id = wp_create_user('user_' . $game_net_id . '_' . time(), wp_generate_password(), $username . '@gamenet.com');
-
-            if (is_wp_error($user_id)) {
-                wp_send_json_error(array('message' => 'خطا در ایجاد حساب کاربری: ' . $user_id->get_error_message()));
-                wp_die();
-            }
-        }
-
         // بروزرسانی نقش کاربر
         $user = new WP_User($user_id);
         $user->set_role('game_net_owner');
@@ -469,11 +463,7 @@ add_action('wp_ajax_update_game_net_info', 'update_game_net_info_handler');
 
 function update_game_net_info_handler()
 {
-    // بررسی nonce
-    if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'update_game_net_nonce')) {
-        wp_send_json_error('امنیت نامعتبر است');
-        wp_die();
-    }
+
 
     $user_id = get_current_user_id();
     if (!$user_id) {
@@ -913,7 +903,7 @@ function delete_device_handler()
         wp_die();
     }
 
-    // حذف دستگاه
+
     $result = wp_delete_post($device_id, true);
 
     if ($result) {
@@ -924,7 +914,6 @@ function delete_device_handler()
     wp_die();
 }
 
-// کوتاه‌نمای اطلاعات کاربر
 function get_current_user_game_net_info()
 {
     $user_id = get_current_user_id();
@@ -945,7 +934,8 @@ function get_current_user_game_net_info()
         'hours' => get_post_meta($game_net_id, '_hours', true),
         'holiday' => get_post_meta($game_net_id, '_holiday', true),
         'bio' => get_post_meta($game_net_id, '_bio', true),
-        'gallery_images' => get_post_meta($game_net_id, '_gallery_images', true) // اضافه شد
+        'gallery_images' => get_post_meta($game_net_id, '_gallery_images', true),
+        'profile_picture' => get_post_meta($game_net_id, '_profile_picture_id', true) // اضافه شد
     );
 }
 
@@ -1068,7 +1058,9 @@ function get_game_nets_list_handler()
                 'holiday' => get_post_meta($post_id, '_holiday', true),
                 'bio' => get_post_meta($post_id, '_bio', true),
                 'thumbnail' => get_the_post_thumbnail_url($post_id, 'medium') ?: get_template_directory_uri() . '/images/default-game-net.jpg',
-                'gallery_images' => get_post_meta($post_id, '_gallery_images', true)
+                'gallery_images' => get_post_meta($post_id, '_gallery_images', true),
+                'permalink' => esc_url(get_permalink($post_id)),
+                'profile_picture' => get_post_meta($post_id, '_profile_picture_id', true)
             );
         }
         wp_reset_postdata();
@@ -1109,4 +1101,194 @@ function custom_game_net_query_vars($vars)
     $vars[] = 'game_net_id';
     return $vars;
 }
+
+// متاباکس برای تصویر پروفایل گیم نت
+function add_game_net_profile_picture_meta_box()
+{
+    add_meta_box(
+        'game_net_profile_picture',
+        'تصویر پروفایل',
+        'game_net_profile_picture_meta_box_callback',
+        'game_net',
+        'side',
+        'default'
+    );
+}
+add_action('add_meta_boxes', 'add_game_net_profile_picture_meta_box');
+
+function game_net_profile_picture_meta_box_callback($post)
+{
+    wp_nonce_field('save_game_net_profile_picture', 'game_net_profile_picture_nonce');
+
+    $profile_picture_id = get_post_meta($post->ID, '_profile_picture_id', true);
+    $profile_picture_url = $profile_picture_id ? wp_get_attachment_image_url($profile_picture_id, 'medium') : '';
+?>
+
+    <div id="game_net_profile_picture_container">
+        <div id="game_net_profile_picture_preview" style="margin-bottom: 10px;">
+            <?php if ($profile_picture_url): ?>
+                <img src="<?php echo $profile_picture_url; ?>" style="max-width: 100%; height: auto;">
+            <?php endif; ?>
+        </div>
+
+        <input type="hidden" id="game_net_profile_picture_id" name="game_net_profile_picture_id" value="<?php echo $profile_picture_id; ?>">
+
+        <button type="button" id="game_net_upload_profile_picture" class="button" style="margin-bottom: 10px;">
+            <?php echo $profile_picture_id ? 'تغییر تصویر' : 'آپلود تصویر'; ?>
+        </button>
+
+        <?php if ($profile_picture_id): ?>
+            <button type="button" id="game_net_remove_profile_picture" class="button button-danger" style="background: #dc3232; color: white;">
+                حذف تصویر
+            </button>
+        <?php endif; ?>
+    </div>
+
+    <script>
+        jQuery(document).ready(function($) {
+            var profile_frame;
+
+            // آپلود تصویر پروفایل
+            $('#game_net_upload_profile_picture').click(function(e) {
+                e.preventDefault();
+
+                if (profile_frame) {
+                    profile_frame.open();
+                    return;
+                }
+
+                profile_frame = wp.media({
+                    title: 'انتخاب تصویر پروفایل',
+                    button: {
+                        text: 'استفاده از تصویر'
+                    },
+                    multiple: false
+                });
+
+                profile_frame.on('select', function() {
+                    var attachment = profile_frame.state().get('selection').first().toJSON();
+
+                    $('#game_net_profile_picture_id').val(attachment.id);
+                    $('#game_net_profile_picture_preview').html('<img src="' + attachment.sizes.medium.url + '" style="max-width: 100%; height: auto;">');
+                    $('#game_net_remove_profile_picture').show();
+                    $(this).text('تغییر تصویر');
+                });
+
+                profile_frame.open();
+            });
+
+            // حذف تصویر پروفایل
+            $('#game_net_remove_profile_picture').click(function(e) {
+                e.preventDefault();
+
+                $('#game_net_profile_picture_id').val('');
+                $('#game_net_profile_picture_preview').html('');
+                $(this).hide();
+                $('#game_net_upload_profile_picture').text('آپلود تصویر');
+            });
+        });
+    </script>
+
+    <style>
+        .button-danger {
+            background: #dc3232;
+            color: white;
+            border-color: #dc3232;
+        }
+
+        .button-danger:hover {
+            background: #a00;
+            border-color: #a00;
+            color: white;
+        }
+    </style>
+<?php
+}
+
+// ذخیره تصویر پروفایل
+function save_game_net_profile_picture($post_id)
+{
+    if (
+        !isset($_POST['game_net_profile_picture_nonce']) ||
+        !wp_verify_nonce($_POST['game_net_profile_picture_nonce'], 'save_game_net_profile_picture')
+    ) {
+        return;
+    }
+
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+
+    if (isset($_POST['game_net_profile_picture_id'])) {
+        $profile_picture_id = intval($_POST['game_net_profile_picture_id']);
+        update_post_meta($post_id, '_profile_picture_id', $profile_picture_id);
+
+        // همچنین به عنوان تصویر شاخص پست تنظیم شود
+        if ($profile_picture_id) {
+            set_post_thumbnail($post_id, $profile_picture_id);
+        } else {
+            delete_post_thumbnail($post_id);
+        }
+    }
+}
+add_action('save_post', 'save_game_net_profile_picture');
+
+// AJAX برای آپلود تصویر پروفایل از پنل کاربری
+add_action('wp_ajax_upload_game_net_profile_picture', 'upload_game_net_profile_picture_handler');
+
+function upload_game_net_profile_picture_handler()
+{
+    // بررسی nonce
+    if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'update_game_net_nonce')) {
+        wp_send_json_error('امنیت نامعتبر است');
+        wp_die();
+    }
+
+    $user_id = get_current_user_id();
+    if (!$user_id) {
+        wp_send_json_error('لطفاً ابتدا وارد شوید');
+        wp_die();
+    }
+
+    $game_net_id = get_user_meta($user_id, '_game_net_id', true);
+    if (!$game_net_id) {
+        wp_send_json_error('گیم نت پیدا نشد');
+        wp_die();
+    }
+
+    if (empty($_FILES['profile_picture'])) {
+        wp_send_json_error('هیچ فایلی آپلود نشده است');
+        wp_die();
+    }
+
+    require_once(ABSPATH . 'wp-admin/includes/image.php');
+    require_once(ABSPATH . 'wp-admin/includes/file.php');
+    require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+    $attachment_id = media_handle_upload('profile_picture', $game_net_id);
+
+    if (is_wp_error($attachment_id)) {
+        wp_send_json_error('خطا در آپلود تصویر: ' . $attachment_id->get_error_message());
+        wp_die();
+    }
+
+    update_post_meta($game_net_id, '_profile_picture_id', $attachment_id);
+    set_post_thumbnail($game_net_id, $attachment_id);
+
+    wp_send_json_success(array(
+        'message' => 'تصویر پروفایل با موفقیت آپلود شد',
+        'image_url' => wp_get_attachment_image_url($attachment_id, 'medium')
+    ));
+    wp_die();
+};
+
+
+add_action("after_setup_theme", function () {
+    register_nav_menus([
+        'landing header' => 'landing header',
+
+    ]);
+    register_nav_menus([
+        'footer' => 'footer'
+    ]);
+});
+
 ?>

@@ -1,4 +1,3 @@
-<<
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
@@ -6,30 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>جاگیم - بهترین گیم نت های شهر</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#4B3F72',
-                        secondary: '#8E7CC3',
-                        accent: '#FFD447',
-                        surface: '#FFFFFF',
-                        'text-dark': '#111827',
-                        'text-on-dark': '#FFFFFF',
-                        muted: '#6B7280'
-                    }
-                }
-            }
-        }
-    </script>
+    <?php wp_head() ?>
+    
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #4B3F72 0%, #8E7CC3 100%);
         }
     </style>
-    <?php wp_head() ?>
 </head>
 
 <body class="bg-gray-50 text-text-dark">
@@ -43,35 +25,38 @@
                     </div>
                     <h1 class="text-xl sm:text-2xl font-bold">جاگیم</h1>
                 </a>
-                <nav class="hidden md:flex gap-7">
-                 <a href=<?= home_url('/') ?> class="hover:text-accent transition-colors text-sm lg:text-base">خانه</a>
-                    <a href=<?= home_url('/about/') ?> class="hover:text-accent transition-colors text-sm lg:text-base">درباره ما</a>
-                    <a href=<?= home_url('/contact/') ?> class="hover:text-accent transition-colors text-sm lg:text-base ">تماس با ما</a>
-                    <a href=<?= home_url('/login/') ?> class="hover:text-accent transition-colors text-sm lg:text-base">ورود اپراتور</a>
-                </nav>
+                <?php
+                wp_nav_menu([
+                    'theme_location' => 'landing header',
+                    'menu_class' => 'hidden md:flex gap-7',
+                    'container' => false
+                ])
+                ?>
                 <button id="mobile-menu-button" class="md:hidden text-text-on-dark">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
             </div>
+
             <!-- منوی موبایل -->
             <div id="mobile-menu" class="hidden md:hidden mt-4 pb-2">
-                <a href="<?= home_url('/') ?>" class="block py-2 hover:text-accent transition-colors">خانه</a>
-                <a href="<?= home_url('/about/') ?>" class="block py-2 hover:text-accent transition-colors">درباره ما</a>
-                <a href="<?= home_url('/contact/') ?>" class="block py-2 hover:text-accent transition-colors">تماس با ما</a>
-                <a href=<?= home_url('/login/') ?> class="block py-2 hover:text-accent transition-colors">ورود اپراتور</a>
+                <?php
+                wp_nav_menu([
+                    'theme_location' => 'landing header',
+                    'menu_class' => 'space-y-2 hover:text-accent transition-colors',
+                    'container' => false
+                ])
+                ?>
             </div>
         </div>
     </header>
 
 
- <script>
+    <script>
         // اسکریپت ساده برای منوی موبایل
         document.getElementById('mobile-menu-button').addEventListener('click', function() {
             const menu = document.getElementById('mobile-menu');
             menu.classList.toggle('hidden');
         });
     </script>
-        </div>
-    </header>
