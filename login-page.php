@@ -1,131 +1,241 @@
 <?php
-/* Template Name: Login Page */
-// Generate fresh nonce for this page load
-$login_nonce = wp_create_nonce('ajax_login_nonce');
+/*
+Template Name: login Page
+*/
+wp_head();
+get_header();
 ?>
 
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<script>
+    var user_auth_object = {
+        ajax_url: '<?php echo admin_url("admin-ajax.php"); ?>',
+        nonce: '<?php echo wp_create_nonce("user_auth_nonce"); ?>',
+        is_logged_in: <?php echo is_user_logged_in() ? 'true' : 'false'; ?>
+    };
+</script>
 
-<head>
-    <meta charset="<?php bloginfo('charset') ?>">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جاگیم - ورود به حساب کاربری</title>
-    <?php wp_head() ?>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#4B3F72',
-                        secondary: '#8E7CC3',
-                        accent: '#FFD447',
-                        surface: '#FFFFFF',
-                        'text-dark': '#111827',
-                        'text-on-dark': '#FFFFFF',
-                        muted: '#6B7280'
-                    },
-                }
-            }
-        }
-    </script>
-</head>
+<div class="bg-white rounded-lg shadow-md p-6 max-w-md mx-auto mt-10">
+    <h2 class="text-2xl font-bold text-center mb-6">ورود / ثبت‌نام کاربران</h2>
 
-<body class="bg-gradient-to-br from-primary to-secondary min-h-screen flex items-center justify-center p-4">
+    <div id="loginForm">
+        <div class="mb-4">
+            <label class="block text-gray-700 mb-2" for="username">نام کاربری یا ایمیل</label>
+            <input type="text" id="username" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="mb-6">
+            <label class="block text-gray-700 mb-2" for="password">رمز عبور</label>
+            <input type="password" id="password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <button id="loginBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200">ورود</button>
+        <p class="text-center mt-4">
+            حساب کاربری ندارید؟
+            <a href="#" id="showRegister" class="text-blue-600 hover:underline">ثبت‌نام کنید</a>
+        </p>
+    </div>
 
-    <div class="w-full max-w-md">
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-text-on-dark mb-2">کجا گیم</h1>
-            <p class="text-secondary text-lg">ورود به حساب کاربری</p>
+    <div id="registerForm" class="hidden">
+        <div class="mb-4">
+            <label class="block text-gray-700 mb-2" for="reg_username">نام کاربری</label>
+            <input type="text" id="reg_username" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 mb-2" for="reg_email">ایمیل</label>
+            <input type="email" id="reg_email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 mb-2" for="reg_password">رمز عبور</label>
+            <input type="password" id="reg_password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="mb-6">
+            <label class="block text-gray-700 mb-2" for="reg_password_confirm">تکرار رمز عبور</label>
+            <input type="password" id="reg_password_confirm" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <button id="registerBtn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-200">ثبت‌نام</button>
+        <p class="text-center mt-4">
+            قبلاً حساب دارید؟
+            <a href="#" id="showLogin" class="text-blue-600 hover:underline">وارد شوید</a>
+        </p>
+    </div>
+</div>
+
+<div id="userDashboard" class="hidden bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto mt-10">
+    <h2 class="text-2xl font-bold text-center mb-6">پنل کاربری</h2>
+
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <p class="text-gray-600">خوش آمدید، <span id="userDisplayName" class="font-semibold"></span></p>
+        </div>
+        <button id="logoutBtn" class="bg-red-600 text-white py-1 px-3 rounded-md hover:bg-red-700 transition duration-200 text-sm">خروج</button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-gray-50 p-4 rounded-lg">
+            <h3 class="text-lg font-semibold mb-3">اطلاعات کاربری</h3>
+            <p><span class="font-medium">نام کاربری:</span> <span id="userUsername"></span></p>
+            <p><span class="font-medium">ایمیل:</span> <span id="userEmail"></span></p>
+            <p><span class="font-medium">تاریخ عضویت:</span> <span id="userRegistered"></span></p>
         </div>
 
-        <div class="bg-surface rounded-3xl p-8 shadow-2xl">
-            <form id="login-form" class="space-y-6">
-                <div id="login-error" class="text-red-500 text-center hidden"></div>
-
-                <!-- شماره موبایل -->
-                <div>
-                    <label class="block text-sm font-medium text-text-dark mb-2">شماره موبایل</label>
-                    <input name="username" type="tel" placeholder="09123456789" dir="rtl"
-                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-text-dark placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all duration-200">
-                </div>
-
-                <!-- رمز عبور -->
-                <div>
-                    <label class="block text-sm font-medium text-text-dark mb-2">رمز عبور</label>
-                    <div class="flex items-center">
-                        <input name="password" type="password" placeholder="رمز عبور خود را وارد کنید"
-                            class="passwordinput w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-text-dark placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all duration-200">
-                       
-                    </div>
-                </div>
-
-                <!-- Submit -->
-                <button type="submit"
-                    class="w-full bg-primary hover:bg-primary/90 text-text-on-dark font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-accent shadow-lg hover:shadow-xl">
-                    ورود به حساب کاربری
-                </button>
-            </form>
+        <div class="bg-gray-50 p-4 rounded-lg">
+            <h3 class="text-lg font-semibold mb-3">تاریخچه رزروها</h3>
+            <div id="userReservations">
+                <p class="text-gray-500 text-center">هنوز رزروی انجام نداده‌اید</p>
+            </div>
         </div>
     </div>
 
-    <script>
-        // Toggle password visibility
-        document.getElementById('toggle-password').addEventListener('click', function() {
-            const input = document.querySelector('.passwordinput');
-            input.type = input.type === 'password' ? 'text' : 'password';
+    <div class="mt-6 bg-gray-50 p-4 rounded-lg">
+        <h3 class="text-lg font-semibold mb-3">گیم‌نت‌های مورد علاقه</h3>
+        <div id="userFavorites">
+            <p class="text-gray-500 text-center">هنوز گیم‌نتی به علاقه‌مندی‌ها اضافه نکرده‌اید</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    jQuery(document).ready(function($) {
+        // ابتدا مطمئن شوید user_auth_object تعریف شده است
+        if (typeof user_auth_object === 'undefined') {
+            console.error('user_auth_object is not defined');
+            return;
+        }
+
+        // تغییر بین فرم ورود و ثبت‌نام
+        $('#showRegister').on('click', function(e) {
+            e.preventDefault();
+            $('#loginForm').addClass('hidden');
+            $('#registerForm').removeClass('hidden');
         });
 
-        const ajax_login_obj = {
-            ajax_url: "<?php echo admin_url('admin-ajax.php'); ?>",
-            nonce: "<?php echo $login_nonce; ?>"
-        };
-
-        document.querySelector('#login-form').addEventListener('submit', function(e) {
+        $('#showLogin').on('click', function(e) {
             e.preventDefault();
-            const form = e.target;
-            const errorDiv = document.querySelector('#login-error');
-            const submitBtn = form.querySelector('button[type="submit"]');
-            
-            // Reset error
-            errorDiv.classList.add('hidden');
-            errorDiv.textContent = '';
-            
-            // Show loading
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = 'در حال ورود...';
-            submitBtn.disabled = true;
+            $('#registerForm').addClass('hidden');
+            $('#loginForm').removeClass('hidden');
+        });
 
-            const data = new FormData(form);
-            data.append('action', 'ajax_login');
-            data.append('security', ajax_login_obj.nonce);
+        // ثبت‌نام کاربر
+        $('#registerBtn').on('click', function() {
+            var formData = {
+                action: 'register_user',
+                username: $('#reg_username').val(),
+                email: $('#reg_email').val(),
+                password: $('#reg_password').val(),
+                confirm_password: $('#reg_password_confirm').val(),
+                nonce: user_auth_object.nonce
+            };
 
-            fetch(ajax_login_obj.ajax_url, {
-                method: 'POST',
-                body: data
-            })
-            .then(res => res.json())
-            .then(res => {
-                if (res.success) {
-                    window.location.href = res.data.redirect;
-                } else {
-                    errorDiv.textContent = res.data.message;
-                    errorDiv.classList.remove('hidden');
+            // اعتبارسنجی اولیه
+            if (!formData.username || !formData.email || !formData.password) {
+                alert('لطفاً تمام فیلدهای ضروری را پر کنید.');
+                return;
+            }
+
+            if (formData.password !== formData.confirm_password) {
+                alert('رمزهای عبور مطابقت ندارند.');
+                return;
+            }
+
+            $.ajax({
+                url: user_auth_object.ajax_url,
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.data);
+                        getUserData();
+                    } else {
+                        alert('خطا: ' + response.data);
+                    }
+                },
+                error: function() {
+                    alert('خطا در ارتباط با سرور.');
                 }
-            })
-            .catch(err => {
-                errorDiv.textContent = 'خطا در ارتباط با سرور';
-                errorDiv.classList.remove('hidden');
-                console.error(err);
-            })
-            .finally(() => {
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
             });
         });
-    </script>
 
-    <?php wp_footer(); ?>
-</body>
-</html>
+        // ورود کاربر
+        $('#loginBtn').on('click', function() {
+            var formData = {
+                action: 'login_user',
+                username: $('#username').val(),
+                password: $('#password').val(),
+                nonce: user_auth_object.nonce
+            };
+
+            if (!formData.username || !formData.password) {
+                alert('لطفاً نام کاربری و رمز عبور را وارد کنید.');
+                return;
+            }
+
+            $.ajax({
+                url: user_auth_object.ajax_url,
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.data);
+                        getUserData();
+                    } else {
+                        alert('خطا: ' + response.data);
+                    }
+                },
+                error: function() {
+                    alert('خطا در ارتباط با سرور.');
+                }
+            });
+        });
+
+        // دریافت اطلاعات کاربر
+        function getUserData() {
+            $.ajax({
+                url: user_auth_object.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'get_user_data',
+                    nonce: user_auth_object.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#userDisplayName').text(response.data.display_name);
+                        $('#userUsername').text(response.data.username);
+                        $('#userEmail').text(response.data.email);
+                        $('#userRegistered').text(response.data.registered);
+
+                        $('#loginForm, #registerForm').addClass('hidden');
+                        $('#userDashboard').removeClass('hidden');
+                    }
+                },
+                error: function() {
+                    alert('خطا در دریافت اطلاعات کاربر.');
+                }
+            });
+        }
+
+        // خروج کاربر
+        $('#logoutBtn').on('click', function() {
+            $.ajax({
+                url: user_auth_object.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'user_logout',
+                    nonce: user_auth_object.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.data);
+                        $('#userDashboard').addClass('hidden');
+                        $('#loginForm').removeClass('hidden');
+                    }
+                },
+                error: function() {
+                    alert('خطا در خروج از حساب.');
+                }
+            });
+        });
+
+        // بررسی اگر کاربر قبلاً وارد شده
+        if (user_auth_object.is_logged_in) {
+            getUserData();
+        }
+    });
+</script>
