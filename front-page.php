@@ -371,7 +371,7 @@ function displayGameNets(gameNets) {
                     </div>
                     ` : ''}
 
-                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 sm:space-x-reverse">
+                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:gap-x-2 sm:space-x-reverse">
                         <a href="${permalink}" 
                             class="flex-1 bg-primary text-text-on-dark py-2 sm:py-2 rounded-lg font-semibold text-sm sm:text-base hover:bg-opacity-90 transition-colors text-center">
                             مشاهده جزئیات

@@ -4,11 +4,11 @@
     Version:1.0.0
 */
 @font-face {
-    font-family: "iransans";
-    src: url(./IRANSansWeb_Medium.woff2);
+    font-family: "iranYekan";
+    src: url(./asset/font/IRANYekanX-Regular.woff2);
 }
 
 
 * {
-    font-family: "iransans" !important;
+    font-family: "iranYekan" !important;
 }
