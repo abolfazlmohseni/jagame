@@ -10,12 +10,17 @@ function hodcode_enqueue_styles()
 
     wp_enqueue_script('hodkode-script', get_template_directory_uri() . '/js/script.js', array('jquery'), null, true);
 
+    // در تابع hodcode_enqueue_styles، آبجکت ajax را به روز کنید:
     wp_localize_script('hodkode-script', 'ajax_object', array(
         'ajax_url' => admin_url('admin-ajax.php'),
         'login_nonce' => wp_create_nonce('ajax_login_nonce'),
         'update_nonce' => wp_create_nonce('update_game_net_nonce'),
         'device_nonce' => wp_create_nonce('device_management_nonce'),
-        'unified_auth_nonce' => wp_create_nonce('unified_auth_nonce') // اضافه کردن nonce جدید
+        'unified_auth_nonce' => wp_create_nonce('unified_auth_nonce'),
+        'reservation_nonce' => wp_create_nonce('device_reservation_nonce'),
+        'game_nets_list_nonce' => wp_create_nonce('game_nets_list_nonce'),
+        'reservation_nonce' => wp_create_nonce('reservation_management_nonce'),
+
     ));
 }
 add_action('wp_enqueue_scripts', 'hodcode_enqueue_styles');
@@ -363,7 +368,6 @@ function device_meta_box_callback($post)
         <select name="device_status" class="widefat">
             <option value="قابل استفاده" <?php selected($status, 'قابل استفاده'); ?>>قابل استفاده</option>
             <option value="در حال تعمیر" <?php selected($status, 'در حال تعمیر'); ?>>در حال تعمیر</option>
-            <option value="رزومه شده" <?php selected($status, 'رزومه شده'); ?>>رزرو شده</option>
             <option value="غیرفعال" <?php selected($status, 'غیرفعال'); ?>>غیرفعال</option>
         </select>
     </p>
@@ -1793,4 +1797,814 @@ function unified_register_handler()
         'redirect' => $redirect_url
     ));
 }
+
+
+
+// ثبت CPT برای رزروها
+function register_reservations_cpt()
+{
+    $labels = array(
+        'name' => 'رزروها',
+        'singular_name' => 'رزرو',
+        'add_new' => 'افزودن رزرو',
+        'add_new_item' => 'افزودن رزرو جدید',
+        'edit_item' => 'ویرایش رزرو',
+        'all_items' => 'تمام رزروها',
+    );
+
+    $args = array(
+        'labels' => $labels,
+        'public' => false,
+        'show_ui' => true,
+        'show_in_menu' => 'edit.php?post_type=device',
+        'supports' => array('title'),
+        'menu_icon' => 'dashicons-calendar-alt',
+    );
+
+    register_post_type('reservation', $args);
+}
+add_action('init', 'register_reservations_cpt');
+
+// متاباکس‌های رزرو
+function reservation_meta_boxes()
+{
+    add_meta_box('reservation_info', 'اطلاعات رزرو', 'reservation_meta_box_callback', 'reservation', 'normal', 'high');
+}
+add_action('add_meta_boxes', 'reservation_meta_boxes');
+
+function reservation_meta_box_callback($post)
+{
+    wp_nonce_field('save_reservation_meta', 'reservation_meta_nonce');
+
+    $user_id = get_post_meta($post->ID, '_user_id', true);
+    $device_id = get_post_meta($post->ID, '_device_id', true);
+    $game_net_id = get_post_meta($post->ID, '_game_net_id', true);
+    $start_time = get_post_meta($post->ID, '_start_time', true);
+    $end_time = get_post_meta($post->ID, '_end_time', true);
+    $status = get_post_meta($post->ID, '_status', true);
+    $total_price = get_post_meta($post->ID, '_total_price', true);
+
+    echo '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">';
+
+    echo '<p><label>کاربر:</label><br>';
+    if ($user_id) {
+        $user = get_user_by('id', $user_id);
+        echo $user ? $user->display_name . ' (' . $user->user_email . ')' : 'نامشخص';
+    } else {
+        echo 'نامشخص';
+    }
+    echo '</p>';
+
+    echo '<p><label>دستگاه:</label><br>';
+    if ($device_id) {
+        echo get_the_title($device_id);
+    } else {
+        echo 'نامشخص';
+    }
+    echo '</p>';
+
+    echo '<p><label>گیم نت:</label><br>';
+    if ($game_net_id) {
+        echo get_the_title($game_net_id);
+    } else {
+        echo 'نامشخص';
+    }
+    echo '</p>';
+
+    echo '<p><label>زمان شروع:</label><br>';
+    echo '<input type="datetime-local" name="reservation_start_time" value="' . esc_attr($start_time) . '" class="widefat">';
+    echo '</p>';
+
+    echo '<p><label>زمان پایان:</label><br>';
+    echo '<input type="datetime-local" name="reservation_end_time" value="' . esc_attr($end_time) . '" class="widefat">';
+    echo '</p>';
+
+    echo '<p><label>وضعیت:</label><br>';
+    echo '<select name="reservation_status" class="widefat">';
+    echo '<option value="pending" ' . selected($status, 'pending', false) . '>در انتظار تایید</option>';
+    echo '<option value="confirmed" ' . selected($status, 'confirmed', false) . '>تایید شده</option>';
+    echo '<option value="cancelled" ' . selected($status, 'cancelled', false) . '>لغو شده</option>';
+    echo '<option value="completed" ' . selected($status, 'completed', false) . '>تکمیل شده</option>';
+    echo '</select>';
+    echo '</p>';
+
+    echo '<p><label>قیمت کل:</label><br>';
+    echo '<input type="number" name="reservation_total_price" value="' . esc_attr($total_price) . '" class="widefat"> تومان';
+    echo '</p>';
+
+    echo '</div>';
+}
+
+function save_reservation_meta($post_id)
+{
+    if (!isset($_POST['reservation_meta_nonce']) || !wp_verify_nonce($_POST['reservation_meta_nonce'], 'save_reservation_meta')) return;
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+
+    $fields = array('start_time', 'end_time', 'status', 'total_price');
+
+    foreach ($fields as $field) {
+        if (isset($_POST['reservation_' . $field])) {
+            update_post_meta($post_id, '_' . $field, sanitize_text_field($_POST['reservation_' . $field]));
+        }
+    }
+}
+add_action('save_post', 'save_reservation_meta');
+
+// AJAX برای رزرو دستگاه
+add_action('wp_ajax_reserve_device', 'reserve_device_handler');
+add_action('wp_ajax_nopriv_reserve_device', 'reserve_device_handler');
+
+function reserve_device_handler()
+{
+    // بررسی nonce
+    if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'device_reservation_nonce')) {
+        wp_send_json_error('امنیت نامعتبر است');
+        wp_die();
+    }
+
+    // اگر کاربر لاگین نباشد
+    if (!is_user_logged_in()) {
+        wp_send_json_error('not_logged_in', 'لطفاً ابتدا وارد حساب کاربری خود شوید');
+        wp_die();
+    }
+
+    // بررسی نقش کاربر - فقط گیمرها می‌توانند رزرو کنند
+    $user = wp_get_current_user();
+    if (!in_array('regular_user', $user->roles) && !in_array('subscriber', $user->roles)) {
+        wp_send_json_error('فقط کاربران عادی می‌توانند دستگاه رزرو کنند');
+        wp_die();
+    }
+
+    $user_id = get_current_user_id();
+    $device_id = isset($_POST['device_id']) ? intval($_POST['device_id']) : 0;
+    $start_time = isset($_POST['start_time']) ? sanitize_text_field($_POST['start_time']) : '';
+    $end_time = isset($_POST['end_time']) ? sanitize_text_field($_POST['end_time']) : '';
+
+    if (!$device_id || !$start_time || !$end_time) {
+        wp_send_json_error('لطفاً تمام فیلدهای ضروری را پر کنید');
+        wp_die();
+    }
+
+    // بررسی موجود بودن دستگاه
+    $device_status = get_post_meta($device_id, '_status', true);
+    if ($device_status !== 'قابل استفاده' && $device_status !== 'available') {
+        wp_send_json_error('این دستگاه در حال حاضر قابل رزرو نیست');
+        wp_die();
+    }
+
+    // بررسی تداخل زمانی
+    $existing_reservations = get_posts(array(
+        'post_type' => 'reservation',
+        'meta_query' => array(
+            'relation' => 'AND',
+            array(
+                'key' => '_device_id',
+                'value' => $device_id,
+                'compare' => '='
+            ),
+            array(
+                'key' => '_status',
+                'value' => array('pending', 'confirmed'),
+                'compare' => 'IN'
+            )
+        )
+    ));
+
+    $new_start = strtotime($start_time);
+    $new_end = strtotime($end_time);
+
+    foreach ($existing_reservations as $reservation) {
+        $existing_start = strtotime(get_post_meta($reservation->ID, '_start_time', true));
+        $existing_end = strtotime(get_post_meta($reservation->ID, '_end_time', true));
+
+        if (($new_start >= $existing_start && $new_start < $existing_end) ||
+            ($new_end > $existing_start && $new_end <= $existing_end) ||
+            ($new_start <= $existing_start && $new_end >= $existing_end)
+        ) {
+            wp_send_json_error('این زمان با رزروهای موجود تداخل دارد');
+            wp_die();
+        }
+    }
+
+    // محاسبه قیمت
+    $hourly_price = get_post_meta($device_id, '_price', true);
+    $hours = ceil(($new_end - $new_start) / 3600); // تبدیل به ساعت
+    $total_price = $hourly_price * $hours;
+
+    // ایجاد رزرو
+    $game_net_id = get_post_meta($device_id, '_game_net_id', true);
+
+    $reservation_id = wp_insert_post(array(
+        'post_title' => 'رزرو دستگاه ' . get_the_title($device_id) . ' توسط کاربر ' . wp_get_current_user()->display_name,
+        'post_type' => 'reservation',
+        'post_status' => 'publish'
+    ));
+
+    if (is_wp_error($reservation_id)) {
+        wp_send_json_error('خطا در ایجاد رزرو');
+        wp_die();
+    }
+
+    // ذخیره متادیتا
+    update_post_meta($reservation_id, '_user_id', $user_id);
+    update_post_meta($reservation_id, '_device_id', $device_id);
+    update_post_meta($reservation_id, '_game_net_id', $game_net_id);
+    update_post_meta($reservation_id, '_start_time', $start_time);
+    update_post_meta($reservation_id, '_end_time', $end_time);
+    update_post_meta($reservation_id, '_status', 'pending');
+    update_post_meta($reservation_id, '_total_price', $total_price);
+
+    // ارسال ایمیل به کاربر و مدیر گیم نت
+    $user_email = wp_get_current_user()->user_email;
+    $game_net_owner_id = get_post_meta($game_net_id, '_owner_id', true);
+    $game_net_owner_email = $game_net_owner_id ? get_userdata($game_net_owner_id)->user_email : get_option('admin_email');
+
+    $subject = 'رزرو جدید - دستگاه ' . get_the_title($device_id);
+    $message = "رزرو جدیدی ثبت شده است:\n\n";
+    $message .= "دستگاه: " . get_the_title($device_id) . "\n";
+    $message .= "کاربر: " . wp_get_current_user()->display_name . "\n";
+    $message .= "زمان: " . date('Y/m/d H:i', $new_start) . " تا " . date('Y/m/d H:i', $new_end) . "\n";
+    $message .= "قیمت: " . number_format($total_price) . " تومان\n\n";
+    $message .= "لطفاً در پنل مدیریت وضعیت این رزرو را بررسی کنید.";
+
+    wp_mail($user_email, $subject, $message);
+    wp_mail($game_net_owner_email, $subject, $message);
+
+    wp_send_json_success(array(
+        'message' => 'رزرو با موفقیت ثبت شد. به زودی با شما تماس خواهیم گرفت.',
+        'reservation_id' => $reservation_id
+    ));
+    wp_die();
+}
+
+
+
+
+// functions.php - تغییرات و اضافات
+
+
+// 2. اضافه کردن امکان رزرو چند دستگاه
+add_action('wp_ajax_reserve_devices', 'reserve_devices_handler');
+add_action('wp_ajax_nopriv_reserve_devices', 'reserve_devices_handler');
+
+function reserve_devices_handler()
+{
+    // بررسی nonce
+    if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'device_reservation_nonce')) {
+        wp_send_json_error('امنیت نامعتبر است');
+        wp_die();
+    }
+
+    // اگر کاربر لاگین نباشد
+    if (!is_user_logged_in()) {
+        wp_send_json_error('not_logged_in', 'لطفاً ابتدا وارد حساب کاربری خود شوید');
+        wp_die();
+    }
+
+    $user_id = get_current_user_id();
+    $device_ids = isset($_POST['device_ids']) ? array_map('intval', explode(',', $_POST['device_ids'])) : array();
+    $start_time = isset($_POST['start_time']) ? sanitize_text_field($_POST['start_time']) : '';
+    $end_time = isset($_POST['end_time']) ? sanitize_text_field($_POST['end_time']) : '';
+    $hours = isset($_POST['hours']) ? intval($_POST['hours']) : 0;
+
+    if (empty($device_ids) || !$start_time || !$hours) {
+        wp_send_json_error('لطفاً تمام فیلدهای ضروری را پر کنید');
+        wp_die();
+    }
+
+    // محاسبه زمان پایان بر اساس ساعت‌های انتخاب شده
+    if (!$end_time) {
+        $end_time = date('Y-m-d H:i:s', strtotime($start_time . " +{$hours} hours"));
+    }
+
+    $reservation_ids = array();
+    $total_price = 0;
+
+    foreach ($device_ids as $device_id) {
+        // بررسی موجود بودن دستگاه
+        $device_status = get_post_meta($device_id, '_status', true);
+        if ($device_status !== 'قابل استفاده' && $device_status !== 'available') {
+            wp_send_json_error('دستگاه ' . get_the_title($device_id) . ' در حال حاضر قابل رزرو نیست');
+            wp_die();
+        }
+
+        // بررسی تداخل زمانی
+        $conflict = check_reservation_conflict($device_id, $start_time, $end_time);
+        if ($conflict) {
+            wp_send_json_error('زمان انتخاب شده برای دستگاه ' . get_the_title($device_id) . ' با رزروهای موجود تداخل دارد');
+            wp_die();
+        }
+
+        // محاسبه قیمت
+        $hourly_price = get_post_meta($device_id, '_price', true);
+        $device_total_price = $hourly_price * $hours;
+        $total_price += $device_total_price;
+
+        // ایجاد رزرو
+        $game_net_id = get_post_meta($device_id, '_game_net_id', true);
+
+        $reservation_id = wp_insert_post(array(
+            'post_title' => 'رزرو دستگاه ' . get_the_title($device_id) . ' توسط کاربر ' . wp_get_current_user()->display_name,
+            'post_type' => 'reservation',
+            'post_status' => 'publish'
+        ));
+
+        if (!is_wp_error($reservation_id)) {
+            // ذخیره متادیتا
+            update_post_meta($reservation_id, '_user_id', $user_id);
+            update_post_meta($reservation_id, '_device_id', $device_id);
+            update_post_meta($reservation_id, '_game_net_id', $game_net_id);
+            update_post_meta($reservation_id, '_start_time', $start_time);
+            update_post_meta($reservation_id, '_end_time', $end_time);
+            update_post_meta($reservation_id, '_status', 'pending');
+            update_post_meta($reservation_id, '_total_price', $device_total_price);
+            update_post_meta($reservation_id, '_hours', $hours);
+
+            $reservation_ids[] = $reservation_id;
+        }
+    }
+
+    // ارسال ایمیل
+    send_reservation_email($user_id, $device_ids, $start_time, $end_time, $total_price, $reservation_ids);
+
+    wp_send_json_success(array(
+        'message' => 'رزرو با موفقیت ثبت شد. به زودی با شما تماس خواهیم گرفت.',
+        'reservation_ids' => $reservation_ids,
+        'total_price' => $total_price
+    ));
+    wp_die();
+}
+
+// 3. تابع بررسی تداخل رزرو
+function check_reservation_conflict($device_id, $start_time, $end_time)
+{
+    $existing_reservations = get_posts(array(
+        'post_type' => 'reservation',
+        'posts_per_page' => -1,
+        'meta_query' => array(
+            'relation' => 'AND',
+            array(
+                'key' => '_device_id',
+                'value' => $device_id,
+                'compare' => '='
+            ),
+            array(
+                'key' => '_status',
+                'value' => array('pending', 'confirmed'),
+                'compare' => 'IN'
+            )
+        )
+    ));
+
+    $new_start = strtotime($start_time);
+    $new_end = strtotime($end_time);
+
+    foreach ($existing_reservations as $reservation) {
+        $existing_start = strtotime(get_post_meta($reservation->ID, '_start_time', true));
+        $existing_end = strtotime(get_post_meta($reservation->ID, '_end_time', true));
+
+        // بررسی تداخل زمانی
+        if (($new_start >= $existing_start && $new_start < $existing_end) ||
+            ($new_end > $existing_start && $new_end <= $existing_end) ||
+            ($new_start <= $existing_start && $new_end >= $existing_end)
+        ) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// 4. تابع ارسال ایمیل
+function send_reservation_email($user_id, $device_ids, $start_time, $end_time, $total_price, $reservation_ids)
+{
+    $user = get_userdata($user_id);
+    $user_email = $user->user_email;
+
+    $device_names = array();
+    foreach ($device_ids as $device_id) {
+        $device_names[] = get_the_title($device_id);
+    }
+
+    $subject = 'رزرو جدید - ' . count($device_ids) . ' دستگاه';
+    $message = "رزرو جدیدی ثبت شده است:\n\n";
+    $message .= "تعداد دستگاه‌ها: " . count($device_ids) . "\n";
+    $message .= "دستگاه‌ها: " . implode(', ', $device_names) . "\n";
+    $message .= "کاربر: " . $user->display_name . "\n";
+    $message .= "زمان: " . date('Y/m/d H:i', strtotime($start_time)) . " تا " . date('Y/m/d H:i', strtotime($end_time)) . "\n";
+    $message .= "مدت زمان: " . ceil((strtotime($end_time) - strtotime($start_time)) / 3600) . " ساعت\n";
+    $message .= "قیمت کل: " . number_format($total_price) . " تومان\n\n";
+    $message .= "شماره‌های رزرو: " . implode(', ', $reservation_ids) . "\n\n";
+    $message .= "لطفاً در پنل مدیریت وضعیت این رزروها را بررسی کنید.";
+
+    // ارسال به کاربر
+    wp_mail($user_email, $subject, $message);
+
+    // ارسال به مدیران گیم نت‌ها (برای هر دستگاه گیم نت متفاوت ممکن باشد)
+    $game_net_emails = array();
+    foreach ($device_ids as $device_id) {
+        $game_net_id = get_post_meta($device_id, '_game_net_id', true);
+        $game_net_owner_id = get_post_meta($game_net_id, '_owner_id', true);
+
+        if ($game_net_owner_id) {
+            $owner = get_userdata($game_net_owner_id);
+            $game_net_emails[$owner->user_email] = true;
+        }
+    }
+
+    foreach (array_keys($game_net_emails) as $email) {
+        wp_mail($email, $subject, $message);
+    }
+}
+
+// 5. اضافه کردن shortcode برای نمایش فرم رزرو در صفحه تک گیم نت
+function game_net_reservation_form_shortcode($atts)
+{
+    if (!is_singular('game_net')) {
+        return '';
+    }
+
+    ob_start();
+    include get_template_directory() . '/game-net-reservation-form.php';
+    return ob_get_clean();
+}
+add_shortcode('game_net_reservation_form', 'game_net_reservation_form_shortcode');
+
+// AJAX برای دریافت دستگاه‌های موجود بر اساس نوع
+add_action('wp_ajax_get_available_devices', 'get_available_devices_handler');
+add_action('wp_ajax_nopriv_get_available_devices', 'get_available_devices_handler');
+
+function get_available_devices_handler()
+{
+    // بررسی nonce
+    if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'device_reservation_nonce')) {
+        wp_send_json_error('امنیت نامعتبر است');
+        wp_die();
+    }
+
+    $device_type = isset($_POST['device_type']) ? sanitize_text_field($_POST['device_type']) : '';
+    $game_net_id = isset($_POST['game_net_id']) ? intval($_POST['game_net_id']) : 0;
+    $date = isset($_POST['date']) ? sanitize_text_field($_POST['date']) : '';
+    $start_time = isset($_POST['start_time']) ? sanitize_text_field($_POST['start_time']) : '';
+
+    if (!$device_type || !$game_net_id || !$date || !$start_time) {
+        wp_send_json_error('پارامترهای لازم ارسال نشده است');
+        wp_die();
+    }
+
+    // دریافت دستگاه‌های موجود
+    $args = array(
+        'post_type' => 'device',
+        'posts_per_page' => -1,
+        'meta_query' => array(
+            'relation' => 'AND',
+            array(
+                'key' => '_game_net_id',
+                'value' => $game_net_id,
+                'compare' => '='
+            ),
+            array(
+                'key' => '_type',
+                'value' => $device_type,
+                'compare' => '='
+            ),
+            array(
+                'key' => '_status',
+                'value' => array('قابل استفاده', 'available'),
+                'compare' => 'IN'
+            )
+        )
+    );
+
+    $devices_query = new WP_Query($args);
+    $available_devices = array();
+
+    if ($devices_query->have_posts()) {
+        while ($devices_query->have_posts()) {
+            $devices_query->the_post();
+            $device_id = get_the_ID();
+
+            // بررسی آیا دستگاه در زمان مورد نظر آزاد است
+            $start_datetime = $date . ' ' . $start_time;
+            $is_available = !check_reservation_conflict($device_id, $start_datetime, date('Y-m-d H:i:s', strtotime($start_datetime . ' +1 hour')));
+
+            if ($is_available) {
+                $available_devices[] = array(
+                    'id' => $device_id,
+                    'name' => get_the_title(),
+                    'type' => get_post_meta($device_id, '_type', true),
+                    'specs' => get_post_meta($device_id, '_specs', true),
+                    'price' => get_post_meta($device_id, '_price', true)
+                );
+            }
+        }
+        wp_reset_postdata();
+    }
+
+    wp_send_json_success(array(
+        'devices' => $available_devices,
+        'count' => count($available_devices)
+    ));
+    wp_die();
+}
+
+function get_available_devices($game_net_id, $start_datetime, $end_datetime) {
+    $args = array(
+        'post_type' => 'device',
+        'posts_per_page' => -1,
+        'meta_query' => array(
+            array(
+                'key' => '_game_net_id',
+                'value' => $game_net_id,
+                'compare' => '='
+            )
+        )
+    );
+
+    $devices = get_posts($args);
+    $available_devices = array();
+
+    foreach ($devices as $device) {
+        // بررسی آیا دستگاه در بازه زمانی مورد نظر آزاد است
+        if (!check_reservation_conflict($device->ID, $start_datetime, $end_datetime)) {
+            $available_devices[] = array(
+                'id' => $device->ID,
+                'name' => $device->post_title,
+                'type' => get_post_meta($device->ID, '_type', true),
+                'specs' => get_post_meta($device->ID, '_specs', true),
+                'price' => get_post_meta($device->ID, '_price', true)
+            );
+        }
+    }
+
+    return $available_devices;
+}
+
+
+// AJAX برای ذخیره اطلاعات پروفایل کاربر
+add_action('wp_ajax_update_user_profile', 'update_user_profile_handler');
+function update_user_profile_handler()
+{
+    // بررسی nonce
+    if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'user_profile_nonce')) {
+        wp_send_json_error('امنیت نامعتبر است');
+        wp_die();
+    }
+
+    if (!is_user_logged_in()) {
+        wp_send_json_error('لطفاً ابتدا وارد حساب کاربری خود شوید');
+        wp_die();
+    }
+
+    $user_id = get_current_user_id();
+    $errors = array();
+
+    // اعتبارسنجی و ذخیره اطلاعات
+    if (isset($_POST['first_name'])) {
+        update_user_meta($user_id, 'first_name', sanitize_text_field($_POST['first_name']));
+    }
+
+    if (isset($_POST['last_name'])) {
+        update_user_meta($user_id, 'last_name', sanitize_text_field($_POST['last_name']));
+    }
+
+    if (isset($_POST['phone'])) {
+        update_user_meta($user_id, 'phone', sanitize_text_field($_POST['phone']));
+    }
+
+    if (isset($_POST['email'])) {
+        $email = sanitize_email($_POST['email']);
+        if (!is_email($email)) {
+            $errors[] = 'ایمیل وارد شده معتبر نیست';
+        } elseif (email_exists($email) && email_exists($email) != $user_id) {
+            $errors[] = 'این ایمیل قبلاً توسط کاربر دیگری استفاده شده است';
+        } else {
+            wp_update_user(array('ID' => $user_id, 'user_email' => $email));
+        }
+    }
+
+    if (isset($_POST['birthdate'])) {
+        update_user_meta($user_id, 'birthdate', sanitize_text_field($_POST['birthdate']));
+    }
+
+    if (isset($_POST['address'])) {
+        update_user_meta($user_id, 'address', sanitize_textarea_field($_POST['address']));
+    }
+
+    if (!empty($errors)) {
+        wp_send_json_error(implode('<br>', $errors));
+    }
+
+    wp_send_json_success('اطلاعات پروفایل با موفقیت به‌روزرسانی شد');
+    wp_die();
+}
+
+// AJAX برای تغییر رمز عبور کاربر
+add_action('wp_ajax_change_user_password', 'change_user_password_handler');
+function change_user_password_handler()
+{
+    // بررسی nonce
+    if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'user_profile_nonce')) {
+        wp_send_json_error('امنیت نامعتبر است');
+        wp_die();
+    }
+
+    if (!is_user_logged_in()) {
+        wp_send_json_error('لطفاً ابتدا وارد حساب کاربری خود شوید');
+        wp_die();
+    }
+
+    $user_id = get_current_user_id();
+    $current_password = $_POST['current_password'];
+    $new_password = $_POST['new_password'];
+    $confirm_password = $_POST['confirm_password'];
+
+    // اعتبارسنجی
+    if (empty($current_password) || empty($new_password) || empty($confirm_password)) {
+        wp_send_json_error('لطفاً تمام فیلدهای رمز عبور را پر کنید');
+        wp_die();
+    }
+
+    if ($new_password !== $confirm_password) {
+        wp_send_json_error('رمزهای عبور جدید مطابقت ندارند');
+        wp_die();
+    }
+
+    if (strlen($new_password) < 6) {
+        wp_send_json_error('رمز عبور جدید باید حداقل ۶ کاراکتر باشد');
+        wp_die();
+    }
+
+    // بررسی رمز عبور فعلی
+    $user = get_userdata($user_id);
+    if (!wp_check_password($current_password, $user->user_pass, $user_id)) {
+        wp_send_json_error('رمز عبور فعلی نادرست است');
+        wp_die();
+    }
+
+    // تغییر رمز عبور
+    wp_set_password($new_password, $user_id);
+
+    // ورود مجدد کاربر پس از تغییر رمز عبور
+    wp_set_current_user($user_id);
+    wp_set_auth_cookie($user_id);
+
+    wp_send_json_success('رمز عبور با موفقیت تغییر یافت');
+    wp_die();
+}
+
+// اضافه کردن nonce برای امنیت
+function add_user_profile_nonce()
+{
+    wp_localize_script('hodkode-script', 'user_profile_ajax', array(
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('user_profile_nonce')
+    ));
+}
+add_action('wp_enqueue_scripts', 'add_user_profile_nonce');
+// AJAX برای دریافت رزروهای گیم نت
+add_action('wp_ajax_get_game_net_reservations', 'get_game_net_reservations_handler');
+function get_game_net_reservations_handler() {
+    // بررسی nonce - نام action را با آنچه در reservation.php استفاده کردیم مطابقت دهیم
+    if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'reservation_management_nonce')) {
+        wp_send_json_error('امنیت نامعتبر است');
+        wp_die();
+    }
+
+    $user_id = get_current_user_id();
+    if (!$user_id) {
+        wp_send_json_error('لطفاً ابتدا وارد شوید');
+        wp_die();
+    }
+
+    $game_net_id = isset($_POST['game_net_id']) ? intval($_POST['game_net_id']) : 0;
+    if (!$game_net_id) {
+        wp_send_json_error('گیم نت مشخص نشده است');
+        wp_die();
+    }
+
+    // بررسی مالکیت گیم نت
+    $user_game_net_id = get_user_meta($user_id, '_game_net_id', true);
+    if ($user_game_net_id != $game_net_id) {
+        wp_send_json_error('شما مجاز به مشاهده رزروهای این گیم نت نیستید');
+        wp_die();
+    }
+
+    // دریافت رزروهای مربوط به این گیم نت
+    $args = array(
+        'post_type' => 'reservation',
+        'posts_per_page' => -1,
+        'meta_query' => array(
+            array(
+                'key' => '_game_net_id',
+                'value' => $game_net_id,
+                'compare' => '='
+            )
+        ),
+        'orderby' => 'meta_value',
+        'meta_key' => '_start_time',
+        'order' => 'ASC'
+    );
+
+    $reservations = array();
+    $query = new WP_Query($args);
+
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $post_id = get_the_ID();
+
+            // فقط رزروهای آینده یا امروز را نشان بده
+            $start_time = get_post_meta($post_id, '_start_time', true);
+            $end_time = get_post_meta($post_id, '_end_time', true);
+            
+            // اگر رزرو تمام شده است، نشان نده (مگر اینکه وضعیت pending یا confirmed داشته باشد)
+            $status = get_post_meta($post_id, '_status', true);
+            $is_completed = ($status === 'completed' || $status === 'cancelled');
+            $is_future = strtotime($end_time) > current_time('timestamp');
+
+            if ($is_future || !$is_completed) {
+                $user_id = get_post_meta($post_id, '_user_id', true);
+                $user_info = $user_id ? get_userdata($user_id) : null;
+                
+                $reservations[] = array(
+                    'id' => $post_id,
+                    'device_id' => get_post_meta($post_id, '_device_id', true),
+                    'device_name' => get_the_title(get_post_meta($post_id, '_device_id', true)),
+                    'user_id' => $user_id,
+                    'user_name' => $user_info ? $user_info->display_name : null,
+                    'start_time' => $start_time,
+                    'end_time' => $end_time,
+                    'status' => $status,
+                    'total_price' => get_post_meta($post_id, '_total_price', true)
+                );
+            }
+        }
+        wp_reset_postdata();
+    }
+
+    wp_send_json_success(array('reservations' => $reservations));
+    wp_die();
+}
+
+// AJAX برای به‌روزرسانی وضعیت رزرو
+add_action('wp_ajax_update_reservation_status', 'update_reservation_status_handler');
+function update_reservation_status_handler() {
+    // بررسی nonce - نام action را با آنچه در reservation.php استفاده کردیم مطابقت دهیم
+    if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'reservation_management_nonce')) {
+        wp_send_json_error('امنیت نامعتبر است');
+        wp_die();
+    }
+
+    $user_id = get_current_user_id();
+    if (!$user_id) {
+        wp_send_json_error('لطفاً ابتدا وارد شوید');
+        wp_die();
+    }
+
+    $reservation_id = isset($_POST['reservation_id']) ? intval($_POST['reservation_id']) : 0;
+    $new_status = isset($_POST['new_status']) ? sanitize_text_field($_POST['new_status']) : '';
+
+    if (!$reservation_id || !$new_status) {
+        wp_send_json_error('پارامترهای لازم ارسال نشده است');
+        wp_die();
+    }
+
+    // بررسی مالکیت رزرو
+    $game_net_id = get_post_meta($reservation_id, '_game_net_id', true);
+    $user_game_net_id = get_user_meta($user_id, '_game_net_id', true);
+    
+    if ($game_net_id != $user_game_net_id) {
+        wp_send_json_error('شما مجاز به تغییر این رزرو نیستید');
+        wp_die();
+    }
+
+    // به‌روزرسانی وضعیت
+    update_post_meta($reservation_id, '_status', $new_status);
+
+    // ارسال ایمیل به کاربر در صورت تغییر وضعیت
+    $user_id = get_post_meta($reservation_id, '_user_id', true);
+    if ($user_id) {
+        $user_info = get_userdata($user_id);
+        $device_name = get_the_title(get_post_meta($reservation_id, '_device_id', true));
+        
+        $status_labels = array(
+            'pending' => 'در انتظار تایید',
+            'confirmed' => 'تایید شده',
+            'cancelled' => 'لغو شده',
+            'completed' => 'تکمیل شده'
+        );
+        
+        $subject = 'تغییر وضعیت رزرو - ' . $device_name;
+        $message = "وضعیت رزرو شما تغییر یافت:\n\n";
+        $message .= "دستگاه: " . $device_name . "\n";
+        $message .= "وضعیت جدید: " . ($status_labels[$new_status] ?? $new_status) . "\n";
+        
+        wp_mail($user_info->user_email, $subject, $message);
+    }
+
+    wp_send_json_success('وضعیت رزرو با موفقیت به‌روزرسانی شد');
+    wp_die();
+}
+
 ?>
