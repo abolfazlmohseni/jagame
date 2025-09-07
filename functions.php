@@ -9,14 +9,17 @@ function hodcode_enqueue_styles()
     wp_enqueue_style('hodkode-style', get_stylesheet_uri());
 
     wp_enqueue_script('hodkode-script', get_template_directory_uri() . '/js/script.js', array('jquery'), null, true);
+
     wp_localize_script('hodkode-script', 'ajax_object', array(
         'ajax_url' => admin_url('admin-ajax.php'),
         'login_nonce' => wp_create_nonce('ajax_login_nonce'),
         'update_nonce' => wp_create_nonce('update_game_net_nonce'),
-        'device_nonce' => wp_create_nonce('device_management_nonce')
+        'device_nonce' => wp_create_nonce('device_management_nonce'),
+        'unified_auth_nonce' => wp_create_nonce('unified_auth_nonce') // اضافه کردن nonce جدید
     ));
 }
 add_action('wp_enqueue_scripts', 'hodcode_enqueue_styles');
+
 
 // پشتیبانی قالب
 add_action('after_setup_theme', function () {
@@ -81,16 +84,6 @@ function register_devices_cpt()
 }
 add_action('init', 'register_devices_cpt');
 
-// ثبت نقش مالک گیم نت
-function add_game_net_roles()
-{
-    add_role('game_net_owner', 'مالک گیم نت', array(
-        'read' => true,
-        'edit_posts' => false,
-        'delete_posts' => false
-    ));
-}
-add_action('init', 'add_game_net_roles');
 
 // متاباکس‌های گیم نت
 function game_net_meta_boxes()
@@ -392,72 +385,6 @@ function save_device_meta($post_id)
 }
 add_action('save_post', 'save_device_meta');
 
-// AJAX Login
-add_action('wp_ajax_nopriv_ajax_login', 'ajax_login_handler');
-add_action('wp_ajax_ajax_login', 'ajax_login_handler');
-
-function ajax_login_handler()
-{
-    // بررسی وجود security field
-    if (!isset($_POST['security'])) {
-        wp_send_json_error(array('message' => 'فیلد امنیتی وجود ندارد'));
-        wp_die();
-    }
-
-    // بررسی nonce
-    if (!wp_verify_nonce($_POST['security'], 'ajax_login_nonce')) {
-        wp_send_json_error(array('message' => 'لطفاً صفحه را رفرش کرده و مجدد تلاش کنید'));
-        wp_die();
-    }
-
-    $username = sanitize_text_field($_POST['username'] ?? '');
-    $password = sanitize_text_field($_POST['password'] ?? '');
-
-    if (empty($username) || empty($password)) {
-        wp_send_json_error(array('message' => 'لطفاً شماره موبایل و رمز عبور را وارد کنید'));
-        wp_die();
-    }
-
-    // جستجوی گیم نت
-    global $wpdb;
-    $game_net_id = $wpdb->get_var($wpdb->prepare(
-        "SELECT p.ID FROM {$wpdb->posts} p
-        INNER JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id
-        INNER JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id
-        WHERE p.post_type = 'game_net'
-        AND p.post_status = 'publish'
-        AND pm1.meta_key = '_phone' AND pm1.meta_value = %s
-        AND pm2.meta_key = '_password' AND pm2.meta_value = %s",
-        $username,
-        $password
-    ));
-
-    if ($game_net_id) {
-        $user_id = get_current_user_id();
-
-        // بروزرسانی نقش کاربر
-        $user = new WP_User($user_id);
-        $user->set_role('game_net_owner');
-
-        // ذخیره game_net_id
-        update_user_meta($user_id, '_game_net_id', $game_net_id);
-
-        // لاگین کاربر
-        wp_clear_auth_cookie();
-        wp_set_current_user($user_id);
-        wp_set_auth_cookie($user_id);
-
-        // پیدا کردن صفحه پنل
-        $panel_page = get_page_by_path('Overview');
-        $redirect_url = $panel_page ? get_permalink($panel_page) : home_url();
-
-        wp_send_json_success(array('redirect' => $redirect_url));
-    } else {
-        wp_send_json_error(array('message' => 'شماره موبایل یا رمز عبور اشتباه است'));
-    }
-
-    wp_die();
-}
 // AJAX برای ذخیره اطلاعات گیم نت و آپلود عکس‌ها
 add_action('wp_ajax_update_game_net_info', 'update_game_net_info_handler');
 
@@ -1616,18 +1543,7 @@ add_action('wp_footer', 'add_registration_nonce');
 // 
 // 
 
-// ثبت نقش گیمر(اگر وجود ندارد)
-function add_regular_user_role()
-{
-    if (!get_role('regular_user')) {
-        add_role('regular_user', 'گیمر', array(
-            'read' => true,
-            'edit_posts' => false,
-            'delete_posts' => false
-        ));
-    }
-}
-add_action('init', 'add_regular_user_role');
+
 
 // ثبت صفحه پنل کاربری
 function create_user_dashboard_page()
@@ -1659,88 +1575,6 @@ function user_dashboard_shortcode()
 }
 add_shortcode('user_dashboard', 'user_dashboard_shortcode');
 
-// Ajax برای ثبت‌نام کاربر
-add_action('wp_ajax_nopriv_register_user', 'register_user_handler');
-function register_user_handler()
-{
-    // بررسی nonce
-    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'user_auth_nonce')) {
-        wp_send_json_error('خطای امنیتی. لطفاً صفحه را رفرش کنید.');
-    }
-
-    // دریافت و اعتبارسنجی داده‌ها
-    $username = sanitize_user($_POST['username']);
-    $email = sanitize_email($_POST['email']);
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
-
-    // بررسی وجود فیلدهای ضروری
-    if (empty($username) || empty($email) || empty($password)) {
-        wp_send_json_error('لطفاً تمام فیلدهای ضروری را پر کنید.');
-    }
-
-    // بررسی مطابقت رمز عبور
-    if ($password !== $confirm_password) {
-        wp_send_json_error('رمزهای عبور وارد شده مطابقت ندارند.');
-    }
-
-    // بررسی وجود کاربر
-    if (username_exists($username)) {
-        wp_send_json_error('نام کاربری قبلاً انتخاب شده است.');
-    }
-
-    // بررسی وجود ایمیل
-    if (email_exists($email)) {
-        wp_send_json_error('ایمیل وارد شده قبلاً استفاده شده است.');
-    }
-
-    // ایجاد کاربر جدید
-    $user_id = wp_create_user($username, $password, $email);
-
-    if (is_wp_error($user_id)) {
-        wp_send_json_error('خطا در ایجاد حساب کاربری: ' . $user_id->get_error_message());
-    }
-
-    // اختصاص نقش به کاربر
-    $user = new WP_User($user_id);
-    $user->set_role('regular_user');
-
-    // ورود خودکار کاربر بعد از ثبت‌نام
-    wp_set_current_user($user_id);
-    wp_set_auth_cookie($user_id);
-
-    wp_send_json_success('حساب کاربری با موفقیت ایجاد شد. در حال انتقال...');
-}
-
-// Ajax برای ورود کاربر
-add_action('wp_ajax_nopriv_login_user', 'login_user_handler');
-function login_user_handler()
-{
-    // بررسی nonce
-    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'user_auth_nonce')) {
-        wp_send_json_error('خطای امنیتی. لطفاً صفحه را رفرش کنید.');
-    }
-
-    // دریافت داده‌ها
-    $credentials = array();
-    $credentials['user_login'] = sanitize_user($_POST['username']);
-    $credentials['user_password'] = $_POST['password'];
-    $credentials['remember'] = isset($_POST['remember']) ? true : false;
-
-    // بررسی وجود فیلدهای ضروری
-    if (empty($credentials['user_login']) || empty($credentials['user_password'])) {
-        wp_send_json_error('لطفاً نام کاربری و رمز عبور را وارد کنید.');
-    }
-
-    // تلاش برای ورود
-    $user = wp_signon($credentials, false);
-
-    if (is_wp_error($user)) {
-        wp_send_json_error('نام کاربری یا رمز عبور اشتباه است.');
-    }
-
-    wp_send_json_success('ورود موفقیت‌آمیز. در حال انتقال...');
-}
 
 // Ajax برای دریافت اطلاعات کاربر
 add_action('wp_ajax_get_user_data', 'get_user_data_handler');
@@ -1779,20 +1613,184 @@ function add_user_auth_nonce()
 }
 add_action('wp_footer', 'add_user_auth_nonce');
 
-// localize script برای Ajax
-function user_auth_localize_script()
-{
-    // اول مطمئن شوید اسکریپت ثبت شده است
-    wp_enqueue_script('hodkode-script');
+// 
+// 
+// 
+// 
 
-    // سپس آن را localize کنید
-    wp_localize_script('hodkode-script', 'user_auth_object', array(
-        'ajax_url' => admin_url('admin-ajax.php'),
-        'nonce' => wp_create_nonce('user_auth_nonce'),
-        'is_logged_in' => is_user_logged_in()
+
+
+// ثبت نقش‌های کاربری در یک تابع واحد
+function add_custom_user_roles()
+{
+    // نقش مالک گیم نت (اگر وجود ندارد)
+    if (!get_role('game_net_owner')) {
+        add_role('game_net_owner', 'مالک گیم نت', array(
+            'read' => true,
+            'edit_posts' => false,
+            'delete_posts' => false
+        ));
+    }
+
+    // نقش گیمر (اگر وجود ندارد)
+    if (!get_role('regular_user')) {
+        add_role('regular_user', 'گیمر', array(
+            'read' => true,
+            'edit_posts' => false,
+            'delete_posts' => false
+        ));
+    }
+}
+add_action('init', 'add_custom_user_roles');
+
+// یکپارچه‌سازی سیستم AJAX برای احراز هویت
+add_action('wp_ajax_nopriv_unified_login', 'unified_login_handler');
+add_action('wp_ajax_nopriv_unified_register', 'unified_register_handler');
+
+function unified_login_handler()
+{
+    // بررسی nonce
+    if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'unified_auth_nonce')) {
+        wp_send_json_error('خطای امنیتی. لطفاً صفحه را رفرش کنید.');
+    }
+
+    $username = sanitize_user($_POST['username']);
+    $password = $_POST['password'];
+    $user_type = sanitize_text_field($_POST['user_type']); // 'gamer' یا 'owner'
+
+    if (empty($username) || empty($password)) {
+        wp_send_json_error('لطفاً نام کاربری و رمز عبور را وارد کنید.');
+    }
+
+    // اگر مالک گیم نت است، از روش خاص آن استفاده کن
+    if ($user_type === 'owner') {
+        // کدهای مربوط به ورود مالک گیم نت
+        global $wpdb;
+        $game_net_id = $wpdb->get_var($wpdb->prepare(
+            "SELECT p.ID FROM {$wpdb->posts} p
+            INNER JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id
+            INNER JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id
+            WHERE p.post_type = 'game_net'
+            AND p.post_status = 'publish'
+            AND pm1.meta_key = '_phone' AND pm1.meta_value = %s
+            AND pm2.meta_key = '_password' AND pm2.meta_value = %s",
+            $username,
+            $password
+        ));
+
+        if ($game_net_id) {
+            // ایجاد کاربر جدید برای مالک گیم نت (اگر وجود ندارد)
+            if (!email_exists($username . '@gamenet.local')) {
+                $user_id = wp_create_user($username, $password, $username . '@gamenet.local');
+                if (!is_wp_error($user_id)) {
+                    $user = new WP_User($user_id);
+                    $user->set_role('game_net_owner');
+                }
+            } else {
+                // اگر کاربر وجود دارد، فقط لاگین کند
+                $user = get_user_by('email', $username . '@gamenet.local');
+                $user_id = $user->ID;
+            }
+
+            update_user_meta($user_id, '_game_net_id', $game_net_id);
+
+            wp_clear_auth_cookie();
+            wp_set_current_user($user_id);
+            wp_set_auth_cookie($user_id);
+
+            $panel_page = get_page_by_path('overview');
+            $redirect_url = $panel_page ? get_permalink($panel_page->ID) : home_url();
+
+            wp_send_json_success(array('redirect' => $redirect_url));
+        } else {
+            wp_send_json_error('شماره موبایل یا رمز عبور اشتباه است');
+        }
+    } else {
+        // ورود معمولی کاربران (گیمرها)
+        $credentials = array(
+            'user_login' => $username,
+            'user_password' => $password,
+            'remember' => isset($_POST['remember']) ? true : false
+        );
+
+        $user = wp_signon($credentials, false);
+
+        if (is_wp_error($user)) {
+            wp_send_json_error('نام کاربری یا رمز عبور اشتباه است.');
+        }
+
+        // بررسی نقش کاربر
+        $user_obj = new WP_User($user->ID);
+        if (in_array('game_net_owner', $user_obj->roles)) {
+            $panel_page = get_page_by_path('overview');
+            $redirect_url = $panel_page ? get_permalink($panel_page->ID) : home_url();
+        } else {
+            $panel_page = get_page_by_path('userpanel');
+            $redirect_url = $panel_page ? get_permalink($panel_page->ID) : home_url();
+        }
+
+        wp_send_json_success(array('redirect' => $redirect_url));
+    }
+}
+
+function unified_register_handler()
+{
+    // بررسی nonce
+    if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'unified_auth_nonce')) {
+        wp_send_json_error('خطای امنیتی. لطفاً صفحه را رفرش کنید.');
+    }
+
+    $username = sanitize_user($_POST['username']);
+    $email = sanitize_email($_POST['email']);
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm_password'];
+    $user_type = sanitize_text_field($_POST['user_type']); // 'gamer' یا 'owner'
+
+    // اعتبارسنجی
+    if (empty($username) || empty($email) || empty($password)) {
+        wp_send_json_error('لطفاً تمام فیلدهای ضروری را پر کنید.');
+    }
+
+    if ($password !== $confirm_password) {
+        wp_send_json_error('رمزهای عبور وارد شده مطابقت ندارند.');
+    }
+
+    if (username_exists($username)) {
+        wp_send_json_error('نام کاربری قبلاً انتخاب شده است.');
+    }
+
+    if (email_exists($email)) {
+        wp_send_json_error('ایمیل وارد شده قبلاً استفاده شده است.');
+    }
+
+    // ایجاد کاربر جدید
+    $user_id = wp_create_user($username, $password, $email);
+
+    if (is_wp_error($user_id)) {
+        wp_send_json_error('خطا در ایجاد حساب کاربری: ' . $user_id->get_error_message());
+    }
+
+    // اختصاص نقش بر اساس نوع کاربر
+    $user = new WP_User($user_id);
+    $role = ($user_type === 'owner') ? 'game_net_owner' : 'regular_user';
+    $user->set_role($role);
+
+    // ورود خودکار کاربر
+    wp_set_current_user($user_id);
+    wp_set_auth_cookie($user_id);
+
+    // تعیین صفحه مقصد بر اساس نقش
+    if ($role === 'game_net_owner') {
+        $panel_page = get_page_by_path('overview');
+        $redirect_url = $panel_page ? get_permalink($panel_page->ID) : home_url();
+    } else {
+        $panel_page = get_page_by_path('userpanel');
+        $redirect_url = $panel_page ? get_permalink($panel_page->ID) : home_url();
+    }
+
+    wp_send_json_success(array(
+        'message' => 'حساب کاربری با موفقیت ایجاد شد.',
+        'redirect' => $redirect_url
     ));
 }
-add_action('wp_enqueue_scripts', 'user_auth_localize_script', 20);
-
-
 ?>
