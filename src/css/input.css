@@ -9,3 +9,7 @@
     --color-text-on-dark: #FFFFFF;
     --color-muted: #6B7280;
 }
+
+*{
+    direction: rtl !important;
+}

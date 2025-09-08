@@ -176,7 +176,8 @@ get_header();
                     display: block;
                 }
 
-                .btn-next, .btn-prev {
+                .btn-next,
+                .btn-prev {
                     background-color: #4B3F72;
                     color: white;
                     padding: 10px 20px;
@@ -185,13 +186,14 @@ get_header();
                     margin: 10px 5px;
                 }
 
-                .btn-next:hover, .btn-prev:hover {
+                .btn-next:hover,
+                .btn-prev:hover {
                     background-color: #3A2F5A;
                 }
             </style>
         </head>
 
-        <body class="font-[Vazir] bg-gray-100 text-dark">
+        <body class="bg-gray-100 text-dark">
             <!-- Hero Section -->
             <section class="gradient-bg text-text-on-dark shadow-lg from-primary to-secondary py-8">
                 <div class="container mx-auto px-4 flex flex-col lg:flex-row items-center gap-6">
@@ -215,7 +217,7 @@ get_header();
                     </div>
                 </div>
             </section>
-            
+
             <!-- دکمه رزرو اصلی -->
             <section class="container mx-auto px-4 py-4">
                 <div class="text-center">
@@ -361,11 +363,11 @@ get_header();
                         </button>
                     </div>
 
-                    <div id="loginRequiredMessage" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4 hidden">
-                        <p class="text-yellow-800">برای رزرو دستگاه باید وارد حساب کاربری خود شوید.</p>
+                    <div id="loginRequiredMessage" class=" hidden">
+                        <p class="text-yellow-800 bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">برای رزرو دستگاه وارد حساب کاربری خود شوید.</p>
                         <div class="mt-2">
                             <a href="<?php echo home_url('/index.php/login-page'); ?>"
-                                class="bg-primary hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+                                class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm transition-colors">
                                 ورود به حساب کاربری
                             </a>
                         </div>

@@ -307,7 +307,7 @@ $birthdate = get_user_meta($user_id, 'birthdate', true);
 $address = get_user_meta($user_id, 'address', true);
 ?>
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 
 <head>
     <meta charset="UTF-8">
