@@ -58,7 +58,6 @@ get_header();
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title><?php the_title(); ?> - <?php bloginfo('name'); ?></title>
             <?php wp_head(); ?>
-            <script src="https://cdn.tailwindcss.com"></script>
             <style>
                 .gradient-bg {
                     background: linear-gradient(135deg, #4B3F72 0%, #8E7CC3 100%);
@@ -352,7 +351,7 @@ get_header();
             </div>
 
             <!-- Reservation Modal -->
-            <div id="reservationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div id="reservationModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
                 <div class="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-xl font-bold">رزرو دستگاه</h3>

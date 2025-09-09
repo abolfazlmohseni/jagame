@@ -59,7 +59,7 @@ $game_net_name = get_the_title($game_net_id);
 </div>
 
 <!-- مودال اضافه/ویرایش دستگاه -->
-<div id="deviceModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+<div id="deviceModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center">
     <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
         <div class="flex items-center justify-between mb-6">
             <h3 id="modalTitle" class="text-xl font-bold text-gray-800">اضافه کردن دستگاه جدید</h3>
@@ -124,7 +124,7 @@ $game_net_name = get_the_title($game_net_id);
 </div>
 
 <!-- مودال تأیید حذف -->
-<div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+<div id="confirmModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center">
     <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4">
         <p class="text-lg text-center">آیا از حذف این دستگاه اطمینان دارید؟</p>
         <div class="flex gap-2 mt-4">
@@ -135,7 +135,7 @@ $game_net_name = get_the_title($game_net_id);
 </div>
 <!-- مودال اعلان دستگاه ها -->
 
-<div id="alertModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+<div id="alertModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center">
     <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4">
         <p class="textalert text-lg text-center"></p>
         <div class="flex gap-2 mt-4">

@@ -47,7 +47,7 @@
     </header>
 
     <!-- overlay برای موبایل -->
-    <div class="overlay fixed inset-0 bg-black bg-opacity-50 z-40 hidden lg:hidden" id="overlay"></div>
+    <div class="overlay fixed inset-0 bg-black/50 z-40 hidden lg:hidden" id="overlay"></div>
 
     <!-- منوی سایدبار -->
     <div class="flex">
@@ -79,7 +79,7 @@
         </menu>
 
         <!-- تأییدیه خروج -->
-        <div class="logout-confirm fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden" id="logout-confirm">
+        <div class="logout-confirm fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden" id="logout-confirm">
             <div class="bg-white rounded-xl p-6 w-11/12 max-w-md">
                 <h3 class="text-lg font-bold text-center mb-4">آیا مطمئن هستید؟</h3>
                 <p class="text-gray-600 text-center mb-6">می‌خواهید از حساب کاربری خود خارج شوید؟</p>

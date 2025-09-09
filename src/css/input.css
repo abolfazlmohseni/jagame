@@ -13,3 +13,14 @@
 *{
     direction: rtl !important;
 }
+
+@font-face {
+    font-family: "iranYekan";
+    src: url(./asset/font/IRANYekanX-Regular.woff2);
+}
+
+
+* {
+    font-family: "iranYekan" !important;
+
+}
