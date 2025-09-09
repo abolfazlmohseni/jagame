@@ -2,27 +2,8 @@
 /*
 Template Name: Information panel
 */
+include_once "PanelHeader.php";
 
-// استفاده از مسیر کامل برای فایل‌های include
-$panel_header_path = get_template_directory() . '/Panel/PanelHeader.php';
-if (file_exists($panel_header_path)) {
-    include_once $panel_header_path;
-} else {
-    // اگر فایل وجود ندارد، هدر ساده‌ای نمایش بده
-?>
-    <!DOCTYPE html>
-    <html lang="fa" dir="rtl">
-
-    <head>
-        <meta charset="<?php bloginfo('charset') ?>">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>پنل اطلاعات گیم نت</title>
-        <?php wp_head() ?>
-    </head>
-
-    <body class="bg-gray-100">
-    <?php
-}
 $user_info = get_current_user_game_net_info();
 
 if (!$user_info) {
@@ -43,6 +24,7 @@ if (!empty($user_info['gallery_images'])) {
 // دریافت تصویر پروفایل
 $profile_picture_id = get_post_meta(get_user_meta(get_current_user_id(), '_game_net_id', true), '_profile_picture_id', true);
 $profile_picture_url = $profile_picture_id ? wp_get_attachment_image_url($profile_picture_id, 'medium') : '';
+
     ?>
 
     <div class="pb-[6rem] w-full mx-auto p-4 max-w-6xl overflow-auto h-screen">

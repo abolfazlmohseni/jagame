@@ -9,3 +9,17 @@
     --color-text-on-dark: #FFFFFF;
     --color-muted: #6B7280;
 }
+
+*{
+    direction: rtl !important;
+}
+
+@font-face {
+    font-family: "iranYekan";
+    src: url(./asset/font/IRANYekanX-Regular.woff2);
+}
+
+
+* {
+    font-family: "iranYekan" !important;
+}
