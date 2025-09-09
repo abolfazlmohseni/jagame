@@ -58,7 +58,6 @@ get_header();
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title><?php the_title(); ?> - <?php bloginfo('name'); ?></title>
             <?php wp_head(); ?>
-            <script src="https://cdn.tailwindcss.com"></script>
             <style>
                 .gradient-bg {
                     background: linear-gradient(135deg, #4B3F72 0%, #8E7CC3 100%);
