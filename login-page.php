@@ -148,7 +148,7 @@ if (is_user_logged_in()) {
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">رمز عبور</label>
                         <div class="relative">
-                            <input id="reg-confirm-password" type="password" placeholder="رمز عبور قوی انتخاب کنید"
+                            <input id="reg-password" type="password" placeholder="رمز عبور قوی انتخاب کنید"
                                 class="w-full px-4 py-3 pl-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200">
                             <button type="button" class="password-toggle absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-purple-600 transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -162,7 +162,7 @@ if (is_user_logged_in()) {
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">تکرار رمز عبور</label>
                         <div class="relative">
-                            <input id="register-confirm-password" type="password" placeholder="رمز عبور را مجدداً وارد کنید"
+                            <input id="reg-confirm-password" type="password" placeholder="رمز عبور را مجدداً وارد کنید"
                                 class="w-full px-4 py-3 pl-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200">
                             <button type="button" class="password-toggle absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-purple-600 transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

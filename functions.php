@@ -1602,13 +1602,6 @@ function get_user_data_handler()
     wp_send_json_success($user_data);
 }
 
-// Ajax برای خروج کاربر
-add_action('wp_ajax_user_logout', 'user_logout_handler');
-function user_logout_handler()
-{
-    wp_logout();
-    wp_send_json_success('خروج موفقیت‌آمیز بود.');
-}
 
 // اضافه کردن nonce به سایت
 function add_user_auth_nonce()
@@ -2606,5 +2599,26 @@ function update_reservation_status_handler() {
     wp_send_json_success('وضعیت رزرو با موفقیت به‌روزرسانی شد');
     wp_die();
 }
+// Ajax برای خروج کاربر
+add_action('wp_ajax_user_logout', 'user_logout_handler');
+function user_logout_handler()
+{
+    // بررسی nonce برای امنیت
+    if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'user_auth_nonce')) {
+        wp_send_json_error('امنیت نامعتبر است');
+        wp_die();
+    }
 
+    // خروج کاربر از سیستم
+    wp_logout();
+    
+    // پاک کردن تمام کوکی‌های مربوط به session
+    wp_clear_auth_cookie();
+    
+    // از بین بردن session داده‌ها
+    wp_destroy_current_session();
+    
+    wp_send_json_success('خروج موفقیت‌آمیز بود.');
+    wp_die();
+}
 ?>
