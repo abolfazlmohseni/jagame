@@ -477,7 +477,6 @@ $address = get_user_meta($user_id, 'address', true);
 </head>
 
 <body class="bg-gray-50 min-h-screen">
-    <!-- Header جدید -->
     <header class="gradient-bg text-white shadow-lg">
         <div class="container mx-auto px-6 py-3">
             <div class="header-container">
@@ -513,6 +512,18 @@ $address = get_user_meta($user_id, 'address', true);
             </div>
         </div>
     </header>
+
+    <!-- تأییدیه خروج -->
+    <div class="logout-confirm fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden" id="logout-confirm">
+        <div class="bg-white rounded-xl p-6 w-11/12 max-w-md">
+            <h3 class="text-lg font-bold text-center mb-4">آیا مطمئن هستید؟</h3>
+            <p class="text-gray-600 text-center mb-6">می‌خواهید از حساب کاربری خود خارج شوید؟</p>
+            <div class="flex justify-center gap-3">
+                <button class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors" id="cancel-logout">لغو</button>
+                <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors" id="confirm-logout">خروج</button>
+            </div>
+        </div>
+    </div>
 
     <div class="container mx-auto px-6 py-8">
         <!-- Navigation Tabs -->
@@ -883,11 +894,50 @@ $address = get_user_meta($user_id, 'address', true);
 
     <?php wp_footer() ?>
     <script>
-        // Tab Switching
         document.addEventListener('DOMContentLoaded', function() {
             const tabs = document.querySelectorAll('.tab-button');
             const tabContents = document.querySelectorAll('.tab-content');
+            const logoutBtn = document.getElementById('logout-btn');
+            const logoutConfirm = document.getElementById('logout-confirm');
+            const cancelLogout = document.getElementById('cancel-logout');
+            const confirmLogout = document.getElementById('confirm-logout');
 
+            // مدیریت منوی خروج
+            logoutBtn.addEventListener('click', function() {
+                logoutConfirm.classList.remove('hidden');
+            });
+
+            cancelLogout.addEventListener('click', function() {
+                logoutConfirm.classList.add('hidden');
+            });
+
+            confirmLogout.addEventListener('click', function() {
+                // عملیات خروج واقعی با AJAX
+                const formData = new FormData();
+                formData.append('action', 'user_logout');
+                formData.append('security', '<?php echo wp_create_nonce("user_auth_nonce"); ?>');
+
+                fetch('<?php echo admin_url("admin-ajax.php"); ?>', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // هدایت به صفحه اصلی پس از خروج موفق
+                            window.location.href = '<?php echo home_url(); ?>';
+                        } else {
+                            alert('خطا در خروج از سیستم: ' + data.data);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('خطا در ارتباط با سرور');
+                    });
+            });
+
+            // Tab Switching
             // Check if there's a tab parameter in URL
             const urlParams = new URLSearchParams(window.location.search);
             const activeTab = urlParams.get('tab') || 'dashboard';
@@ -915,12 +965,6 @@ $address = get_user_meta($user_id, 'address', true);
                 }
             });
 
-            // Logout button
-            document.getElementById('logout-btn').addEventListener('click', function() {
-                window.location.href = '<?php echo wp_logout_url(home_url()); ?>';
-            });
-
-            // Profile form submission
             // Profile form submission
             document.getElementById('profile-form').addEventListener('submit', function(e) {
                 e.preventDefault();

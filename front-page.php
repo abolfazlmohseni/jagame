@@ -163,7 +163,7 @@ get_header();
 
                 <!-- Search Button -->
                 <div class="flex items-end sm:col-span-2 lg:col-span-1">
-                    <button onclick="loadGameNets(1)" class="w-full bg-primary text-text-on-dark py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base hover:bg-opacity-90 transition-colors">
+                    <button onclick="loadGameNets(1)" class="w-full bg-primary text-text-on-dark py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base hover:bg-primary/90 transition-colors">
                         جستجو
                     </button>
                 </div>
@@ -373,7 +373,7 @@ function displayGameNets(gameNets) {
 
                     <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:gap-x-2 sm:space-x-reverse">
                         <a href="${permalink}" 
-                            class="flex-1 bg-primary text-text-on-dark py-2 sm:py-2 rounded-lg font-semibold text-sm sm:text-base hover:bg-opacity-90 transition-colors text-center">
+                            class="flex-1 bg-primary text-text-on-dark py-2 sm:py-2 rounded-lg font-semibold text-sm sm:text-base hover:bg-primary/90 transition-colors text-center">
                             مشاهده جزئیات
                         </a>
 
