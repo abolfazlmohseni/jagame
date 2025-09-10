@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Template Name: Game Net Single
  * Template Post Type: game_net
@@ -292,7 +293,9 @@ get_header();
                 }
 
                 @keyframes spin {
-                    to { transform: rotate(360deg); }
+                    to {
+                        transform: rotate(360deg);
+                    }
                 }
             </style>
         </head>
@@ -393,10 +396,10 @@ get_header();
                                             </div>
                                             <p class="text-muted text-sm mb-3"><?php echo esc_html($specs); ?></p>
                                             <p class="text-lg font-bold mb-3"><?php echo number_format((float)$price); ?> تومان/ساعت</p>
-                                            
+
                                             <!-- View Games Button -->
                                             <button class="view-games-btn px-3 py-1 text-sm rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
-                                                    data-device-id="<?php echo $device_id; ?>">
+                                                data-device-id="<?php echo $device_id; ?>">
                                                 مشاهده بازی‌ها
                                             </button>
                                         </div>
@@ -435,13 +438,13 @@ get_header();
                                         <p class="text-muted"><?php echo esc_html($holiday); ?></p>
                                     </div>
                                 <?php endif; ?>
-                                
+
                                 <?php if ($address) : ?>
                                     <div class="mb-3">
                                         <h4 class="font-bold mb-1">آدرس:</h4>
                                         <p class="text-muted"><?php echo nl2br(esc_html($address)); ?></p>
                                     </div>
-                                 <?php endif; ?>
+                                <?php endif; ?>
                             </div>
 
                             <!-- Quick Actions -->
@@ -652,10 +655,10 @@ get_header();
                     isModalOpen = true;
                     gamesModal.classList.add('active');
                     document.body.style.overflow = 'hidden';
-                    
+
                     // Set focus to modal
                     gamesModal.setAttribute('aria-hidden', 'false');
-                    
+
                     // Load games
                     loadDeviceGames(deviceId);
                 }
@@ -665,7 +668,7 @@ get_header();
                     document.body.style.overflow = 'auto';
                     isModalOpen = false;
                     gamesModal.setAttribute('aria-hidden', 'true');
-                    
+
                     // Restore focus to the button that opened the modal
                     document.querySelector(`.view-games-btn[data-device-id="${currentDeviceId}"]`).focus();
                     currentDeviceId = null;
@@ -704,38 +707,38 @@ get_header();
                     params.append('security', '<?php echo wp_create_nonce('device_management_nonce'); ?>');
 
                     fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: params
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('پاسخ سرور معتبر نیست');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            displayGames(data.data.games);
-                        } else {
-                            gamesList.innerHTML = `
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: params
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('پاسخ سرور معتبر نیست');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                displayGames(data.data.games);
+                            } else {
+                                gamesList.innerHTML = `
                                 <div class="text-center py-8 text-red-500">
                                     <p>خطا در دریافت بازی‌ها: ${data.data || 'خطای نامشخص'}</p>
                                 </div>
                             `;
-                            console.error('Server error:', data.data);
-                        }
-                    })
-                    .catch(error => {
-                        gamesList.innerHTML = `
+                                console.error('Server error:', data.data);
+                            }
+                        })
+                        .catch(error => {
+                            gamesList.innerHTML = `
                             <div class="text-center py-8 text-red-500">
                                 <p>خطا در ارتباط با سرور: ${error.message}</p>
                             </div>
                         `;
-                        console.error('Fetch error:', error);
-                    });
+                            console.error('Fetch error:', error);
+                        });
                 }
 
                 // Display games in the modal
@@ -754,7 +757,7 @@ get_header();
                         // اطمینان از اینکه game یک آبجکت است
                         const gameTitle = game.title || game;
                         const thumbnailUrl = game.thumbnail_url || null;
-                        
+
                         html += `
                             <div class="game-item" role="button" tabindex="0">
                                 <div class="game-thumbnail-container">

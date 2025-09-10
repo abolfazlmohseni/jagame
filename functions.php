@@ -90,7 +90,8 @@ function register_devices_cpt()
 add_action('init', 'register_devices_cpt');
 
 // لیست بازی‌ها بر اساس نوع دستگاه — جایگزین/ویرایش کن به‌دلخواه
-function hodcode_get_device_games_map() {
+function hodcode_get_device_games_map()
+{
     return array(
         'pc' => array(
             'Counter-Strike: Global Offensive',
@@ -359,7 +360,7 @@ function device_meta_box_callback($post)
 
     // دریافت نقشه بازی‌ها
     $games_map = hodcode_get_device_games_map();
-    ?>
+?>
 
     <?php if (current_user_can('manage_options')) : ?>
         <p>
@@ -426,32 +427,34 @@ function device_meta_box_callback($post)
     </div>
 
     <script>
-    (function(){
-        var gamesMap = <?php echo wp_json_encode($games_map); ?>;
-        var container = document.getElementById('device_games_container');
-        var select = document.getElementById('device_type_select');
+        (function() {
+            var gamesMap = <?php echo wp_json_encode($games_map); ?>;
+            var container = document.getElementById('device_games_container');
+            var select = document.getElementById('device_type_select');
 
-        function renderGamesFor(type) {
-            var list = gamesMap[type] || [];
-            var selected = [];
-            // جمع آوری بازی‌هایی که هم‌اکنون تیک خورده‌اند (تا حافظه انتخاب نگه داشته شود)
-            container.querySelectorAll('input[type="checkbox"]').forEach(function(cb){ if(cb.checked) selected.push(cb.value); });
-            // بازسازی لیست
-            var html = '';
-            list.forEach(function(game){
-                var isChecked = selected.indexOf(game) !== -1 ? 'checked' : '';
-                html += '<label style="display:block; margin-bottom:4px;"><input type="checkbox" name="device_games[]" value="' + game.replace(/"/g, '&quot;') + '" ' + isChecked + '> ' + game + '</label>';
+            function renderGamesFor(type) {
+                var list = gamesMap[type] || [];
+                var selected = [];
+                // جمع آوری بازی‌هایی که هم‌اکنون تیک خورده‌اند (تا حافظه انتخاب نگه داشته شود)
+                container.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+                    if (cb.checked) selected.push(cb.value);
+                });
+                // بازسازی لیست
+                var html = '';
+                list.forEach(function(game) {
+                    var isChecked = selected.indexOf(game) !== -1 ? 'checked' : '';
+                    html += '<label style="display:block; margin-bottom:4px;"><input type="checkbox" name="device_games[]" value="' + game.replace(/"/g, '&quot;') + '" ' + isChecked + '> ' + game + '</label>';
+                });
+                container.innerHTML = html;
+            }
+
+            select.addEventListener('change', function() {
+                renderGamesFor(this.value);
             });
-            container.innerHTML = html;
-        }
-
-        select.addEventListener('change', function(){
-            renderGamesFor(this.value);
-        });
-    })();
+        })();
     </script>
 
-    <?php
+<?php
 }
 
 function save_device_meta($post_id)
@@ -664,7 +667,7 @@ function delete_game_net_image_handler()
 add_action('wp_ajax_add_device', 'add_device_handler');
 function add_device_handler()
 {
-    
+
     // بررسی nonce
     if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'device_management_nonce')) {
         wp_send_json_error('امنیت نامعتبر است');
@@ -726,37 +729,37 @@ function add_device_handler()
         update_post_meta($device_id, '_games', $games);
     }
     // handle device_games (expecting JSON string from JS)
-    if ( isset( $_POST['device_games'] ) ) {
-    $games_raw = wp_unslash( $_POST['device_games'] ); // undo JS escaping
-    $games = array();
+    if (isset($_POST['device_games'])) {
+        $games_raw = wp_unslash($_POST['device_games']); // undo JS escaping
+        $games = array();
 
-    $decoded = json_decode( $games_raw, true );
-    if ( is_array( $decoded ) ) {
-        $games = $decoded;
-    } else {
-        // fallback: comma separated
-        $games = array_filter( array_map( 'trim', explode( ',', sanitize_text_field( $games_raw ) ) ) );
+        $decoded = json_decode($games_raw, true);
+        if (is_array($decoded)) {
+            $games = $decoded;
+        } else {
+            // fallback: comma separated
+            $games = array_filter(array_map('trim', explode(',', sanitize_text_field($games_raw))));
+        }
+
+        // sanitize each
+        $games = array_map('sanitize_text_field', $games);
+
+        update_post_meta($device_id, '_device_games', wp_json_encode($games));
     }
-
-    // sanitize each
-    $games = array_map( 'sanitize_text_field', $games );
-
-    update_post_meta( $device_id, '_device_games', wp_json_encode( $games ) );
-}
 
     wp_send_json_success(array(
         'message' => 'دستگاه با موفقیت اضافه شد',
         'device_id' => $device_id
     ));
     wp_die();
-
 }
 
 // AJAX handler for getting device games
 add_action('wp_ajax_nopriv_get_device_games', 'get_device_games_handler');
 add_action('wp_ajax_get_device_games', 'get_device_games_handler');
 
-function get_device_games_handler() {
+function get_device_games_handler()
+{
     // Verify nonce
     if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'device_management_nonce')) {
         wp_send_json_error('Nonce نامعتبر است');
@@ -780,7 +783,7 @@ function get_device_games_handler() {
     // ابتدا بازی‌های جدید (JSON) را بررسی کنید
     $games_meta = get_post_meta($device_id, '_device_games', true);
     $games = array();
-    
+
     if (!empty($games_meta)) {
         $decoded = json_decode($games_meta, true);
         if (is_array($decoded)) {
@@ -801,7 +804,7 @@ function get_device_games_handler() {
             }
         }
     }
-    
+
     // اگر بازی‌های جدید پیدا نشد، بازی‌های قدیمی را بررسی کنید
     if (empty($games)) {
         $old_games = get_post_meta($device_id, '_games', true);
@@ -920,71 +923,72 @@ function get_devices_handler()
 
 // AJAX برای دریافت اطلاعات یک دستگاه
 add_action('wp_ajax_get_device', 'jagame_ajax_get_device_handler');
-function jagame_ajax_get_device_handler() {
+function jagame_ajax_get_device_handler()
+{
     // nonce check (returns false if invalid)
-    if ( ! isset( $_POST['security'] ) || ! check_ajax_referer( 'device_management_nonce', 'security', false ) ) {
-        wp_send_json_error( 'invalid_nonce' );
+    if (! isset($_POST['security']) || ! check_ajax_referer('device_management_nonce', 'security', false)) {
+        wp_send_json_error('invalid_nonce');
     }
 
     // validate device id
-    $device_id = isset( $_POST['device_id'] ) ? intval( $_POST['device_id'] ) : 0;
-    if ( $device_id <= 0 ) {
-        wp_send_json_error( 'invalid_device_id' );
+    $device_id = isset($_POST['device_id']) ? intval($_POST['device_id']) : 0;
+    if ($device_id <= 0) {
+        wp_send_json_error('invalid_device_id');
     }
 
-    $post = get_post( $device_id );
-    if ( ! $post || $post->post_type !== 'device' ) {
-        wp_send_json_error( 'device_not_found' );
+    $post = get_post($device_id);
+    if (! $post || $post->post_type !== 'device') {
+        wp_send_json_error('device_not_found');
     }
 
     $current_user_id = get_current_user_id();
-    if ( $current_user_id ) {
-        $user_game_net_id = get_user_meta( $current_user_id, '_game_net_id', true );
-        $device_game_net_id = get_post_meta( $device_id, '_game_net_id', true );
+    if ($current_user_id) {
+        $user_game_net_id = get_user_meta($current_user_id, '_game_net_id', true);
+        $device_game_net_id = get_post_meta($device_id, '_game_net_id', true);
 
-        if ( ! current_user_can( 'manage_options' ) && $user_game_net_id && $device_game_net_id && (string)$user_game_net_id !== (string)$device_game_net_id ) {
-            wp_send_json_error( 'forbidden' );
+        if (! current_user_can('manage_options') && $user_game_net_id && $device_game_net_id && (string)$user_game_net_id !== (string)$device_game_net_id) {
+            wp_send_json_error('forbidden');
         }
     }
 
     // Read device meta
-    $type   = get_post_meta( $device_id, '_type', true );
-    $specs  = get_post_meta( $device_id, '_specs', true );
-    $price  = get_post_meta( $device_id, '_price', true );
-    $status = get_post_meta( $device_id, '_status', true );
+    $type   = get_post_meta($device_id, '_type', true);
+    $specs  = get_post_meta($device_id, '_specs', true);
+    $price  = get_post_meta($device_id, '_price', true);
+    $status = get_post_meta($device_id, '_status', true);
 
     // Read device games (stored as JSON or CSV)
-    $device_games_raw = get_post_meta( $device_id, '_device_games', true );
+    $device_games_raw = get_post_meta($device_id, '_device_games', true);
     $device_games = array();
 
-    if ( ! empty( $device_games_raw ) ) {
-        $decoded = json_decode( $device_games_raw, true );
-        if ( is_array( $decoded ) ) {
+    if (! empty($device_games_raw)) {
+        $decoded = json_decode($device_games_raw, true);
+        if (is_array($decoded)) {
             $device_games = $decoded;
         } else {
-            $split = array_filter( array_map( 'trim', explode( ',', (string) $device_games_raw ) ) );
+            $split = array_filter(array_map('trim', explode(',', (string) $device_games_raw)));
             $device_games = $split;
         }
     }
 
     // sanitize each game entry
-    $device_games = array_map( 'sanitize_text_field', $device_games );
+    $device_games = array_map('sanitize_text_field', $device_games);
 
     // build response
     $device_data = array(
         'id'        => $device_id,
-        'title'     => get_the_title( $device_id ),
-        'permalink' => get_permalink( $device_id ),
-        'type'      => sanitize_text_field( $type ),
-        'specs'     => sanitize_textarea_field( $specs ),
-        'price'     => sanitize_text_field( $price ),
-        'status'    => sanitize_text_field( $status ),
-        'games'     => array_values( $device_games ), // reindex
+        'title'     => get_the_title($device_id),
+        'permalink' => get_permalink($device_id),
+        'type'      => sanitize_text_field($type),
+        'specs'     => sanitize_textarea_field($specs),
+        'price'     => sanitize_text_field($price),
+        'status'    => sanitize_text_field($status),
+        'games'     => array_values($device_games), // reindex
     );
 
-    wp_send_json_success( $device_data );
+    wp_send_json_success($device_data);
 }
-add_action( 'wp_ajax_get_device', 'jagame_ajax_get_device_handler' );
+add_action('wp_ajax_get_device', 'jagame_ajax_get_device_handler');
 
 // AJAX برای ویرایش دستگاه
 add_action('wp_ajax_update_device', 'update_device_handler');
@@ -1044,10 +1048,10 @@ function update_device_handler()
     // handle device_games during update
     if (isset($_POST['device_games'])) {
         $games_raw = wp_unslash($_POST['device_games']);
-        
+
         // بازی‌ها را از JSON به آرایه تبدیل کنید
         $games = json_decode(stripslashes($games_raw), true);
-        
+
         if (is_array($games)) {
             $games_objects = array();
             foreach ($games as $game) {

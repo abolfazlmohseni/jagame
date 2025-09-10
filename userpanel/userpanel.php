@@ -309,9 +309,6 @@ $address = get_user_meta($user_id, 'address', true);
 <!DOCTYPE html>
 <html lang="fa">
 
-<!DOCTYPE html>
-<html lang="fa">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -355,161 +352,63 @@ $address = get_user_meta($user_id, 'address', true);
         .status-cancelled {
             background: linear-gradient(45deg, #ef4444, #dc2626);
         }
-
-        /* استایل‌های جدید برای هدر */
-        .header-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem 0;
-        }
-
-        .header-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo-text {
-            font-weight: bold;
-            font-size: 1.5rem;
-            color: white;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-        }
-
-        .nav-link {
-            color: rgba(255, 255, 255, 0.9);
-            transition: all 0.3s ease;
-            padding: 0.5rem 0.8rem;
-            border-radius: 6px;
-        }
-
-        .nav-link:hover {
-            color: white;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .user-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .welcome-text {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.9rem;
-        }
-
-        .logout-btn {
-            background: #ef4444;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-        }
-
-        .logout-btn:hover {
-            background: #dc2626;
-        }
-
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-                position: absolute;
-                top: 100%;
-                right: 0;
-                left: 0;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                flex-direction: column;
-                padding: 1rem;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-                z-index: 1000;
-            }
-
-            .nav-links.active {
-                display: flex;
-            }
-
-            .user-section {
-                display: none;
-            }
-
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .mobile-user-section {
-                display: flex;
-                flex-direction: column;
-                gap: 0.5rem;
-                margin-top: 1rem;
-                padding-top: 1rem;
-                border-top: 1px solid rgba(255, 255, 255, 0.1);
-            }
-        }
     </style>
 </head>
 
 <body class="bg-gray-50 min-h-screen">
-    <header class="gradient-bg text-white shadow-lg">
-        <div class="container mx-auto px-6 py-3">
-            <div class="header-container">
-                <!-- لوگو در سمت راست -->
-                <div class="header-logo">
-                    <a href="<?php echo home_url('/'); ?>" class="flex items-center space-x-2 space-x-reverse">
-                        <div class="logo-icon">
-                            <span>🎮</span>
-                        </div>
-                        <span class="logo-text">جاگیم</span>
-                    </a>
+    <!-- Header -->
+
+    <header class="gradient-bg text-white shadow-lg ">
+        <div class="container mx-auto px-4 lg:px-6 py-3">
+            <div class="flex items-center justify-between py-2 md:py-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg md:text-xl "><?php echo esc_html($current_user->display_name); ?></span>
                 </div>
 
-                <!-- منوی ناوبری در وسط -->
-                <nav class="nav-links" id="nav-links">
-                    <a href="<?php echo home_url('/'); ?>" class="nav-link">صفحه اصلی</a>
-                    <a href="<?php echo home_url('/درباره-ما'); ?>" class="nav-link">درباره ما</a>
-                    <a href="<?php echo home_url('/تماس-با-ما'); ?>" class="nav-link">تماس با ما</a>
-                    
-                    <!-- بخش کاربر در نسخه موبایل -->
-                    <div class="mobile-user-section">
-                        <span class="welcome-text">خوش آمدید، <?php echo esc_html($current_user->display_name); ?></span>
-                        <button class="logout-btn" onclick="window.location.href='<?php echo wp_logout_url(home_url()); ?>'">
-                            خروج
-                        </button>
-                    </div>
+                <!-- منوی ناوبری در وسط - فقط در دسکتاپ نمایش داده می‌شود -->
+                <nav class="hidden md:flex text-lg text-white space-x-reverse space-x-2 lg:space-x-4">
+                    <a href="<?php echo home_url('/'); ?>" class="text-white hover:bg-blue-500/20 transition-colors py-2 px-3 rounded-md">صفحه اصلی</a>
+                    <a href="<?php echo home_url('/about/'); ?>" class="text-white hover:bg-blue-500/20 transition-colors py-2 px-3 rounded-md">درباره ما</a>
+                    <a href="<?php echo home_url('/contact/'); ?>" class="text-white hover:bg-blue-500/20 transition-colors py-2 px-3 rounded-md">تماس با ما</a>
                 </nav>
 
+                <!-- بخش کاربر در دسکتاپ -->
+                <div class="hidden md:flex items-center gap-4">
+
+                    <button id="logout-btn" class=" bg-red-500 text-white py-2 px-4 rounded-md transition-colors border-0 cursor-pointer hover:bg-red-600">
+                        خروج
+                    </button>
+                </div>
+
                 <!-- دکمه منوی موبایل -->
-                <button class="mobile-menu-btn" id="mobile-menu-toggle">
-                    ☰
+                <button class="md:hidden block bg-transparent border-0 text-white text-2xl cursor-pointer" id="mobile-menu-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+                    </svg>
                 </button>
             </div>
+        </div>
+
+        <!-- منوی موبایل -->
+        <div class="md:hidden hidden gradient-bg px-6 pb-6 pt-3 shadow-xl" id="mobile-menu">
+            <nav class="flex flex-col text-lg text-white space-y-4">
+                <a href="<?php echo home_url('/'); ?>" class="text-white py-2 px-3 rounded-md">
+                    صفحه اصلی
+                </a>
+                <a href="<?php echo home_url('/about/'); ?>" class="text-white py-2 px-3 rounded-md">
+                    درباره ما
+                </a>
+                <a href="<?php echo home_url('/contact/'); ?>" class="text-white py-2 px-3 rounded-md">
+                    تماس با ما
+                </a>
+
+                <!-- بخش کاربر در نسخه موبایل -->
+                <div class="flex flex-col gap-3 mt-4 pt-4">
+                    <button onclick="window.location.href='<?php echo wp_logout_url(home_url()); ?>" class="bg-red-500 text-white py-2 px-4 rounded-md transition-colors border-0 cursor-pointer hover:bg-red-600 flex items-center justify-center">
+                        خروج
+                    </button>
+                </div>
+            </nav>
         </div>
     </header>
 
@@ -1050,19 +949,17 @@ $address = get_user_meta($user_id, 'address', true);
                     });
             }
         }
-        // در بخش اسکریپت پایین صفحه
+        // اسکریپت ساده برای نمایش/مخفی کردن منوی موبایل
         document.getElementById('mobile-menu-toggle').addEventListener('click', function() {
-            document.getElementById('nav-links').classList.toggle('active');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
         });
 
-        // بستن منوی موبایل هنگام کلیک خارج از آن
-        document.addEventListener('click', function(event) {
-            const navLinks = document.getElementById('nav-links');
-            const mobileMenuBtn = document.getElementById('mobile-menu-toggle');
-            
-            if (!navLinks.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
-                navLinks.classList.remove('active');
-            }
+        // بستن منوی موبایل هنگام کلیک روی لینک‌ها
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.add('hidden');
+            });
         });
     </script>
 </body>
