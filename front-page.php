@@ -331,7 +331,7 @@ function displayGameNets(gameNets) {
         const age = escapeHtml(gameNet.age || 'ثبت نشده');
         const hours = escapeHtml(gameNet.hours || 'ثبت نشده');
         const holiday = escapeHtml(gameNet.holiday || 'بدون تعطیلی');
-        const bio = escapeHtml(gameNet.bio || '');
+        const address = escapeHtml(gameNet.address || 'ثبت نشده');
 
         html += `
             <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover card-stagger" style="animation-delay: ${index * 0.1}s">
@@ -365,9 +365,9 @@ function displayGameNets(gameNets) {
                         </div>
                     </div>
                     
-                    ${bio ? `
+                    ${address ? `
                     <div class="mb-3 sm:mb-4">
-                        <p class="text-sm text-gray-600 line-clamp-2">${bio}</p>
+                        <p class="text-sm text-gray-600 line-clamp-2">${address}</p>
                     </div>
                     ` : ''}
 

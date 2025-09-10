@@ -59,28 +59,95 @@ $game_net_name = get_the_title($game_net_id);
 </div>
 
 <!-- مودال اضافه/ویرایش دستگاه -->
-<div id="deviceModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
-    <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-        <div class="flex items-center justify-between mb-6">
-            <h3 id="modalTitle" class="text-xl font-bold text-gray-800">اضافه کردن دستگاه جدید</h3>
+<!-- مودال اضافه/ویرایش دستگاه -->
+<div id="deviceModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl p-4 md:p-6 w-full max-w-md mx-auto max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-4 md:mb-6">
+            <h3 id="modalTitle" class="text-lg md:text-xl font-bold text-gray-800">اضافه کردن دستگاه جدید</h3>
             <button id="closeModal" class="text-gray-500 hover:text-gray-700">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
         </div>
 
-        <form id="deviceModalForm" class="space-y-4">
+        <form id="deviceModalForm" class="space-y-3 md:space-y-4">
             <input type="hidden" id="editingDeviceId" value="">
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">نام دستگاه</label>
-                <input type="text" id="modalDeviceName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="مثال: PC-1" required>
+                <label class="block text-sm font-medium text-gray-700 mb-1 md:mb-2">نام دستگاه</label>
+                <input type="text" id="modalDeviceName" class="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="مثال: PC-1" required>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">نوع دستگاه</label>
-                <select id="modalDeviceType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                <label class="block text-sm font-medium text-gray-700 mb-1 md:mb-2">نوع دستگاه</label>
+                <select id="modalDeviceType" class="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                    <option value="">انتخاب کنید</option>
+                    <option value="pc">PC</option>
+                    <option value="console">کنسول</option>
+                    <option value="vr">VR</option>
+                    <option value="other">سایر</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1 md:mb-2">بازی‌ها</label>
+                <div id="modalDeviceGames" class="grid grid-cols-1 gap-1 md:gap-2 max-h-40 overflow-y-auto p-2 border border-gray-300 rounded-lg"></div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1 md:mb-2">مشخصات</label>
+                <textarea id="modalDeviceSpecs" rows="2" class="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="CPU، RAM، کارت گرافیک و..."></textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1 md:mb-2">قیمت ساعتی (تومان)</label>
+                <input type="number" id="modalDevicePrice" class="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="۱۵۰۰۰" required>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1 md:mb-2">وضعیت</label>
+                <select id="modalDeviceStatus" class="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="available">قابل استفاده</option>
+                    <option value="maintenance">در حال تعمیر</option>
+                    <option value="reserved">رزرو شده</option>
+                    <option value="inactive">غیرفعال</option>
+                </select>
+            </div>
+
+            <div class="flex gap-2 md:gap-4 pt-3 md:pt-4">
+                <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-3 md:px-4 rounded-lg transition-colors font-medium text-sm md:text-base">
+                    ذخیره
+                </button>
+                <button type="button" id="cancelModal" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 px-3 md:px-4 rounded-lg transition-colors font-medium text-sm md:text-base">
+                    انصراف
+                </button>
+            </div>
+        </form>
+    </div>
+</div><!-- مودال اضافه/ویرایش دستگاه -->
+<div id="deviceModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl p-4 md:p-6 w-full max-w-md mx-auto max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-4 md:mb-6">
+            <h3 id="modalTitle" class="text-lg md:text-xl font-bold text-gray-800">اضافه کردن دستگاه جدید</h3>
+            <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <form id="deviceModalForm" class="space-y-3 md:space-y-4">
+            <input type="hidden" id="editingDeviceId" value="">
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1 md:mb-2">نام دستگاه</label>
+                <input type="text" id="modalDeviceName" class="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="مثال: PC-1" required>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1 md:mb-2">نوع دستگاه</label>
+                <select id="modalDeviceType" class="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
                     <option value="">انتخاب کنید</option>
                     <option value="pc">PC</option>
                     <option value="xbox">XBOX</option>
@@ -92,18 +159,23 @@ $game_net_name = get_the_title($game_net_id);
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">مشخصات</label>
-                <textarea id="modalDeviceSpecs" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="CPU، RAM، کارت گرافیک و..."></textarea>
+                <label class="block text-sm font-medium text-gray-700 mb-1 md:mb-2">بازی‌ها</label>
+                <div id="modalDeviceGames" class="grid grid-cols-1 gap-1 md:gap-2 max-h-40 overflow-y-auto p-2 border border-gray-300 rounded-lg"></div>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">قیمت ساعتی (تومان)</label>
-                <input type="number" id="modalDevicePrice" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="۱۵۰۰۰" required>
+                <label class="block text-sm font-medium text-gray-700 mb-1 md:mb-2">مشخصات</label>
+                <textarea id="modalDeviceSpecs" rows="2" class="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="CPU، RAM، کارت گرافیک و..."></textarea>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">وضعیت</label>
-                <select id="modalDeviceStatus" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <label class="block text-sm font-medium text-gray-700 mb-1 md:mb-2">قیمت ساعتی (تومان)</label>
+                <input type="number" id="modalDevicePrice" class="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="۱۵۰۰۰" required>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1 md:mb-2">وضعیت</label>
+                <select id="modalDeviceStatus" class="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     <option value="available">قابل استفاده</option>
                     <option value="maintenance">در حال تعمیر</option>
                     <option value="reserved">رزرو شده</option>
@@ -111,11 +183,11 @@ $game_net_name = get_the_title($game_net_id);
                 </select>
             </div>
 
-            <div class="flex gap-4 pt-4">
-                <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors font-medium">
+            <div class="flex gap-2 md:gap-4 pt-3 md:pt-4">
+                <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-3 md:px-4 rounded-lg transition-colors font-medium text-sm md:text-base">
                     ذخیره
                 </button>
-                <button type="button" id="cancelModal" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg transition-colors font-medium">
+                <button type="button" id="cancelModal" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 px-3 md:px-4 rounded-lg transition-colors font-medium text-sm md:text-base">
                     انصراف
                 </button>
             </div>
@@ -148,6 +220,49 @@ $game_net_name = get_the_title($game_net_id);
     var ajax_object = {
         ajax_url: '<?php echo admin_url("admin-ajax.php"); ?>'
     };
+    const deviceGamesMap = {
+    pc: ["Counter-Strike: Global Offensive", "Valorant", "Dota 2", "League of Legends", "PUBG"],
+    console: ["FIFA", "NBA 2K", "Call of Duty", "Gran Turismo", "God of War"],
+    vr: ["Beat Saber", "Half-Life: Alyx", "Superhot VR", "The Walking Dead: Saints & Sinners"],
+    other: ["تخته‌ای/محلی (Custom Game)", "سایر"]
+    };
+
+
+    function renderModalGames(type, selectedGames = []) {
+    const container = document.getElementById('modalDeviceGames');
+    const list = deviceGamesMap[type] || [];
+
+    if (!list || list.length === 0) {
+        container.innerHTML = '<p class="text-sm text-gray-500">هیچ بازی‌ای تعریف نشده است</p>';
+        return;
+    }
+
+    // make sure selectedGames is an array
+    if (!Array.isArray(selectedGames)) {
+        selectedGames = selectedGames ? [selectedGames] : [];
+    }
+
+    let html = '';
+    html += '<div class="space-y-2">';
+    list.forEach((game, idx) => {
+        const id = `modalGame_${type}_${idx}`;
+        const checked = selectedGames.indexOf(game) !== -1 ? 'checked' : '';
+        html += `
+            <label for="${id}" class="flex items-center justify-between gap-3 p-2 border rounded-lg">
+                <div class="flex items-center gap-3">
+                    <input id="${id}" type="checkbox" class="game-checkbox" value="${game.replace(/"/g,'&quot;')}" ${checked}>
+                    <span class="text-sm font-medium">${game}</span>
+                </div>
+                <span class="text-xs text-gray-500">انتخاب</span>
+            </label>
+        `;
+    });
+    html += '</div>';
+
+    container.innerHTML = html;
+    }
+
+
 
     jQuery(document).ready(function($) {
         // متغیر های کلی
@@ -167,6 +282,7 @@ $game_net_name = get_the_title($game_net_id);
             modalTitle.text('اضافه کردن دستگاه جدید');
             $('#editingDeviceId').val('');
             deviceModalForm[0].reset();
+            renderModalGames($('#modalDeviceType').val(), []);
             deviceModal.removeClass('hidden');
         });
 
@@ -238,6 +354,10 @@ $game_net_name = get_the_title($game_net_id);
                 }
             });
         }
+        
+        $(document).on('change', '#modalDeviceType', function() {
+        renderModalGames(this.value, []);
+        });
 
         // نمایش دستگاه‌ها در جدول
         function renderDevicesTable(devices) {
@@ -407,9 +527,12 @@ $game_net_name = get_the_title($game_net_id);
                         $('#modalDeviceSpecs').val(device.specs);
                         $('#modalDevicePrice').val(device.price);
                         $('#modalDeviceStatus').val(device.status);
+                        renderModalGames(device.type || $('#modalDeviceType').val(), device.games || []);
+
                         deviceModal.removeClass('hidden');
                     }
                 }
+
             });
         });
         const alertModal = document.querySelector("#alertModal");
@@ -447,48 +570,62 @@ $game_net_name = get_the_title($game_net_id);
             });
         });
 
+        
+            // ذخیره دستگاه (اضافه یا ویرایش)
         // ذخیره دستگاه (اضافه یا ویرایش)
-        deviceModalForm.on('submit', function(e) {
-            e.preventDefault();
+deviceModalForm.on('submit', function(e) {
+    e.preventDefault();
 
-            const editingDeviceId = $('#editingDeviceId').val();
-            const deviceData = {
-                name: $('#modalDeviceName').val(),
-                type: $('#modalDeviceType').val(),
-                specs: $('#modalDeviceSpecs').val(),
-                price: $('#modalDevicePrice').val(),
-                status: $('#modalDeviceStatus').val(),
-                security: nonce
-            };
+    const editingDeviceId = $('#editingDeviceId').val();
+    console.log('Editing device ID:', editingDeviceId);
 
-            const action = editingDeviceId ? 'update_device' : 'add_device';
-            if (editingDeviceId) {
-                deviceData.device_id = editingDeviceId;
+    // collect checked games from checkboxes
+    const selectedGames = [];
+    $('#modalDeviceGames .game-checkbox:checked').each(function() {
+        selectedGames.push($(this).val());
+    });
+    console.log('Selected games:', selectedGames);
+
+    const deviceData = {
+        action: editingDeviceId ? 'update_device' : 'add_device',
+        name: $('#modalDeviceName').val(),
+        type: $('#modalDeviceType').val(),
+        specs: $('#modalDeviceSpecs').val(),
+        price: $('#modalDevicePrice').val(),
+        status: $('#modalDeviceStatus').val(),
+        device_games: JSON.stringify(selectedGames),
+        security: nonce
+    };
+
+    if (editingDeviceId) {
+        deviceData.device_id = editingDeviceId;
+    }
+
+    console.log('Sending data to server:', deviceData);
+
+    $.ajax({
+        url: ajax_object.ajax_url,
+        type: 'POST',
+        data: deviceData,
+        success: function(response) {
+            console.log('Server response:', response);
+            if (response.success) {
+                closeDeviceModal();
+                textalert.textContent = editingDeviceId ? 'دستگاه با موفقیت ویرایش شد' : 'دستگاه با موفقیت اضافه شد';
+                alertModal.classList.remove("hidden");
+                loadDevices(currentPage);
+            } else {
+                alert('خطا: ' + (response.data || 'خطای نامشخص'));
             }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX error:', status, error);
+            console.error('Response text:', xhr.responseText);
+            alert('خطا در ارتباط با سرور');
+        }
+    });
+});
 
-            $.ajax({
-                url: ajax_object.ajax_url,
-                type: 'POST',
-                data: {
-                    action: action,
-                    ...deviceData
-                },
-                success: function(response) {
-                    if (response.success) {
-                        closeDeviceModal();
-                        textalert.textContent = editingDeviceId ? 'دستگاه با موفقیت ویرایش شد' : 'دستگاه با موفقیت اضافه شد'
-                        alertModal.classList.remove("hidden");
-                        loadDevices(currentPage);
-                    } else {
-                        alert('خطا: ' + response.data);
-                    }
-                },
-                error: function() {
-                    alert('خطا در ارتباط با سرور');
-                }
-            });
-
-        });
         // بارگذاری اولیه دستگاه‌ها
         loadDevices();
 

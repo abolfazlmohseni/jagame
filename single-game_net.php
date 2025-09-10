@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Template Name: Game Net Single
  * Template Post Type: game_net
@@ -20,6 +19,7 @@ get_header();
         $hours = get_post_meta($post_id, '_hours', true);
         $holiday = get_post_meta($post_id, '_holiday', true);
         $bio = get_post_meta($post_id, '_bio', true);
+        $address = get_post_meta($post_id, '_address', true);
         $gallery_raw = get_post_meta($post_id, '_gallery_images', true);
 
         // Process gallery images
@@ -190,6 +190,111 @@ get_header();
                 .btn-prev:hover {
                     background-color: #3A2F5A;
                 }
+
+                /* Games Modal Styles */
+                .games-modal {
+                    display: none;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    z-index: 1001;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .games-modal.active {
+                    display: flex;
+                }
+
+                .games-modal-content {
+                    background-color: white;
+                    border-radius: 12px;
+                    width: 90%;
+                    max-width: 500px;
+                    max-height: 80vh;
+                    overflow: hidden;
+                    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+                }
+
+                @media (max-width: 768px) {
+                    .games-modal-content {
+                        width: 100%;
+                        height: 85vh;
+                        border-radius: 16px 16px 0 0;
+                        position: fixed;
+                        bottom: 0;
+                        max-width: none;
+                    }
+                }
+
+                .games-modal-header {
+                    padding: 1rem;
+                    border-bottom: 1px solid #e5e7eb;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+
+                .games-modal-body {
+                    padding: 1rem;
+                    overflow-y: auto;
+                    max-height: 60vh;
+                }
+
+                .game-item {
+                    display: flex;
+                    align-items: center;
+                    padding: 0.75rem;
+                    border-bottom: 1px solid #f3f4f6;
+                }
+
+                .game-item:last-child {
+                    border-bottom: none;
+                }
+
+                .game-thumbnail {
+                    width: 64px;
+                    height: 64px;
+                    border-radius: 8px;
+                    object-fit: cover;
+                    margin-left: 1rem;
+                    background-color: #f3f4f6;
+                }
+
+                .game-info {
+                    flex: 1;
+                }
+
+                .game-title {
+                    font-weight: 600;
+                    margin-bottom: 0.25rem;
+                }
+
+                .game-genre {
+                    color: #6b7280;
+                    font-size: 0.875rem;
+                }
+
+                .game-details {
+                    color: #4b5563;
+                }
+
+                .loading-spinner {
+                    display: inline-block;
+                    width: 20px;
+                    height: 20px;
+                    border: 3px solid rgba(75, 63, 114, 0.3);
+                    border-radius: 50%;
+                    border-top-color: #4B3F72;
+                    animation: spin 1s ease-in-out infinite;
+                }
+
+                @keyframes spin {
+                    to { transform: rotate(360deg); }
+                }
             </style>
         </head>
 
@@ -289,6 +394,12 @@ get_header();
                                             </div>
                                             <p class="text-muted text-sm mb-3"><?php echo esc_html($specs); ?></p>
                                             <p class="text-lg font-bold mb-3"><?php echo number_format((float)$price); ?> تومان/ساعت</p>
+                                            
+                                            <!-- View Games Button -->
+                                            <button class="view-games-btn px-3 py-1 text-sm rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                                                    data-device-id="<?php echo $device_id; ?>">
+                                                مشاهده بازی‌ها
+                                            </button>
                                         </div>
                                     <?php endwhile;
                                     wp_reset_postdata(); ?>
@@ -325,6 +436,13 @@ get_header();
                                         <p class="text-muted"><?php echo esc_html($holiday); ?></p>
                                     </div>
                                 <?php endif; ?>
+                                
+                                <?php if ($address) : ?>
+                                    <div class="mb-3">
+                                        <h4 class="font-bold mb-1">آدرس:</h4>
+                                        <p class="text-muted"><?php echo nl2br(esc_html($address)); ?></p>
+                                    </div>
+                                 <?php endif; ?>
                             </div>
 
                             <!-- Quick Actions -->
@@ -342,6 +460,25 @@ get_header();
                     </div>
                 </div>
             </main>
+
+            <!-- Games Modal -->
+            <div id="gamesModal" class="games-modal" role="dialog" aria-modal="true" aria-labelledby="gamesModalTitle">
+                <div class="games-modal-content">
+                    <div class="games-modal-header">
+                        <h3 id="gamesModalTitle" class="text-lg font-bold">بازی‌های دستگاه</h3>
+                        <button id="closeGamesModal" class="text-gray-500 hover:text-gray-700" aria-label="بستن">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="games-modal-body">
+                        <div id="gamesList" aria-live="polite">
+                            <!-- Games will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Lightbox -->
             <div class="lightbox" id="lightbox">
@@ -495,6 +632,156 @@ get_header();
                 lightbox.addEventListener('click', (e) => {
                     if (e.target === lightbox) closeLightbox();
                 });
+
+                // Games Modal functionality
+                const gamesModal = document.getElementById('gamesModal');
+                const gamesList = document.getElementById('gamesList');
+                const closeGamesModalBtn = document.getElementById('closeGamesModal');
+                let currentDeviceId = null;
+                let isModalOpen = false;
+
+                // Open games modal
+                document.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('view-games-btn')) {
+                        const deviceId = e.target.getAttribute('data-device-id');
+                        openGamesModal(deviceId);
+                    }
+                });
+
+                function openGamesModal(deviceId) {
+                    currentDeviceId = deviceId;
+                    isModalOpen = true;
+                    gamesModal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    
+                    // Set focus to modal
+                    gamesModal.setAttribute('aria-hidden', 'false');
+                    
+                    // Load games
+                    loadDeviceGames(deviceId);
+                }
+
+                function closeGamesModal() {
+                    gamesModal.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                    isModalOpen = false;
+                    gamesModal.setAttribute('aria-hidden', 'true');
+                    
+                    // Restore focus to the button that opened the modal
+                    document.querySelector(`.view-games-btn[data-device-id="${currentDeviceId}"]`).focus();
+                    currentDeviceId = null;
+                }
+
+                // Close modal on overlay click
+                gamesModal.addEventListener('click', function(e) {
+                    if (e.target === gamesModal) {
+                        closeGamesModal();
+                    }
+                });
+
+                // Close modal on escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && isModalOpen) {
+                        closeGamesModal();
+                    }
+                });
+
+                // Close modal via close button
+                closeGamesModalBtn.addEventListener('click', closeGamesModal);
+
+                // Load device games via AJAX
+                function loadDeviceGames(deviceId) {
+                    gamesList.innerHTML = `
+                        <div class="text-center py-8">
+                            <div class="loading-spinner mx-auto"></div>
+                            <p class="mt-2 text-gray-600">در حال دریافت بازی‌ها...</p>
+                        </div>
+                    `;
+
+                    // استفاده از URLSearchParams به جای FormData برای سازگاری بهتر
+                    const params = new URLSearchParams();
+                    params.append('action', 'get_device_games');
+                    params.append('device_id', deviceId);
+                    params.append('security', '<?php echo wp_create_nonce('device_management_nonce'); ?>');
+
+                    fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: params
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('پاسخ سرور معتبر نیست');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            displayGames(data.data.games);
+                        } else {
+                            gamesList.innerHTML = `
+                                <div class="text-center py-8 text-red-500">
+                                    <p>خطا در دریافت بازی‌ها: ${data.data || 'خطای نامشخص'}</p>
+                                </div>
+                            `;
+                            console.error('Server error:', data.data);
+                        }
+                    })
+                    .catch(error => {
+                        gamesList.innerHTML = `
+                            <div class="text-center py-8 text-red-500">
+                                <p>خطا در ارتباط با سرور: ${error.message}</p>
+                            </div>
+                        `;
+                        console.error('Fetch error:', error);
+                    });
+                }
+
+                // Display games in the modal
+                function displayGames(games) {
+                    if (!games || games.length === 0) {
+                        gamesList.innerHTML = `
+                            <div class="text-center py-8">
+                                <p class="text-gray-500">برای این دستگاه بازی‌ای ثبت نشده است</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    let html = '';
+                    games.forEach(game => {
+                        // اطمینان از اینکه game یک آبجکت است
+                        const gameTitle = game.title || game;
+                        const thumbnailUrl = game.thumbnail_url || null;
+                        
+                        html += `
+                            <div class="game-item" role="button" tabindex="0">
+                                <div class="game-thumbnail-container">
+                                    ${thumbnailUrl ? 
+                                        `<img src="${thumbnailUrl}" alt="${gameTitle}" class="game-thumbnail">` : 
+                                        `<div class="game-thumbnail bg-gray-200 flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>`
+                                    }
+                                </div>
+                                <div class="game-info">
+                                    <h4 class="game-title">${gameTitle}</h4>
+                                </div>
+                                <div class="game-details">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    gamesList.innerHTML = html;
+                }
             </script>
 
             <script>
