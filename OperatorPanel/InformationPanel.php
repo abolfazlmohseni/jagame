@@ -67,6 +67,10 @@ $profile_picture_url = $profile_picture_id ? wp_get_attachment_image_url($profil
                     <p class="text-gray-800" id="displayHoliday"><?= esc_html($user_info['holiday']) ?></p>
                 </div>
                 <div class="bg-gray-50 p-4 rounded-lg md:col-span-2 lg:col-span-3">
+                    <h3 class="font-semibold text-gray-700 mb-2">آدرس</h3>
+                    <p class="text-gray-800 text-sm" id="displayAddress"><?= esc_html($user_info['address']) ?></p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg md:col-span-2 lg:col-span-3">
                     <h3 class="font-semibold text-gray-700 mb-2">بیوگرافی</h3>
                     <p class="text-gray-800 text-sm" id="displayBio"><?= esc_html($user_info['bio']) ?></p>
                 </div>
@@ -122,7 +126,12 @@ $profile_picture_url = $profile_picture_id ? wp_get_attachment_image_url($profil
                             <option value="یکشنبه" <?= $user_info['holiday'] === 'یکشنبه' ? 'selected' : '' ?>>یکشنبه</option>
                         </select>
                     </div>
-
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">آدرس</label>
+                        <textarea name="address" id="address" rows="3"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                            placeholder="آدرس کامل گیم نت..."><?= esc_textarea($user_info['address']) ?></textarea>
+                    </div>
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-2">بیوگرافی</label>
                         <textarea name="bio" id="biography" rows="4"

@@ -357,22 +357,58 @@ $address = get_user_meta($user_id, 'address', true);
 
 <body class="bg-gray-50 min-h-screen">
     <!-- Header -->
-    <!-- Header -->
-    <header class="gradient-bg text-white shadow-lg">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4 space-x-reverse">
-                    <div>
-                        <h1 class="text-2xl font-bold">پنل کاربری</h1>
-                        <p class="text-white text-opacity-80">خوش آمدید، <?php echo esc_html($current_user->display_name); ?></p>
-                    </div>
+
+    <header class="gradient-bg text-white shadow-lg ">
+        <div class="container mx-auto px-4 lg:px-6 py-3">
+            <div class="flex items-center justify-between py-2 md:py-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg md:text-xl "><?php echo esc_html($current_user->display_name); ?></span>
                 </div>
-                <div>
-                    <button id="logout-btn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
+
+                <!-- منوی ناوبری در وسط - فقط در دسکتاپ نمایش داده می‌شود -->
+                <nav class="hidden md:flex text-lg text-white space-x-reverse space-x-2 lg:space-x-4">
+                    <a href="<?php echo home_url('/'); ?>" class="text-white hover:bg-blue-500/20 transition-colors py-2 px-3 rounded-md">صفحه اصلی</a>
+                    <a href="<?php echo home_url('/about/'); ?>" class="text-white hover:bg-blue-500/20 transition-colors py-2 px-3 rounded-md">درباره ما</a>
+                    <a href="<?php echo home_url('/contact/'); ?>" class="text-white hover:bg-blue-500/20 transition-colors py-2 px-3 rounded-md">تماس با ما</a>
+                </nav>
+
+                <!-- بخش کاربر در دسکتاپ -->
+                <div class="hidden md:flex items-center gap-4">
+
+                    <button id="logout-btn" class=" bg-red-500 text-white py-2 px-4 rounded-md transition-colors border-0 cursor-pointer hover:bg-red-600">
                         خروج
                     </button>
                 </div>
+
+                <!-- دکمه منوی موبایل -->
+                <button class="md:hidden block bg-transparent border-0 text-white text-2xl cursor-pointer" id="mobile-menu-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+                    </svg>
+                </button>
             </div>
+        </div>
+
+        <!-- منوی موبایل -->
+        <div class="md:hidden hidden gradient-bg px-6 pb-6 pt-3 shadow-xl" id="mobile-menu">
+            <nav class="flex flex-col text-lg text-white space-y-4">
+                <a href="<?php echo home_url('/'); ?>" class="text-white py-2 px-3 rounded-md">
+                    صفحه اصلی
+                </a>
+                <a href="<?php echo home_url('/about/'); ?>" class="text-white py-2 px-3 rounded-md">
+                    درباره ما
+                </a>
+                <a href="<?php echo home_url('/contact/'); ?>" class="text-white py-2 px-3 rounded-md">
+                    تماس با ما
+                </a>
+
+                <!-- بخش کاربر در نسخه موبایل -->
+                <div class="flex flex-col gap-3 mt-4 pt-4">
+                    <button onclick="window.location.href='<?php echo wp_logout_url(home_url()); ?>" class="bg-red-500 text-white py-2 px-4 rounded-md transition-colors border-0 cursor-pointer hover:bg-red-600 flex items-center justify-center">
+                        خروج
+                    </button>
+                </div>
+            </nav>
         </div>
     </header>
 
@@ -913,6 +949,18 @@ $address = get_user_meta($user_id, 'address', true);
                     });
             }
         }
+        // اسکریپت ساده برای نمایش/مخفی کردن منوی موبایل
+        document.getElementById('mobile-menu-toggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // بستن منوی موبایل هنگام کلیک روی لینک‌ها
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.add('hidden');
+            });
+        });
     </script>
 </body>
 
