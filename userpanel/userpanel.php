@@ -309,6 +309,9 @@ $address = get_user_meta($user_id, 'address', true);
 <!DOCTYPE html>
 <html lang="fa">
 
+<!DOCTYPE html>
+<html lang="fa">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -352,26 +355,160 @@ $address = get_user_meta($user_id, 'address', true);
         .status-cancelled {
             background: linear-gradient(45deg, #ef4444, #dc2626);
         }
+
+        /* استایل‌های جدید برای هدر */
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-text {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
+        }
+
+        .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .welcome-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                left: 0;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .user-section {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .mobile-user-section {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+        }
     </style>
 </head>
 
 <body class="bg-gray-50 min-h-screen">
-    <!-- Header -->
-    <!-- Header -->
     <header class="gradient-bg text-white shadow-lg">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4 space-x-reverse">
-                    <div>
-                        <h1 class="text-2xl font-bold">پنل کاربری</h1>
-                        <p class="text-white text-opacity-80">خوش آمدید، <?php echo esc_html($current_user->display_name); ?></p>
+        <div class="container mx-auto px-6 py-3">
+            <div class="header-container">
+                <!-- لوگو در سمت راست -->
+                <div class="header-logo">
+                    <a href="<?php echo home_url('/'); ?>" class="flex items-center space-x-2 space-x-reverse">
+                        <div class="logo-icon">
+                            <span>🎮</span>
+                        </div>
+                        <span class="logo-text">جاگیم</span>
+                    </a>
+                </div>
+
+                <!-- منوی ناوبری در وسط -->
+                <nav class="nav-links" id="nav-links">
+                    <a href="<?php echo home_url('/'); ?>" class="nav-link">صفحه اصلی</a>
+                    <a href="<?php echo home_url('/درباره-ما'); ?>" class="nav-link">درباره ما</a>
+                    <a href="<?php echo home_url('/تماس-با-ما'); ?>" class="nav-link">تماس با ما</a>
+                    
+                    <!-- بخش کاربر در نسخه موبایل -->
+                    <div class="mobile-user-section">
+                        <span class="welcome-text">خوش آمدید، <?php echo esc_html($current_user->display_name); ?></span>
+                        <button class="logout-btn" onclick="window.location.href='<?php echo wp_logout_url(home_url()); ?>'">
+                            خروج
+                        </button>
                     </div>
-                </div>
-                <div>
-                    <button id="logout-btn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        خروج
-                    </button>
-                </div>
+                </nav>
+
+                <!-- دکمه منوی موبایل -->
+                <button class="mobile-menu-btn" id="mobile-menu-toggle">
+                    ☰
+                </button>
             </div>
         </div>
     </header>
@@ -913,6 +1050,20 @@ $address = get_user_meta($user_id, 'address', true);
                     });
             }
         }
+        // در بخش اسکریپت پایین صفحه
+        document.getElementById('mobile-menu-toggle').addEventListener('click', function() {
+            document.getElementById('nav-links').classList.toggle('active');
+        });
+
+        // بستن منوی موبایل هنگام کلیک خارج از آن
+        document.addEventListener('click', function(event) {
+            const navLinks = document.getElementById('nav-links');
+            const mobileMenuBtn = document.getElementById('mobile-menu-toggle');
+            
+            if (!navLinks.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+                navLinks.classList.remove('active');
+            }
+        });
     </script>
 </body>
 
