@@ -10,7 +10,7 @@
     --color-muted: #6B7280;
 }
 
-*{
+* {
     direction: rtl !important;
 }
 
@@ -22,5 +22,199 @@
 
 * {
     font-family: "iranYekan" !important;
+
+}
+
+
+
+.lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.lightbox img {
+    max-width: 90%;
+    max-height: 80%;
+    object-fit: contain;
+}
+
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    padding: 1rem;
+    cursor: pointer;
+    font-size: 2rem;
+}
+
+.lightbox-prev {
+    right: 10px;
+}
+
+.lightbox-next {
+    left: 10px;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: white;
+    font-size: 2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+@media (min-width: 1024px) {
+    .sticky-sidebar {
+        position: sticky;
+        top: 2rem;
+        align-self: start;
+    }
+}
+
+.device-checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: #4B3F72;
+}
+
+.step {
+    display: none;
+}
+
+.step.active {
+    display: block;
+}
+
+.btn-next,
+.btn-prev {
+    background-color: #4B3F72;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px 5px;
+}
+
+.btn-next:hover,
+.btn-prev:hover {
+    background-color: #3A2F5A;
+}
+
+/* Games Modal Styles */
+.games-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    align-items: center;
+    justify-content: center;
+}
+
+.games-modal.active {
+    display: flex;
+}
+
+.games-modal-content {
+    background-color: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    .games-modal-content {
+        width: 100%;
+        height: 85vh;
+        border-radius: 16px 16px 0 0;
+        position: fixed;
+        bottom: 0;
+        max-width: none;
+    }
+}
+
+.games-modal-header {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.games-modal-body {
+    padding: 1rem;
+    overflow-y: auto;
+    max-height: 60vh;
+}
+
+.game-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.game-item:last-child {
+    border-bottom: none;
+}
+
+.game-thumbnail {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-left: 1rem;
+    background-color: #f3f4f6;
+}
+
+.game-info {
+    flex: 1;
+}
+
+.game-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.game-genre {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.game-details {
+    color: #4b5563;
+}
+
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    animation: spin 1s ease-in-out infinite;
+    @apply border-t-primary rounded-[50%] inline-block border-[3px] border-primary/30;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 
 }
