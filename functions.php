@@ -2841,10 +2841,9 @@ function update_reservation_status_handler()
         wp_die();
     }
 
-    // به‌روزرسانی وضعیت
     update_post_meta($reservation_id, '_status', $new_status);
 
-    // ارسال ایمیل به کاربر در صورت تغییر وضعیت
+
     $user_id = get_post_meta($reservation_id, '_user_id', true);
     if ($user_id) {
         $user_info = get_userdata($user_id);
