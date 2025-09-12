@@ -130,7 +130,7 @@ get_header();
                                     ];
                                     $status_class = $status_colors[$status] ?? 'bg-gray-100 text-gray-800';
                                     ?>
-                                    <div class="border border-black/40 rounded-lg p-4 hover:shadow-lg transition-shadow">
+                                    <div class="shadow-md rounded-lg p-4 hover:shadow-lg transition-shadow">
                                         <h3 class="text-xl font-bold mb-2"><?php the_title(); ?></h3>
                                         <div class="flex gap-2 mb-3">
                                             <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm"><?php echo esc_html($type); ?></span>
@@ -282,8 +282,8 @@ get_header();
                         <input type="date" name="reservation_date" id="reservationDate"
                             min="<?php echo date('Y-m-d'); ?>" class="w-full p-3 border rounded-lg text-lg" required>
                         <div class="mt-6 flex justify-between">
-                            <button type="button" onclick="prevStep(1)" class="btn-prev">← قبلی</button>
                             <button type="button" onclick="nextStep(3)" class="btn-next">بعدی →</button>
+                            <button type="button" onclick="prevStep(1)" class="btn-prev">← قبلی</button>
                         </div>
                     </div>
 
@@ -292,8 +292,8 @@ get_header();
                         <h4 class="text-lg font-semibold mb-4">مرحله 3: انتخاب ساعت شروع</h4>
                         <input type="time" name="start_time" id="startTime" class="w-full p-3 border rounded-lg text-lg" required>
                         <div class="mt-6 flex justify-between">
-                            <button type="button" onclick="prevStep(2)" class="btn-prev">← قبلی</button>
                             <button type="button" onclick="nextStep(4)" class="btn-next">بعدی →</button>
+                            <button type="button" onclick="prevStep(2)" class="btn-prev">← قبلی</button>
                         </div>
                     </div>
 
@@ -303,8 +303,8 @@ get_header();
                         <input type="number" name="duration" id="duration" min="1" value="1"
                             class="w-full p-3 border rounded-lg text-lg" required>
                         <div class="mt-6 flex justify-between">
-                            <button type="button" onclick="prevStep(3)" class="btn-prev">← قبلی</button>
                             <button type="button" onclick="nextStep(5)" class="btn-next">بعدی →</button>
+                            <button type="button" onclick="prevStep(3)" class="btn-prev">← قبلی</button>
                         </div>
                     </div>
 
@@ -319,10 +319,10 @@ get_header();
                             <span id="estimatedPrice" class="text-lg font-bold">0 تومان</span>
                         </div>
                         <div class="mt-6 flex justify-between">
-                            <button type="button" onclick="prevStep(4)" class="btn-prev">← قبلی</button>
-                            <button type="button" onclick="submitReservation()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg">
-                                تأیید و رزرو
+                            <button type="button" onclick="submitReservation()" class="bg-secondary hover:bg-primary transition-colors text-white px-6 py-2 rounded-lg">
+                                رزرو
                             </button>
+                            <button type="button" onclick="prevStep(4)" class="btn-prev">← قبلی</button>
                         </div>
                     </div>
                 </div>
