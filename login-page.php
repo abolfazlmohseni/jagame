@@ -80,20 +80,6 @@ if (is_user_logged_in()) {
             </div>
 
             <div class="bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/20">
-                <!-- انتخاب نوع کاربر -->
-                <div class="mb-6">
-                    <p class="text-sm font-medium text-gray-700 mb-3">من:</p>
-                    <div class="flex rounded-xl overflow-hidden shadow-sm">
-                        <button class="user-type-btn active bg-secondary text-white py-3 px-4 w-1/2 transition-all duration-300 font-medium" data-type="gamer">
-                            گیمر هستم
-                        </button>
-                        <button class="user-type-btn bg-gray-100 text-gray-700 py-3 px-4 w-1/2 transition-all duration-300 font-medium" data-type="owner">
-                            مالک گیم‌نت هستم
-                        </button>
-                    </div>
-                    <input type="hidden" id="user_type" value="gamer">
-                </div>
-
                 <!-- تب‌های ورود و ثبت‌نام -->
                 <div class="flex mb-6 rounded-xl overflow-hidden shadow-sm" id="auth-tabs">
                     <button class="auth-tab active bg-secondary text-white py-3 px-4 w-1/2 transition-all duration-300 font-medium" data-tab="login">
@@ -194,13 +180,13 @@ if (is_user_logged_in()) {
 
     <script>
         // عناصر DOM
-        const userTypeButtons = document.querySelectorAll('.user-type-btn');
+        
         const authTabs = document.querySelectorAll('.auth-tab');
         const loginForm = document.getElementById('login-form');
         const registerForm = document.getElementById('register-form');
         const registerTab = document.getElementById('register-tab');
         const ownerMessage = document.getElementById('owner-message');
-        const userTypeInput = document.getElementById('user_type');
+        
         const passwordToggles = document.querySelectorAll('.password-toggle');
 
         // نمایش/مخفی کردن رمز عبور
@@ -241,28 +227,6 @@ if (is_user_logged_in()) {
                 $('#' + tab + '-form').removeClass('hidden');
             });
 
-            // تغییر بین نوع کاربر (گیمر یا مالک)
-            $('.user-type-btn').on('click', function() {
-                var userType = $(this).data('type');
-
-                $('.user-type-btn').removeClass('bg-secondary text-white').addClass('bg-gray-200 text-gray-700');
-                $(this).removeClass('bg-gray-200 text-gray-700').addClass('bg-secondary text-white');
-
-                $('#user_type').val(userType);
-
-                // تغییر متن دکمه‌ها و placeholder بر اساس نوع کاربر
-                if (userType === 'owner') {
-                    $('#login-username-label').text('شماره موبایل');
-                    $('#login-username').attr('placeholder', 'شماره موبایل گیم نت را وارد کنید');
-                    $('#login-submit').text('ورود به پنل مدیریت');
-                    $('#register-submit').text('ثبت‌نام مالک گیم نت');
-                } else {
-                    $('#login-username-label').text('نام کاربری');
-                    $('#login-username').attr('placeholder', 'نام کاربری خود را وارد کنید');
-                    $('#login-submit').text('ورود به حساب کاربری');
-                    $('#register-submit').text('ثبت‌نام گیمر');
-                }
-            });
             // فرم ورود
             $('#login-form').on('submit', function(e) {
                 e.preventDefault();
