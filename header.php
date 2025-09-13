@@ -12,6 +12,9 @@
             background: linear-gradient(135deg, #4B3F72 0%, #8E7CC3 100%);
         }
     </style>
+    <!-- در بخش head یا قبل از اسکریپت‌ها -->
+<!-- در بخش head یا قبل از اسکریپت‌ها -->
+<script src="https://cdn.jsdelivr.net/npm/jalaali-js@1.2.3/dist/jalaali.js"></script>
 </head>
 
 <body class="bg-gray-50 text-text-dark">
