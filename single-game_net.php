@@ -50,6 +50,143 @@ get_header();
             )
         ));
         ?>
+        <style>
+            /* استایل‌های مربوط به تقویم شمسی */
+            .persian-date-picker .day {
+                padding: 8px;
+                text-align: center;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .persian-date-picker .day:hover {
+                background-color: #e5e7eb;
+            }
+
+            .persian-date-picker .day.selected {
+                background-color: #3b82f6;
+                color: white;
+            }
+
+            .persian-date-picker .day.today {
+                border: 2px solid #3b82f6;
+            }
+
+            .persian-date-picker .day.disabled {
+                color: #9ca3af;
+                cursor: not-allowed;
+            }
+
+            /* استایل‌های مربوط به انتخاب زمان */
+            .time-picker-grid .time-slot {
+                padding: 8px;
+                text-align: center;
+                border-radius: 8px;
+                border: 1px solid #e5e7eb;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .time-picker-grid .time-slot:hover {
+                background-color: #e5e7eb;
+            }
+
+            .time-picker-grid .time-slot.selected {
+                background-color: #3b82f6;
+                color: white;
+                border-color: #3b82f6;
+            }
+
+            .time-picker-grid .time-slot.disabled {
+                color: #9ca3af;
+                cursor: not-allowed;
+            }
+
+            /* استایل‌های مربوط به مراحل */
+            .step {
+                display: none;
+            }
+
+            .step.active {
+                display: block;
+            }
+
+            /* استایل‌های دکمه‌ها */
+            .btn-next,
+            .btn-prev {
+                padding: 8px 16px;
+                border-radius: 8px;
+                font-weight: 500;
+                transition: all 0.2s;
+            }
+
+            .btn-next {
+                background-color: #3b82f6;
+                color: white;
+            }
+
+            .btn-next:hover:not(:disabled) {
+                background-color: #2563eb;
+            }
+
+            .btn-next:disabled {
+                background-color: #9ca3af;
+                cursor: not-allowed;
+            }
+
+            .btn-prev {
+                background-color: #e5e7eb;
+                color: #4b5563;
+            }
+
+            .btn-prev:hover {
+                background-color: #d1d5db;
+            }
+
+            /* استایل‌های مربوط به دستگاه‌ها */
+            .device-type-option {
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .device-type-option:hover {
+                transform: translateY(-2px);
+            }
+
+            .device-type-option.selected .device-icon {
+                background-color: #dbeafe;
+                border: 2px solid #3b82f6;
+            }
+
+            .device-type-option.selected p {
+                color: #3b82f6;
+                font-weight: bold;
+            }
+
+            /* استایل‌های مربوط به دستگاه‌های موجود */
+            .device-item {
+                padding: 12px;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .device-item:hover {
+                background-color: #f9fafb;
+            }
+
+            .device-item.selected {
+                background-color: #dbeafe;
+                border-color: #3b82f6;
+            }
+
+            .device-item.disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        </style>
         <!-- Hero Section -->
         <section class="gradient-bg text-text-on-dark shadow-lg from-primary to-secondary py-8">
             <div class="container mx-auto px-4 flex flex-col lg:flex-row items-center gap-6">
@@ -248,7 +385,7 @@ get_header();
                     </button>
                 </div>
 
-                <div id="loginRequiredMessage" class=" hidden">
+                <div id="loginRequiredMessage" class="hidden">
                     <p class="text-yellow-800 bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">برای رزرو دستگاه وارد حساب کاربری خود شوید.</p>
                     <div class="mt-2">
                         <a href="<?php echo home_url('/index.php/login-page'); ?>"
@@ -262,27 +399,94 @@ get_header();
                     <!-- Step 1: انتخاب نوع دستگاه -->
                     <div id="step1" class="step active">
                         <h4 class="text-lg font-semibold mb-4">مرحله 1: انتخاب نوع دستگاه</h4>
-                        <select name="device_type" id="deviceType" class="w-full p-3 border rounded-lg text-lg" required>
-                            <option value="">-- لطفاً نوع دستگاه را انتخاب کنید --</option>
-                            <option value="pc">PC</option>
-                            <option value="xbox">XBOX</option>
-                            <option value="ps4">PS4</option>
-                            <option value="ps5">PS5</option>
-                            <option value="vr">VR</option>
-                            <option value="other">سایر</option>
-                        </select>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            <div class="device-type-option" data-type="pc">
+                                <div class="device-icon bg-blue-100 p-4 rounded-lg text-center">
+                                    <svg class="w-12 h-12 mx-auto text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-center mt-2 font-medium">کامپیوتر</p>
+                            </div>
+                            <div class="device-type-option" data-type="xbox">
+                                <div class="device-icon bg-green-100 p-4 rounded-lg text-center">
+                                    <svg class="w-12 h-12 mx-auto text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-center mt-2 font-medium">XBOX</p>
+                            </div>
+                            <div class="device-type-option" data-type="ps5">
+                                <div class="device-icon bg-purple-100 p-4 rounded-lg text-center">
+                                    <svg class="w-12 h-12 mx-auto text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-center mt-2 font-medium">PS5</p>
+                            </div>
+                            <div class="device-type-option" data-type="ps4">
+                                <div class="device-icon bg-indigo-100 p-4 rounded-lg text-center">
+                                    <svg class="w-12 h-12 mx-auto text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-center mt-2 font-medium">PS4</p>
+                            </div>
+                            <div class="device-type-option" data-type="vr">
+                                <div class="device-icon bg-pink-100 p-4 rounded-lg text-center">
+                                    <svg class="w-12 h-12 mx-auto text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-center mt-2 font-medium">VR</p>
+                            </div>
+                            <div class="device-type-option" data-type="other">
+                                <div class="device-icon bg-gray-100 p-4 rounded-lg text-center">
+                                    <svg class="w-12 h-12 mx-auto text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-center mt-2 font-medium">سایر</p>
+                            </div>
+                        </div>
+                        <input type="hidden" name="device_type" id="deviceType" value="">
                         <div class="mt-6 text-right">
-                            <button type="button" onclick="nextStep(2)" class="btn-next">بعدی →</button>
+                            <button type="button" onclick="nextStep(2)" class="btn-next" disabled>بعدی →</button>
                         </div>
                     </div>
 
                     <!-- Step 2: انتخاب تاریخ -->
                     <div id="step2" class="step">
                         <h4 class="text-lg font-semibold mb-4">مرحله 2: انتخاب تاریخ</h4>
-                        <input type="date" name="reservation_date" id="reservationDate"
-                            min="<?php echo date('Y-m-d'); ?>" class="w-full p-3 border rounded-lg text-lg" required>
+                        <div class="persian-date-picker bg-gray-50 p-4 rounded-lg">
+                            <div class="flex justify-between items-center mb-4">
+                                <button type="button" onclick="changePersianMonth(-1)" class="p-2 rounded hover:bg-gray-200">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                    </svg>
+                                </button>
+                                <h5 id="persianMonthYear" class="font-bold text-lg"></h5>
+                                <button type="button" onclick="changePersianMonth(1)" class="p-2 rounded hover:bg-gray-200">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-7 gap-2 mb-2">
+                                <div class="text-center text-sm font-medium text-gray-500">ش</div>
+                                <div class="text-center text-sm font-medium text-gray-500">ی</div>
+                                <div class="text-center text-sm font-medium text-gray-500">د</div>
+                                <div class="text-center text-sm font-medium text-gray-500">س</div>
+                                <div class="text-center text-sm font-medium text-gray-500">چ</div>
+                                <div class="text-center text-sm font-medium text-gray-500">پ</div>
+                                <div class="text-center text-sm font-medium text-gray-500">ج</div>
+                            </div>
+                            <div id="persianCalendar" class="grid grid-cols-7 gap-2"></div>
+                        </div>
+                        <input type="hidden" name="reservation_date" id="reservationDate" value="">
                         <div class="mt-6 flex justify-between">
-                            <button type="button" onclick="nextStep(3)" class="btn-next">بعدی →</button>
+                            <button type="button" onclick="nextStep(3)" class="btn-next" disabled>بعدی →</button>
                             <button type="button" onclick="prevStep(1)" class="btn-prev">← قبلی</button>
                         </div>
                     </div>
@@ -290,20 +494,66 @@ get_header();
                     <!-- Step 3: انتخاب ساعت شروع -->
                     <div id="step3" class="step">
                         <h4 class="text-lg font-semibold mb-4">مرحله 3: انتخاب ساعت شروع</h4>
-                        <input type="time" name="start_time" id="startTime" class="w-full p-3 border rounded-lg text-lg" required>
+                        <div class="time-picker-grid bg-gray-50 p-4 rounded-lg">
+                            <div class="grid grid-cols-4 md:grid-cols-6 gap-2">
+                                <!-- زمان‌ها توسط جاوااسکریپت پر خواهد شد -->
+                            </div>
+                        </div>
+                        <input type="hidden" name="start_time" id="startTime" value="">
                         <div class="mt-6 flex justify-between">
-                            <button type="button" onclick="nextStep(4)" class="btn-next">بعدی →</button>
+                            <button type="button" onclick="nextStep(4)" class="btn-next" disabled>بعدی →</button>
                             <button type="button" onclick="prevStep(2)" class="btn-prev">← قبلی</button>
                         </div>
                     </div>
 
                     <!-- Step 4: انتخاب مدت زمان -->
                     <div id="step4" class="step">
-                        <h4 class="text-lg font-semibold mb-4">مرحله 4: انتخاب مدت زمان (ساعت)</h4>
-                        <input type="number" name="duration" id="duration" min="1" value="1"
-                            class="w-full p-3 border rounded-lg text-lg" required>
+                        <h4 class="text-lg font-semibold mb-4">مرحله 4: انتخاب مدت زمان</h4>
+                        <div class="duration-selector bg-gray-50 p-4 rounded-lg">
+                            <div class="grid grid-cols-3 gap-3">
+                                <div class="duration-option" data-duration="1">
+                                    <div class="text-center py-3 px-4 border rounded-lg hover:bg-blue-50 hover:border-blue-300 cursor-pointer">
+                                        <span class="text-lg font-medium">1 ساعت</span>
+                                    </div>
+                                </div>
+                                <div class="duration-option" data-duration="2">
+                                    <div class="text-center py-3 px-4 border rounded-lg hover:bg-blue-50 hover:border-blue-300 cursor-pointer">
+                                        <span class="text-lg font-medium">2 ساعت</span>
+                                    </div>
+                                </div>
+                                <div class="duration-option" data-duration="3">
+                                    <div class="text-center py-3 px-4 border rounded-lg hover:bg-blue-50 hover:border-blue-300 cursor-pointer">
+                                        <span class="text-lg font-medium">3 ساعت</span>
+                                    </div>
+                                </div>
+                                <div class="duration-option" data-duration="4">
+                                    <div class="text-center py-3 px-4 border rounded-lg hover:bg-blue-50 hover:border-blue-300 cursor-pointer">
+                                        <span class="text-lg font-medium">4 ساعت</span>
+                                    </div>
+                                </div>
+                                <div class="duration-option" data-duration="5">
+                                    <div class="text-center py-3 px-4 border rounded-lg hover:bg-blue-50 hover:border-blue-300 cursor-pointer">
+                                        <span class="text-lg font-medium">5 ساعت</span>
+                                    </div>
+                                </div>
+                                <div class="duration-option" data-duration="6">
+                                    <div class="text-center py-3 px-4 border rounded-lg hover:bg-blue-50 hover:border-blue-300 cursor-pointer">
+                                        <span class="text-lg font-medium">6 ساعت</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <label for="customDuration" class="block text-sm font-medium mb-2">یا مدت زمان دلخواه:</label>
+                                <div class="flex items-center">
+                                    <input type="number" id="customDuration" min="1" max="12"
+                                        class="w-20 p-2 border rounded-lg text-center" placeholder="ساعت">
+                                    <span class="mr-2">ساعت</span>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="duration" id="duration" value="">
                         <div class="mt-6 flex justify-between">
-                            <button type="button" onclick="nextStep(5)" class="btn-next">بعدی →</button>
+                            <button type="button" onclick="nextStep(5)" class="btn-next" disabled>بعدی →</button>
                             <button type="button" onclick="prevStep(3)" class="btn-prev">← قبلی</button>
                         </div>
                     </div>
@@ -531,13 +781,22 @@ get_header();
                 gamesList.innerHTML = html;
             }
         </script>
-
+        <!-- اسکریپت برای رزرو دستگاه -->
         <script>
-            // متغیرهای جهانی
-            let availableDevices = [];
+            // متغیرهای سراسری
+            let selectedDeviceType = null;
+            let selectedDate = null;
+            let selectedStartTime = null;
+            let selectedDuration = 1;
             let selectedDevices = [];
-            let isUserLoggedIn = <?php echo is_user_logged_in() ? 'true' : 'false'; ?>;
+            let availableDevices = [];
             let currentStep = 1;
+            let isUserLoggedIn = <?php echo is_user_logged_in() ? 'true' : 'false'; ?>;
+
+            // متغیرهای مربوط به تقویم شمسی
+            let currentPersianDate = new Date();
+            let currentPersianYear = jalaali.toJalaali(currentPersianDate).jy;
+            let currentPersianMonth = jalaali.toJalaali(currentPersianDate).jm;
 
             // باز کردن مودال رزرو
             function openReservationModal() {
@@ -555,6 +814,9 @@ get_header();
                     loginMessage.classList.add('hidden');
                     formContainer.classList.remove('hidden');
                     showStep(1);
+
+                    // مقداردهی اولیه تقویم شمسی
+                    renderPersianCalendar();
                 }
             }
 
@@ -565,12 +827,40 @@ get_header();
 
             // ریست فرم
             function resetForm() {
-                document.getElementById('deviceType').value = '';
-                document.getElementById('reservationDate').value = '';
-                document.getElementById('startTime').value = '';
-                document.getElementById('duration').value = '1';
+                selectedDeviceType = null;
+                selectedDate = null;
+                selectedStartTime = null;
+                selectedDuration = 1;
+                selectedDevices = [];
+
+                // ریست انتخاب‌های UI
+                document.querySelectorAll('.device-type-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+
+                document.querySelectorAll('.time-slot').forEach(slot => {
+                    slot.classList.remove('selected');
+                });
+
+                document.querySelectorAll('.duration-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+
+                document.querySelectorAll('.device-checkbox').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+
+                document.getElementById('customDuration').value = '';
                 document.getElementById('estimatedPrice').textContent = '0 تومان';
+
                 currentStep = 1;
+                showStep(1);
+
+                // بازنشانی تقویم به ماه جاری
+                const today = jalaali.toJalaali(new Date());
+                currentPersianYear = today.jy;
+                currentPersianMonth = today.jm;
+                renderPersianCalendar();
             }
 
             // نمایش مرحله
@@ -585,7 +875,8 @@ get_header();
             // رفتن به مرحله بعد
             function nextStep(nextStepNumber) {
                 if (validateStep(currentStep)) {
-                    if (currentStep === 4) { // قبل از رفتن به مرحله 5، دستگاه‌ها رو دریافت کن
+                    if (currentStep === 4) {
+                        // قبل از رفتن به مرحله 5، دستگاه‌های موجود را دریافت کن
                         fetchAvailableDevices();
                     }
                     showStep(nextStepNumber);
@@ -601,26 +892,26 @@ get_header();
             function validateStep(step) {
                 switch (step) {
                     case 1:
-                        if (!document.getElementById('deviceType').value) {
+                        if (!selectedDeviceType) {
                             alert('لطفاً نوع دستگاه را انتخاب کنید');
                             return false;
                         }
                         return true;
                     case 2:
-                        if (!document.getElementById('reservationDate').value) {
+                        if (!selectedDate) {
                             alert('لطفاً تاریخ را انتخاب کنید');
                             return false;
                         }
                         return true;
                     case 3:
-                        if (!document.getElementById('startTime').value) {
+                        if (!selectedStartTime) {
                             alert('لطفاً ساعت شروع را انتخاب کنید');
                             return false;
                         }
                         return true;
                     case 4:
-                        if (!document.getElementById('duration').value || document.getElementById('duration').value < 1) {
-                            alert('لطفاً مدت زمان معتبر وارد کنید');
+                        if (!selectedDuration || selectedDuration < 1) {
+                            alert('لطفاً مدت زمان معتبر انتخاب کنید');
                             return false;
                         }
                         return true;
@@ -629,19 +920,100 @@ get_header();
                 }
             }
 
-            // دریافت دستگاه‌های موجود از سرور
-            async function fetchAvailableDevices() {
-                const deviceType = document.getElementById('deviceType').value;
-                const gameNetId = <?php echo $post_id; ?>;
-                const date = document.getElementById('reservationDate').value;
-                const time = document.getElementById('startTime').value;
-                const duration = document.getElementById('duration').value;
+            // انتخاب نوع دستگاه
+            function selectDeviceType(type) {
+                selectedDeviceType = type;
 
-                if (!deviceType || !date || !time || !duration) {
-                    alert('لطفاً تمام اطلاعات لازم را وارد کنید');
-                    return;
+                // بروزرسانی UI
+                document.querySelectorAll('.device-type-option').forEach(option => {
+                    option.classList.remove('selected');
+                    if (option.dataset.type === type) {
+                        option.classList.add('selected');
+                    }
+                });
+
+                // فعال کردن دکمه بعدی
+                document.querySelector('#step1 .btn-next').disabled = false;
+            }
+
+            // انتخاب تاریخ
+            function selectDate(date) {
+                selectedDate = date;
+
+                // فعال کردن دکمه بعدی
+                document.querySelector('#step2 .btn-next').disabled = false;
+
+                // بارگذاری زمان‌های موجود برای تاریخ انتخاب شده
+                loadAvailableTimes();
+            }
+
+            // انتخاب زمان شروع
+            function selectStartTime(time) {
+                selectedStartTime = time;
+
+                // بروزرسانی UI
+                document.querySelectorAll('.time-slot').forEach(slot => {
+                    slot.classList.remove('selected');
+                    if (slot.dataset.time === time) {
+                        slot.classList.add('selected');
+                    }
+                });
+
+                // فعال کردن دکمه بعدی
+                document.querySelector('#step3 .btn-next').disabled = false;
+            }
+
+            // انتخاب مدت زمان
+            function selectDuration(duration) {
+                selectedDuration = parseInt(duration);
+
+                // بروزرسانی UI
+                document.querySelectorAll('.duration-option').forEach(option => {
+                    option.classList.remove('selected');
+                    if (parseInt(option.dataset.duration) === selectedDuration) {
+                        option.classList.add('selected');
+                    }
+                });
+
+                // فعال کردن دکمه بعدی
+                document.querySelector('#step4 .btn-next').disabled = false;
+
+                // محاسبه قیمت
+                calculatePrice();
+            }
+
+            // محاسبه قیمت بر اساس دستگاه‌های انتخاب شده و مدت زمان
+            function calculatePrice() {
+                let totalPrice = 0;
+
+                selectedDevices.forEach(deviceId => {
+                    const device = availableDevices.find(d => d.id == deviceId);
+                    if (device) {
+                        totalPrice += device.price * selectedDuration;
+                    }
+                });
+
+                document.getElementById('estimatedPrice').textContent = totalPrice.toLocaleString() + ' تومان';
+            }
+
+            // انتخاب/لغو انتخاب دستگاه
+            function toggleDeviceSelection(deviceId, element) {
+                const index = selectedDevices.indexOf(deviceId);
+
+                if (index === -1) {
+                    selectedDevices.push(deviceId);
+                    element.checked = true;
+                } else {
+                    selectedDevices.splice(index, 1);
+                    element.checked = false;
                 }
 
+                // محاسبه قیمت
+                calculatePrice();
+            }
+
+            // دریافت دستگاه‌های موجود از سرور
+            async function fetchAvailableDevices() {
                 try {
                     const response = await fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
                         method: 'POST',
@@ -650,11 +1022,11 @@ get_header();
                         },
                         body: new URLSearchParams({
                             action: 'get_available_devices',
-                            device_type: deviceType,
-                            game_net_id: gameNetId,
-                            date: date,
-                            start_time: time,
-                            duration: duration,
+                            device_type: selectedDeviceType,
+                            game_net_id: <?php echo $post_id; ?>,
+                            date: selectedDate,
+                            start_time: selectedStartTime,
+                            duration: selectedDuration,
                             security: '<?php echo wp_create_nonce("device_reservation_nonce"); ?>'
                         })
                     });
@@ -674,7 +1046,7 @@ get_header();
                 }
             }
 
-            // بروزرسانی لیست دستگاه‌های موجود
+            // بروزرسانی لیست دستگاه‌های موجود در UI
             function updateAvailableDevicesList() {
                 const list = document.getElementById('availableDevicesList');
                 list.innerHTML = '';
@@ -688,36 +1060,23 @@ get_header();
                     const deviceElement = document.createElement('div');
                     deviceElement.className = 'flex items-center p-3 border rounded-lg hover:bg-gray-50';
                     deviceElement.innerHTML = `
-                            <input type="checkbox" name="selected_devices[]" value="${device.id}" 
-                                   class="device-checkbox mr-3" data-price="${device.price}"
-                                   onchange="calculatePrice()">
-                            <div class="flex-1">
-                                <span class="font-medium text-lg">${device.name}</span>
-                                <span class="text-sm text-gray-600 block">${device.specs}</span>
-                                <span class="text-green-600 font-bold">${Number(device.price).toLocaleString()} تومان/ساعت</span>
-                            </div>
-                        `;
+            <input type="checkbox" id="device-${device.id}" 
+                   class="device-checkbox mr-3" 
+                   onchange="toggleDeviceSelection(${device.id}, this)">
+            <div class="flex-1">
+                <label for="device-${device.id}" class="cursor-pointer">
+                    <span class="font-medium text-lg">${device.name}</span>
+                    <span class="text-sm text-gray-600 block">${device.specs}</span>
+                    <span class="text-green-600 font-bold">${Number(device.price).toLocaleString()} تومان/ساعت</span>
+                </label>
+            </div>
+        `;
                     list.appendChild(deviceElement);
                 });
 
-                calculatePrice();
-            }
-
-            // محاسبه قیمت
-            function calculatePrice() {
-                const duration = parseInt(document.getElementById('duration').value) || 0;
-                const selectedCheckboxes = document.querySelectorAll('.device-checkbox:checked');
-
-                let totalPrice = 0;
+                // ریست انتخاب‌های قبلی
                 selectedDevices = [];
-
-                selectedCheckboxes.forEach(checkbox => {
-                    const price = parseFloat(checkbox.dataset.price);
-                    totalPrice += price * duration;
-                    selectedDevices.push(checkbox.value);
-                });
-
-                document.getElementById('estimatedPrice').textContent = Math.round(totalPrice).toLocaleString() + ' تومان';
+                calculatePrice();
             }
 
             // ارسال درخواست رزرو
@@ -726,12 +1085,6 @@ get_header();
                     alert('لطفاً حداقل یک دستگاه انتخاب کنید');
                     return;
                 }
-
-                const deviceType = document.getElementById('deviceType').value;
-                const date = document.getElementById('reservationDate').value;
-                const time = document.getElementById('startTime').value;
-                const duration = document.getElementById('duration').value;
-                const start_datetime = date + ' ' + time;
 
                 try {
                     const response = await fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
@@ -742,10 +1095,10 @@ get_header();
                         body: new URLSearchParams({
                             action: 'reserve_devices',
                             security: '<?php echo wp_create_nonce("device_reservation_nonce"); ?>',
-                            game_net_id: '<?php echo $post_id; ?>',
+                            game_net_id: <?php echo $post_id; ?>,
                             device_ids: selectedDevices.join(','),
-                            start_time: start_datetime,
-                            hours: duration
+                            start_time: selectedDate + ' ' + selectedStartTime,
+                            hours: selectedDuration
                         })
                     });
 
@@ -754,7 +1107,7 @@ get_header();
                     if (result.success) {
                         alert(result.data.message);
                         closeReservationModal();
-                        // رفرش صفحه یا هدایت به صفحه دیگر
+                        // رفرش صفحه
                         window.location.reload();
                     } else {
                         alert('خطا: ' + result.data);
@@ -765,19 +1118,201 @@ get_header();
                 }
             }
 
-            // بستن مودال با کلید ESC
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeReservationModal();
-                }
-            });
+            // بارگذاری زمان‌های موجود
+            function loadAvailableTimes() {
+                const timeGrid = document.querySelector('.time-picker-grid .grid');
+                timeGrid.innerHTML = '';
 
-            // تنظیم مقادیر پیش‌فرض
+                // تولید زمان‌ها از 10 صبح تا 10 شب
+                for (let hour = 10; hour <= 22; hour++) {
+                    for (let minute = 0; minute < 60; minute += 30) {
+                        const timeSlot = document.createElement('div');
+                        timeSlot.classList.add('time-slot');
+
+                        const timeFormatted = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                        timeSlot.textContent = timeFormatted;
+                        timeSlot.dataset.time = timeFormatted;
+
+                        // بررسی آیا زمان از گذشته است (برای تاریخ امروز)
+                        const today = new Date();
+                        if (selectedDate === today.toISOString().split('T')[0]) {
+                            const now = new Date();
+                            const currentHour = now.getHours();
+                            const currentMinute = now.getMinutes();
+
+                            if (hour < currentHour || (hour === currentHour && minute < currentMinute)) {
+                                timeSlot.classList.add('disabled');
+                            }
+                        }
+
+                        if (!timeSlot.classList.contains('disabled')) {
+                            timeSlot.addEventListener('click', () => {
+                                selectStartTime(timeFormatted);
+                            });
+                        }
+
+                        timeGrid.appendChild(timeSlot);
+                    }
+                }
+            }
+
+            // تابع برای ایجاد تقویم شمسی
+            function renderPersianCalendar() {
+                const calendarContainer = document.getElementById('persianCalendar');
+                const monthYearElement = document.getElementById('persianMonthYear');
+
+                // نام ماه‌های فارسی
+                const persianMonths = [
+                    'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
+                    'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
+                ];
+
+                // روزهای هفته
+                const weekDays = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
+
+                // نمایش نام ماه و سال
+                monthYearElement.textContent = `${persianMonths[currentPersianMonth - 1]} ${currentPersianYear}`;
+
+                // پاک کردن تقویم قبلی
+                calendarContainer.innerHTML = '';
+
+                // دریافت اولین روز ماه و تعداد روزهای ماه
+                const firstDay = jalaali.j2d(currentPersianYear, currentPersianMonth, 1);
+                const daysInMonth = jalaali.jalaaliMonthLength(currentPersianYear, currentPersianMonth);
+
+                // محاسبه روز هفته برای اولین روز ماه (0=شنبه، 6=جمعه)
+                const startDay = (firstDay + 1) % 7;
+
+                // اضافه کردن خانه‌های خالی برای روزهای قبل از شروع ماه
+                for (let i = 0; i < startDay; i++) {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.classList.add('day', 'empty');
+                    calendarContainer.appendChild(emptyCell);
+                }
+
+                // اضافه کردن روزهای ماه
+                const today = jalaali.toJalaali(new Date());
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayCell = document.createElement('div');
+                    dayCell.classList.add('day');
+                    dayCell.textContent = day;
+
+                    // بررسی آیا امروز است
+                    if (today.jy === currentPersianYear &&
+                        today.jm === currentPersianMonth &&
+                        today.jd === day) {
+                        dayCell.classList.add('today');
+                    }
+
+                    // بررسی آیا تاریخ انتخاب شده است
+                    if (selectedDate) {
+                        const selectedJalaali = jalaali.toJalaali(new Date(selectedDate));
+                        if (selectedJalaali.jy === currentPersianYear &&
+                            selectedJalaali.jm === currentPersianMonth &&
+                            selectedJalaali.jd === day) {
+                            dayCell.classList.add('selected');
+                        }
+                    }
+
+                    // غیرفعال کردن روزهای گذشته
+                    const isPastDate = (
+                        currentPersianYear < today.jy ||
+                        (currentPersianYear === today.jy && currentPersianMonth < today.jm) ||
+                        (currentPersianYear === today.jy && currentPersianMonth === today.jm && day < today.jd)
+                    );
+
+                    if (isPastDate) {
+                        dayCell.classList.add('disabled');
+                    } else {
+                        dayCell.addEventListener('click', () => {
+                            selectPersianDate(day);
+                        });
+                    }
+
+                    calendarContainer.appendChild(dayCell);
+                }
+            }
+
+            // تغییر ماه در تقویم شمسی
+            function changePersianMonth(direction) {
+                currentPersianMonth += direction;
+
+                if (currentPersianMonth > 12) {
+                    currentPersianMonth = 1;
+                    currentPersianYear++;
+                } else if (currentPersianMonth < 1) {
+                    currentPersianMonth = 12;
+                    currentPersianYear--;
+                }
+
+                renderPersianCalendar();
+            }
+
+            // انتخاب تاریخ شمسی
+       // انتخاب تاریخ شمسی - نسخه تصحیح شده
+function selectPersianDate(day) {
+    // تبدیل تاریخ شمسی به میلادی با استفاده از تابع صحیح
+    const gregorianDate = jalaali.toGregorian(
+        currentPersianYear,
+        currentPersianMonth,
+        day
+    );
+
+    // فرمت تاریخ به YYYY-MM-DD
+    const selectedDateObj = new Date(
+        gregorianDate.gy,
+        gregorianDate.gm - 1, // ماه در JavaScript از 0 شروع می‌شود
+        gregorianDate.gd
+    );
+
+    const formattedDate = selectedDateObj.toISOString().split('T')[0];
+    selectDate(formattedDate);
+
+    // بروزرسانی UI
+    document.querySelectorAll('.day').forEach(dayElement => {
+        dayElement.classList.remove('selected');
+    });
+
+    event.target.classList.add('selected');
+}
+            // مقداردهی اولیه
             document.addEventListener('DOMContentLoaded', function() {
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                document.getElementById('reservationDate').value = tomorrow.toISOString().split('T')[0];
-                document.getElementById('startTime').value = '14:00';
+                // رویدادهای انتخاب نوع دستگاه
+                document.querySelectorAll('.device-type-option').forEach(option => {
+                    option.addEventListener('click', () => {
+                        selectDeviceType(option.dataset.type);
+                    });
+                });
+
+                // رویدادهای انتخاب مدت زمان
+                document.querySelectorAll('.duration-option').forEach(option => {
+                    option.addEventListener('click', () => {
+                        selectDuration(option.dataset.duration);
+                    });
+                });
+
+                // رویداد مدت زمان دلخواه
+                document.getElementById('customDuration').addEventListener('change', function() {
+                    if (this.value && this.value > 0 && this.value <= 12) {
+                        selectDuration(parseInt(this.value));
+                    }
+                });
+
+                // بستن مودال با کلید ESC
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        closeReservationModal();
+                    }
+                });
+
+                // رویدادهای تغییر ماه در تقویم شمسی
+                document.querySelectorAll('.persian-date-picker button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const direction = this.textContent.includes('‹') ? -1 : 1;
+                        changePersianMonth(direction);
+                    });
+                });
             });
         </script>
         </body>
