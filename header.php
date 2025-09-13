@@ -22,14 +22,14 @@
     <header class="gradient-bg text-text-on-dark shadow-lg">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex justify-between items-center">
-                <a class="flex  items-center gap-1" href="https://jagame.hodecode.ir">
+               <div class="flex gap-1 items-center">
                     <?php
                     if (function_exists("the_custom_logo")) {
                         the_custom_logo();
                     }
                     ?>
                     <h1 class="text-xl sm:text-2xl font-bold">جاگیم</h1>
-                </a>
+            </div>
                 <div class="md:flex items-center justify-center gap-7 hidden">
                     <?php
                     wp_nav_menu([
