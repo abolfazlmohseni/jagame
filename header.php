@@ -30,6 +30,7 @@
                     ?>
                     <h1 class="text-xl sm:text-2xl font-bold">جاگیم</h1>
                 </div>
+       
                 <div class="md:flex items-center justify-center gap-7 hidden">
                     <?php
                     wp_nav_menu([

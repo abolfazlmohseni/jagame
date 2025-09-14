@@ -22,6 +22,7 @@
 
 * {
     font-family: "iranYekan" !important;
+
 }
 
 
@@ -215,4 +216,5 @@
     to {
         transform: rotate(360deg);
     }
+
 }
