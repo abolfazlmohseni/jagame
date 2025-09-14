@@ -653,9 +653,6 @@ $address = get_user_meta($user_id, 'address', true);
             <div class="bg-white rounded-xl shadow-md p-6 mb-6">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-xl font-bold text-gray-800">رزروهای آینده</h2>
-                    <a href="<?php echo home_url('/reserve'); ?>" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        + رزرو جدید
-                    </a>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -688,14 +685,6 @@ $address = get_user_meta($user_id, 'address', true);
                                 <p><span class="font-medium">ساعت:</span> <?php echo esc_html(date('H:i', strtotime($reservation['start_time']))); ?> - <?php echo esc_html(date('H:i', strtotime($reservation['end_time']))); ?></p>
                                 <p><span class="font-medium">مدت:</span> <?php echo esc_html($reservation['hours']); ?> ساعت</p>
                                 <p><span class="font-medium">هزینه:</span> <?php echo esc_html(number_format($reservation['price'])); ?> تومان</p>
-                            </div>
-                            <div class="flex gap-2 mt-4">
-                                <button class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm transition-colors" onclick="editReservation(<?php echo $reservation['id']; ?>)">
-                                    ویرایش
-                                </button>
-                                <button class="flex-1 bg-red-100 hover:bg-red-200 text-red-700 py-2 px-3 rounded-lg text-sm transition-colors" onclick="cancelReservation(<?php echo $reservation['id']; ?>)">
-                                    لغو
-                                </button>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -793,7 +782,7 @@ $address = get_user_meta($user_id, 'address', true);
 
     <?php wp_footer() ?>
     <?php
-    include_once get_template_directory(). '/userpanel/userpanel-script.php';
+    include_once get_template_directory() . '/userpanel/userpanel-script.php';
     ?>
 </body>
 

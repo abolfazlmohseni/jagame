@@ -130,7 +130,6 @@ jQuery(document).ready(function ($) {
             },
             success: function (response) {
                 if (response.success) {
-                    alert('وضعیت رزرو با موفقیت به‌روزرسانی شد');
                     loadReservations(); // بارگذاری مجدد رزروها
                 } else {
                     alert('خطا در به‌روزرسانی وضعیت: ' + response.data);

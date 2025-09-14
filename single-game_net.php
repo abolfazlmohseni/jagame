@@ -578,7 +578,14 @@ get_header();
                 </div>
             </div>
         </div>
-
+        <div id="alertModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center">
+            <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4">
+                <p class="textalert text-lg text-center"></p>
+                <div class="flex gap-2 mt-4">
+                    <button class="closealert w-full text-center text-white bg-green-600 hover:bg-green-700 transition-colors rounded-md py-2">تایید</button>
+                </div>
+            </div>
+        </div>
         <script>
             // Lightbox functionality
             const lightbox = document.getElementById('lightbox');
@@ -783,6 +790,22 @@ get_header();
         </script>
         <!-- اسکریپت برای رزرو دستگاه -->
         <script>
+            const alertmodal = document.querySelector('.alertModal')
+            const textalert = document.querySelector('.textalert')
+            const closealert = document.querySelector('.closealert')
+
+            function closemodal() {
+                alertmodal.classList.add("hidden")
+            }
+
+            function openmodal(text) {
+                textalert.textContent = text
+                alertmodal.classList.remove("hidden")
+            }
+
+            closealert.addEventListener("click", () => {
+                closemodal()
+            })
             // متغیرهای سراسری
             let selectedDeviceType = null;
             let selectedDate = null;
@@ -893,25 +916,25 @@ get_header();
                 switch (step) {
                     case 1:
                         if (!selectedDeviceType) {
-                            alert('لطفاً نوع دستگاه را انتخاب کنید');
+                            openmodal("لطفاً نوع دستگاه را انتخاب کنید")
                             return false;
                         }
                         return true;
                     case 2:
                         if (!selectedDate) {
-                            alert('لطفاً تاریخ را انتخاب کنید');
+                            openmodal("لطفاً تاریخ را انتخاب کنید")
                             return false;
                         }
                         return true;
                     case 3:
                         if (!selectedStartTime) {
-                            alert('لطفاً ساعت شروع را انتخاب کنید');
+                            openmodal("لطفاً ساعت شروع را انتخاب کنید")
                             return false;
                         }
                         return true;
                     case 4:
                         if (!selectedDuration || selectedDuration < 1) {
-                            alert('لطفاً مدت زمان معتبر انتخاب کنید');
+                            openmodal("لطفاً مدت زمان معتبر انتخاب کنید")
                             return false;
                         }
                         return true;
@@ -1037,12 +1060,11 @@ get_header();
                         availableDevices = result.data.devices;
                         updateAvailableDevicesList();
                     } else {
-                        console.error('خطا در دریافت دستگاه‌ها:', result.data);
-                        alert('خطا در دریافت اطلاعات دستگاه‌ها');
+                        openmodal("خطا در دریافت اطلاعات دستگاه‌ها")
                     }
                 } catch (error) {
                     console.error('خطا در ارتباط با سرور:', error);
-                    alert('خطا در ارتباط با سرور');
+                    openmodal("خطا در ارتباط با سرور")
                 }
             }
 
@@ -1082,7 +1104,7 @@ get_header();
             // ارسال درخواست رزرو
             async function submitReservation() {
                 if (selectedDevices.length === 0) {
-                    alert('لطفاً حداقل یک دستگاه انتخاب کنید');
+                    openmodal("لطفاً حداقل یک دستگاه انتخاب کنید")
                     return;
                 }
 
@@ -1105,16 +1127,16 @@ get_header();
                     const result = await response.json();
 
                     if (result.success) {
-                        alert(result.data.message);
+                        openmodal(result.data.message)
                         closeReservationModal();
                         // رفرش صفحه
                         window.location.reload();
                     } else {
-                        alert('خطا: ' + result.data);
+                        openmodal(result.data)
                     }
                 } catch (error) {
                     console.error('خطا در ارسال درخواست:', error);
-                    alert('خطا در ارتباط با سرور');
+                    openmodal("خطا در ارتباط با سرور")
                 }
             }
 
@@ -1250,32 +1272,32 @@ get_header();
             }
 
             // انتخاب تاریخ شمسی
-       // انتخاب تاریخ شمسی - نسخه تصحیح شده
-function selectPersianDate(day) {
-    // تبدیل تاریخ شمسی به میلادی با استفاده از تابع صحیح
-    const gregorianDate = jalaali.toGregorian(
-        currentPersianYear,
-        currentPersianMonth,
-        day
-    );
+            // انتخاب تاریخ شمسی - نسخه تصحیح شده
+            function selectPersianDate(day) {
+                // تبدیل تاریخ شمسی به میلادی با استفاده از تابع صحیح
+                const gregorianDate = jalaali.toGregorian(
+                    currentPersianYear,
+                    currentPersianMonth,
+                    day
+                );
 
-    // فرمت تاریخ به YYYY-MM-DD
-    const selectedDateObj = new Date(
-        gregorianDate.gy,
-        gregorianDate.gm - 1, // ماه در JavaScript از 0 شروع می‌شود
-        gregorianDate.gd
-    );
+                // فرمت تاریخ به YYYY-MM-DD
+                const selectedDateObj = new Date(
+                    gregorianDate.gy,
+                    gregorianDate.gm - 1, // ماه در JavaScript از 0 شروع می‌شود
+                    gregorianDate.gd
+                );
 
-    const formattedDate = selectedDateObj.toISOString().split('T')[0];
-    selectDate(formattedDate);
+                const formattedDate = selectedDateObj.toISOString().split('T')[0];
+                selectDate(formattedDate);
 
-    // بروزرسانی UI
-    document.querySelectorAll('.day').forEach(dayElement => {
-        dayElement.classList.remove('selected');
-    });
+                // بروزرسانی UI
+                document.querySelectorAll('.day').forEach(dayElement => {
+                    dayElement.classList.remove('selected');
+                });
 
-    event.target.classList.add('selected');
-}
+                event.target.classList.add('selected');
+            }
             // مقداردهی اولیه
             document.addEventListener('DOMContentLoaded', function() {
                 // رویدادهای انتخاب نوع دستگاه

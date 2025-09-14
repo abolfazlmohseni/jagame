@@ -67,12 +67,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     // هدایت به صفحه اصلی پس از خروج موفق
                     window.location.href = '<?php echo home_url(); ?>';
                 } else {
-                    alert('خطا در خروج از سیستم: ' + data.data);
+                  
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('خطا در ارتباط با سرور');
+             
             });
     });
 });
