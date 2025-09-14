@@ -72,13 +72,27 @@
             </div>
 
             <!-- منوی موبایل -->
-            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-2">
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-2 space-y-2 ">
                 <?php
                 wp_nav_menu([
                     'theme_location' => 'landing header',
                     'menu_class' => 'space-y-2 hover:text-accent transition-colors',
                     'container' => false
                 ])
+
+                ?>
+                <?php
+                if (is_user_logged_in()) {
+                ?>
+                    <a href="<?php echo home_url("index.php/login-page/") ?>">حساب کاربری</a>
+                <?php
+                } else {
+                ?>
+                    <a href="<?php echo home_url("index.php/login-page/") ?>" class="content-center">ورود | ثبت نام</a>
+                <?php
+                }
+
+
                 ?>
             </div>
         </div>

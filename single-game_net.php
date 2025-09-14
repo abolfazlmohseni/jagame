@@ -210,6 +210,7 @@ get_header();
                 <!-- Title & Info -->
                 <div class="lg:order-1 text-center lg:text-right flex-1">
                     <h1 class="text-3xl font-bold mb-2"><?php the_title(); ?></h1>
+                        <p class="text-white"><?php echo nl2br(esc_html($address)); ?></p>
                 </div>
             </div>
         </section>

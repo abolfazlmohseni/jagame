@@ -2,15 +2,17 @@
     document.addEventListener('DOMContentLoaded', function() {
         const tabs = document.querySelectorAll('.tab-button');
         const tabContents = document.querySelectorAll('.tab-content');
-        const logoutBtn = document.getElementById('logout-btn');
+        const logoutBtn = document.querySelectorAll('.logout-btn');
         const logoutConfirm = document.getElementById('logout-confirm');
         const cancelLogout = document.getElementById('cancel-logout');
         const confirmLogout = document.getElementById('confirm-logout');
 
-        // مدیریت منوی خروج
-        logoutBtn.addEventListener('click', function() {
-            logoutConfirm.classList.remove('hidden');
-        });
+
+        logoutBtn.forEach((btn)=>{
+            btn.addEventListener("click",()=>{
+                     logoutConfirm.classList.remove('hidden');
+            })
+        })
 
         cancelLogout.addEventListener('click', function() {
             logoutConfirm.classList.add('hidden');

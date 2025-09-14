@@ -375,7 +375,7 @@ $address = get_user_meta($user_id, 'address', true);
                 <!-- بخش کاربر در دسکتاپ -->
                 <div class="hidden md:flex items-center gap-4">
 
-                    <button id="logout-btn" class=" bg-red-500 text-white py-2 px-4 rounded-md transition-colors border-0 cursor-pointer hover:bg-red-600">
+                    <button class="logout-btn bg-red-500 text-white py-2 px-4 rounded-md transition-colors border-0 cursor-pointer hover:bg-red-600">
                         خروج
                     </button>
                 </div>
@@ -404,7 +404,7 @@ $address = get_user_meta($user_id, 'address', true);
 
                 <!-- بخش کاربر در نسخه موبایل -->
                 <div class="flex flex-col gap-3 mt-4 pt-4">
-                    <button onclick="window.location.href='<?php echo wp_logout_url(home_url()); ?>" class="bg-red-500 text-white py-2 px-4 rounded-md transition-colors border-0 cursor-pointer hover:bg-red-600 flex items-center justify-center">
+                    <button class="logout-btn bg-red-500 text-white py-2 px-4 rounded-md transition-colors border-0 cursor-pointer hover:bg-red-600 flex items-center justify-center">
                         خروج
                     </button>
                 </div>
@@ -542,7 +542,7 @@ $address = get_user_meta($user_id, 'address', true);
         <!-- History Tab -->
         <div id="history" class="tab-content hidden">
             <div class="bg-white rounded-xl shadow-md p-6">
-                <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center justify-between mb-6 gap-1 flex-col md:flex-row">
                     <h2 class="text-xl font-bold text-gray-800">سابقه رزروها</h2>
                     <div class="flex items-center space-x-4 space-x-reverse">
                         <form method="get" class="flex gap-2">

@@ -59,7 +59,7 @@ $game_net_name = get_the_title($game_net_id);
 </div>
 
 <!-- مودال اضافه/ویرایش دستگاه -->
-<div id="deviceModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+<div id="deviceModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl p-4 md:p-6 w-full max-w-md mx-auto max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-4 md:mb-6">
             <h3 id="modalTitle" class="text-lg md:text-xl font-bold text-gray-800">اضافه کردن دستگاه جدید</h3>
@@ -124,7 +124,7 @@ $game_net_name = get_the_title($game_net_id);
         </form>
     </div>
 </div><!-- مودال اضافه/ویرایش دستگاه -->
-<div id="deviceModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+<div id="deviceModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl p-4 md:p-6 w-full max-w-md mx-auto max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-4 md:mb-6">
             <h3 id="modalTitle" class="text-lg md:text-xl font-bold text-gray-800">اضافه کردن دستگاه جدید</h3>

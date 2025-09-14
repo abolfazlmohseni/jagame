@@ -398,10 +398,6 @@ function device_meta_box_callback($post)
         <textarea name="device_specs" class="widefat" rows="4"><?php echo esc_textarea($specs); ?></textarea>
     </p>
     <p>
-        <label>قیمت ساعتی (تومان):</label>
-        <input type="number" name="device_price" value="<?php echo esc_attr($price); ?>" class="widefat">
-    </p>
-    <p>
         <label>وضعیت:</label>
         <select name="device_status" class="widefat">
             <option value="available" <?php selected($status, 'available'); ?>>قابل استفاده</option>
@@ -1532,7 +1528,6 @@ function game_net_request_info_meta_box($post)
         'off_days' => 'روزهای تعطیل',
         'min_age' => 'حداقل سن',
         'max_age' => 'حداکثر سن',
-        'hourly_price' => 'قیمت ساعتی',
         'devices' => 'دستگاه‌های موجود',
         'additional_features' => 'امکانات اضافی'
     );
@@ -1709,7 +1704,6 @@ function process_game_net_registration_form()
         'startTime' => 'ساعت شروع',
         'endTime' => 'ساعت پایان',
         'minAge' => 'حداقل سن',
-        'hourlyPrice' => 'قیمت ساعتی'
     );
 
     $errors = array();
@@ -1744,7 +1738,6 @@ function process_game_net_registration_form()
         'endTime' => 'end_time',
         'minAge' => 'min_age',
         'maxAge' => 'max_age',
-        'hourlyPrice' => 'hourly_price',
         'additionalFeatures' => 'additional_features'
     );
 
