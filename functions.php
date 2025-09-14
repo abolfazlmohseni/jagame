@@ -10,45 +10,6 @@ function hodcode_enqueue_styles()
 
     wp_enqueue_script('hodkode-script', get_template_directory_uri(), array('jquery'), null, true);
 
-    if (is_page_template('OperatorPanel/DeviceManagement.php')) {
-        wp_enqueue_script(
-            'DeviceManagement',
-            get_template_directory_uri() . '/js/DeviceManagement.js',
-            array('jquery'),
-            '1.0',
-            true
-        );
-    }
-
-    if (is_page_template('OperatorPanel/InformationPanel.php')) {
-        wp_enqueue_script(
-            'InformationPanel',
-            get_template_directory_uri() . '/js/InformationPanel.js',
-            array('jquery'),
-            '1.0',
-            true
-        );
-    }
-
-    if (is_page_template('OperatorPanel/overview.php')) {
-        wp_enqueue_script(
-            'overview',
-            get_template_directory_uri() . '/js/overview.js',
-            array('jquery'),
-            '1.0',
-            true
-        );
-    }
-
-    if (is_page_template('OperatorPanel/reservation.php')) {
-        wp_enqueue_script(
-            'reservation',
-            get_template_directory_uri() . '/js/reservation.js',
-            array('jquery'),
-            '1.0',
-            true
-        );
-    }
     
     // در تابع hodcode_enqueue_styles، آبجکت ajax را به روز کنید:
     wp_localize_script('hodkode-script', 'ajax_object', array(
@@ -1175,23 +1136,7 @@ function get_current_user_game_net_info()
     );
 }
 
-// Debug function to check what's happening
-// function debug_ajax_login()
-// {
-//     if (isset($_POST['action']) && $_POST['action'] === 'ajax_login') {
-//         error_log('AJAX Login Request: ' . print_r($_POST, true));
 
-//         // Check if nonce exists
-//         if (!isset($_POST['security'])) {
-//             error_log('Security field missing');
-//         } else {
-//             error_log('Nonce received: ' . $_POST['security']);
-//             error_log('Nonce verification: ' . (wp_verify_nonce($_POST['security'], 'ajax_login_nonce') ? 'VALID' : 'INVALID'));
-//         }
-//     }
-// }
-// add_action('wp_ajax_nopriv_ajax_login', 'debug_ajax_login', 1);
-// add_action('wp_ajax_ajax_login', 'debug_ajax_login', 1);
 
 // تابع helper برای selected option
 function theme_selected($value, $compare)

@@ -213,7 +213,11 @@ $game_net_name = get_the_title($game_net_id);
         </div>
     </div>
 </div>
-
+<script>
+<?php 
+    include_once get_template_directory() . '/js/DeviceManagement.js';
+?>
+</script>
 </body>
 
 </html>

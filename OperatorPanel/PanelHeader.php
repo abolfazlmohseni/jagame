@@ -89,5 +89,8 @@
                 </div>
             </div>
         </div>
-
-        <script src="../js/PanelHeader.js"></script>
+<script>
+<?php 
+    include_once get_template_directory() . '/js/PanelHeader.js';
+?>
+</script>

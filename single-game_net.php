@@ -160,7 +160,7 @@ get_header();
             }
 
             .device-type-option.selected p {
-                color: #3b82f6;
+                color: #4B3F72;
                 font-weight: bold;
             }
 
@@ -185,6 +185,16 @@ get_header();
             .device-item.disabled {
                 opacity: 0.5;
                 cursor: not-allowed;
+            }
+
+            .device-type-option {
+                cursor: pointer;
+                transition: all 0.3s ease;
+                border: 2px solid transparent;
+                border-radius: 16px;
+                padding: 20px;
+                background: linear-gradient(145deg, #ffffff, #f8fafc);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             }
         </style>
         <!-- Hero Section -->
@@ -398,61 +408,50 @@ get_header();
                 <div id="reservationFormContainer" class="hidden">
                     <!-- Step 1: انتخاب نوع دستگاه -->
                     <div id="step1" class="step active">
-                        <h4 class="text-lg font-semibold mb-4">مرحله 1: انتخاب نوع دستگاه</h4>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <h4 class="text-2xl font-bold mb-6 text-center">مرحله 1: انتخاب نوع دستگاه</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-5">
                             <div class="device-type-option" data-type="pc">
-                                <div class="device-icon bg-blue-100 p-4 rounded-lg text-center">
-                                    <svg class="w-12 h-12 mx-auto text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                    </svg>
+                                <div class="text-center py-8">
+                                    <h3 class="text-2xl font-bold text-blue-600 mb-2">💻</h3>
+                                    <p class="text-xl font-bold text-gray-800">کامپیوتر</p>
+                                    <p class="text-sm text-gray-500 mt-1">PC Gaming</p>
                                 </div>
-                                <p class="text-center mt-2 font-medium">کامپیوتر</p>
                             </div>
+
                             <div class="device-type-option" data-type="xbox">
-                                <div class="device-icon bg-green-100 p-4 rounded-lg text-center">
-                                    <svg class="w-12 h-12 mx-auto text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
+                                <div class="text-center py-8">
+                                    <h3 class="text-2xl font-bold text-green-600 mb-2">🎮</h3>
+                                    <p class="text-xl font-bold text-gray-800">XBOX</p>
+                                    <p class="text-sm text-gray-500 mt-1">Xbox Series X/S</p>
                                 </div>
-                                <p class="text-center mt-2 font-medium">XBOX</p>
                             </div>
+
                             <div class="device-type-option" data-type="ps5">
-                                <div class="device-icon bg-purple-100 p-4 rounded-lg text-center">
-                                    <svg class="w-12 h-12 mx-auto text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                    </svg>
+                                <div class="text-center py-8">
+                                    <h3 class="text-2xl font-bold text-purple-600 mb-2">🕹️</h3>
+                                    <p class="text-xl font-bold text-gray-800">PS5</p>
+                                    <p class="text-sm text-gray-500 mt-1">PlayStation 5</p>
                                 </div>
-                                <p class="text-center mt-2 font-medium">PS5</p>
                             </div>
+
                             <div class="device-type-option" data-type="ps4">
-                                <div class="device-icon bg-indigo-100 p-4 rounded-lg text-center">
-                                    <svg class="w-12 h-12 mx-auto text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                    </svg>
+                                <div class="text-center py-8">
+                                    <h3 class="text-2xl font-bold text-indigo-600 mb-2">🎯</h3>
+                                    <p class="text-xl font-bold text-gray-800">PS4</p>
+                                    <p class="text-sm text-gray-500 mt-1">PlayStation 4</p>
                                 </div>
-                                <p class="text-center mt-2 font-medium">PS4</p>
                             </div>
+
                             <div class="device-type-option" data-type="vr">
-                                <div class="device-icon bg-pink-100 p-4 rounded-lg text-center">
-                                    <svg class="w-12 h-12 mx-auto text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                    </svg>
+                                <div class="text-center py-8">
+                                    <h3 class="text-2xl font-bold text-pink-600 mb-2">🥽</h3>
+                                    <p class="text-xl font-bold text-gray-800">واقعیت مجازی</p>
+                                    <p class="text-sm text-gray-500 mt-1">VR Headset</p>
                                 </div>
-                                <p class="text-center mt-2 font-medium">VR</p>
-                            </div>
-                            <div class="device-type-option" data-type="other">
-                                <div class="device-icon bg-gray-100 p-4 rounded-lg text-center">
-                                    <svg class="w-12 h-12 mx-auto text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                                    </svg>
-                                </div>
-                                <p class="text-center mt-2 font-medium">سایر</p>
                             </div>
                         </div>
-                        <input type="hidden" name="device_type" id="deviceType" value="">
                         <div class="mt-6 text-right">
-                            <button type="button" onclick="nextStep(2)" class="btn-next" disabled>بعدی →</button>
+                            <button type="button" onclick="nextStep(2)" class="btn-next" disabled="">بعدی →</button>
                         </div>
                     </div>
 
@@ -790,7 +789,7 @@ get_header();
         </script>
         <!-- اسکریپت برای رزرو دستگاه -->
         <script>
-            const alertmodal = document.querySelector('.alertModal')
+            const alertmodal = document.querySelector('#alertModal')
             const textalert = document.querySelector('.textalert')
             const closealert = document.querySelector('.closealert')
 

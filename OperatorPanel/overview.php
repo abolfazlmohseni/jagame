@@ -78,7 +78,11 @@ include_once "PanelHeader.php"
         ajax_url: '<?php echo admin_url("admin-ajax.php"); ?>'
     };
 </script>
-
+<script>
+<?php 
+    include_once get_template_directory() . '/js/overview.js';
+?>
+</script>
 </body>
 
 </html>

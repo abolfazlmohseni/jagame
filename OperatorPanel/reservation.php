@@ -43,12 +43,17 @@ $reservation_nonce = wp_create_nonce('reservation_management_nonce');
 </div>
 
 <script>
-var reservation_ajax_object = {
-    ajax_url: '<?php echo admin_url('admin-ajax.php'); ?>',
-    reservation_nonce: '<?php echo $reservation_nonce; ?>',
-    game_net_id: '<?php echo $game_net_id; ?>'
-};
+    var reservation_ajax_object = {
+        ajax_url: '<?php echo admin_url('admin-ajax.php'); ?>',
+        reservation_nonce: '<?php echo $reservation_nonce; ?>',
+        game_net_id: '<?php echo $game_net_id; ?>'
+    };
 </script>
-
+<script>
+    <?php
+    include_once get_template_directory() . '/js/reservation.js';
+    ?>
+</script>
 </body>
+
 </html>

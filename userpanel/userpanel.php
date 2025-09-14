@@ -695,7 +695,6 @@ $address = get_user_meta($user_id, 'address', true);
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                             <p>هیچ رزرو آینده‌ای ندارید</p>
-                            <a href="<?php echo home_url('/reserve'); ?>" class="text-purple-600 hover:text-purple-700 mt-2 inline-block">رزرو جدید ایجاد کنید</a>
                         </div>
                     <?php endif; ?>
                 </div>
