@@ -55,14 +55,11 @@ jQuery(document).ready(function($) {
             contentType: false,
             success: function(response) {
                 if (response.success) {
-                    alert(response.data.message);
                     location.reload();
                 } else {
-                    alert(response.data.message);
                 }
             },
             error: function() {
-                alert('خطا در ارتباط با سرور');
             }
         });
     });

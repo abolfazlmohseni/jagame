@@ -396,14 +396,11 @@ jQuery(document).ready(function ($) {
                     textalert.textContent = editingDeviceId ? 'دستگاه با موفقیت ویرایش شد' : 'دستگاه با موفقیت اضافه شد';
                     alertModal.classList.remove("hidden");
                     loadDevices(currentPage);
-                } else {
-                    alert('خطا: ' + (response.data || 'خطای نامشخص'));
-                }
+                } 
             },
             error: function (xhr, status, error) {
                 console.error('AJAX error:', status, error);
                 console.error('Response text:', xhr.responseText);
-                alert('خطا در ارتباط با سرور');
             }
         });
     });

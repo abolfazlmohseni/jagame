@@ -85,7 +85,6 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('تغییرات با موفقیت ذخیره شد!');
                     } else {
                         alert('خطا: ' + data.data);
                     }
@@ -110,7 +109,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('رمز عبور با موفقیت تغییر یافت!');
+                    // 
                         this.reset();
                     } else {
                         alert('خطا: ' + data.data);
@@ -122,39 +121,6 @@
         });
     });
 
-    function editReservation(id) {
-        // Redirect to reservation edit page
-        window.location.href = '<?php echo home_url(' / reserve ? edit = '); ?>' + id;
-    }
-
-    function cancelReservation(id) {
-        if (confirm('آیا از لغو این رزرو مطمئن هستید؟')) {
-            // AJAX call to cancel reservation
-            fetch('<?php echo admin_url('admin - ajax.php'); ?>', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        'action': 'cancel_reservation',
-                        'reservation_id': id,
-                        'nonce': '<?php echo wp_create_nonce('cancel_reservation_nonce'); ?>'
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('رزرو با موفقیت لغو شد.');
-                        location.reload();
-                    } else {
-                        alert('خطا در لغو رزرو: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    alert('خطا در ارتباط با سرور');
-                });
-        }
-    }
     // اسکریپت ساده برای نمایش/مخفی کردن منوی موبایل
     document.getElementById('mobile-menu-toggle').addEventListener('click', function() {
         const mobileMenu = document.getElementById('mobile-menu');
