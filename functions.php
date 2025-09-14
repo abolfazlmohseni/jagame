@@ -8,8 +8,48 @@ function hodcode_enqueue_styles()
     );
     wp_enqueue_style('hodkode-style', get_stylesheet_uri());
 
-    wp_enqueue_script('hodkode-script', get_template_directory_uri() . '/js/script.js', array('jquery'), null, true);
+    wp_enqueue_script('hodkode-script', get_template_directory_uri(), array('jquery'), null, true);
 
+    if (is_page_template('OperatorPanel/DeviceManagement.php')) {
+        wp_enqueue_script(
+            'DeviceManagement',
+            get_template_directory_uri() . '/js/DeviceManagement.js',
+            array('jquery'),
+            '1.0',
+            true
+        );
+    }
+
+    if (is_page_template('OperatorPanel/InformationPanel.php')) {
+        wp_enqueue_script(
+            'InformationPanel',
+            get_template_directory_uri() . '/js/InformationPanel.js',
+            array('jquery'),
+            '1.0',
+            true
+        );
+    }
+
+    if (is_page_template('OperatorPanel/overview.php')) {
+        wp_enqueue_script(
+            'overview',
+            get_template_directory_uri() . '/js/overview.js',
+            array('jquery'),
+            '1.0',
+            true
+        );
+    }
+
+    if (is_page_template('OperatorPanel/reservation.php')) {
+        wp_enqueue_script(
+            'reservation',
+            get_template_directory_uri() . '/js/reservation.js',
+            array('jquery'),
+            '1.0',
+            true
+        );
+    }
+    
     // در تابع hodcode_enqueue_styles، آبجکت ajax را به روز کنید:
     wp_localize_script('hodkode-script', 'ajax_object', array(
         'ajax_url' => admin_url('admin-ajax.php'),
