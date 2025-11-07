@@ -357,72 +357,23 @@ $address = get_user_meta($user_id, 'address', true);
 
 <body class="bg-gray-50 min-h-screen">
     <!-- Header -->
-
-    <header class="gradient-bg text-white shadow-lg ">
-        <div class="container mx-auto px-4 lg:px-6 py-3">
-            <div class="flex items-center justify-between py-2 md:py-4">
-                <div class="flex items-center gap-2">
-                    <span class="text-lg md:text-xl "><?php echo esc_html($current_user->display_name); ?></span>
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <div>
+                        <h1 class="text-2xl font-bold">پنل کاربری</h1>
+                        <p class="text-white text-opacity-80">خوش آمدید، <?php echo esc_html($current_user->display_name); ?></p>
+                    </div>
                 </div>
-
-                <!-- منوی ناوبری در وسط - فقط در دسکتاپ نمایش داده می‌شود -->
-                <nav class="hidden md:flex text-lg text-white space-x-reverse space-x-2 lg:space-x-4">
-                    <a href="<?php echo home_url('/'); ?>" class="text-white hover:bg-blue-500/20 transition-colors py-2 px-3 rounded-md">صفحه اصلی</a>
-                    <a href="<?php echo home_url('/about/'); ?>" class="text-white hover:bg-blue-500/20 transition-colors py-2 px-3 rounded-md">درباره ما</a>
-                    <a href="<?php echo home_url('/contact/'); ?>" class="text-white hover:bg-blue-500/20 transition-colors py-2 px-3 rounded-md">تماس با ما</a>
-                </nav>
-
-                <!-- بخش کاربر در دسکتاپ -->
-                <div class="hidden md:flex items-center gap-4">
-
-                    <button class="logout-btn bg-red-500 text-white py-2 px-4 rounded-md transition-colors border-0 cursor-pointer hover:bg-red-600">
+                <div>
+                    <button id="logout-btn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
                         خروج
                     </button>
                 </div>
-
-                <!-- دکمه منوی موبایل -->
-                <button class="md:hidden block bg-transparent border-0 text-white text-2xl cursor-pointer" id="mobile-menu-toggle">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
-                    </svg>
-                </button>
             </div>
-        </div>
-
-        <!-- منوی موبایل -->
-        <div class="md:hidden hidden gradient-bg px-6 pb-6 pt-3 shadow-xl" id="mobile-menu">
-            <nav class="flex flex-col text-lg text-white space-y-4">
-                <a href="<?php echo home_url('/'); ?>" class="text-white py-2 px-3 rounded-md">
-                    صفحه اصلی
-                </a>
-                <a href="<?php echo home_url('/about/'); ?>" class="text-white py-2 px-3 rounded-md">
-                    درباره ما
-                </a>
-                <a href="<?php echo home_url('/contact/'); ?>" class="text-white py-2 px-3 rounded-md">
-                    تماس با ما
-                </a>
-
-                <!-- بخش کاربر در نسخه موبایل -->
-                <div class="flex flex-col gap-3 mt-4 pt-4">
-                    <button class="logout-btn bg-red-500 text-white py-2 px-4 rounded-md transition-colors border-0 cursor-pointer hover:bg-red-600 flex items-center justify-center">
-                        خروج
-                    </button>
-                </div>
-            </nav>
         </div>
     </header>
-
-    <!-- تأییدیه خروج -->
-    <div class="logout-confirm fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden" id="logout-confirm">
-        <div class="bg-white rounded-xl p-6 w-11/12 max-w-md">
-            <h3 class="text-lg font-bold text-center mb-4">آیا مطمئن هستید؟</h3>
-            <p class="text-gray-600 text-center mb-6">می‌خواهید از حساب کاربری خود خارج شوید؟</p>
-            <div class="flex justify-center gap-3">
-                <button class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors" id="cancel-logout">لغو</button>
-                <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors" id="confirm-logout">خروج</button>
-            </div>
-        </div>
-    </div>
 
     <div class="container mx-auto px-6 py-8">
         <!-- Navigation Tabs -->
@@ -542,7 +493,7 @@ $address = get_user_meta($user_id, 'address', true);
         <!-- History Tab -->
         <div id="history" class="tab-content hidden">
             <div class="bg-white rounded-xl shadow-md p-6">
-                <div class="flex items-center justify-between mb-6 gap-1 flex-col md:flex-row">
+                <div class="flex items-center justify-between mb-6">
                     <h2 class="text-xl font-bold text-gray-800">سابقه رزروها</h2>
                     <div class="flex items-center space-x-4 space-x-reverse">
                         <form method="get" class="flex gap-2">
@@ -653,6 +604,9 @@ $address = get_user_meta($user_id, 'address', true);
             <div class="bg-white rounded-xl shadow-md p-6 mb-6">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-xl font-bold text-gray-800">رزروهای آینده</h2>
+                    <a href="<?php echo home_url('/reserve'); ?>" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        + رزرو جدید
+                    </a>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -686,6 +640,14 @@ $address = get_user_meta($user_id, 'address', true);
                                 <p><span class="font-medium">مدت:</span> <?php echo esc_html($reservation['hours']); ?> ساعت</p>
                                 <p><span class="font-medium">هزینه:</span> <?php echo esc_html(number_format($reservation['price'])); ?> تومان</p>
                             </div>
+                            <div class="flex gap-2 mt-4">
+                                <button class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm transition-colors" onclick="editReservation(<?php echo $reservation['id']; ?>)">
+                                    ویرایش
+                                </button>
+                                <button class="flex-1 bg-red-100 hover:bg-red-200 text-red-700 py-2 px-3 rounded-lg text-sm transition-colors" onclick="cancelReservation(<?php echo $reservation['id']; ?>)">
+                                    لغو
+                                </button>
+                            </div>
                         </div>
                     <?php endforeach; ?>
 
@@ -695,6 +657,7 @@ $address = get_user_meta($user_id, 'address', true);
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                             <p>هیچ رزرو آینده‌ای ندارید</p>
+                            <a href="<?php echo home_url('/reserve'); ?>" class="text-purple-600 hover:text-purple-700 mt-2 inline-block">رزرو جدید ایجاد کنید</a>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -780,9 +743,131 @@ $address = get_user_meta($user_id, 'address', true);
     </div>
 
     <?php wp_footer() ?>
-    <?php
-    include_once get_template_directory() . '/userpanel/userpanel-script.php';
-    ?>
+    <script>
+        // Tab Switching
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            // Check if there's a tab parameter in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeTab = urlParams.get('tab') || 'dashboard';
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+
+                    // Update URL without reloading page
+                    const url = new URL(window.location);
+                    url.searchParams.set('tab', tabId);
+                    window.history.pushState({}, '', url);
+
+                    // Activate tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+
+                    tabContents.forEach(content => content.classList.add('hidden'));
+                    document.getElementById(tabId).classList.remove('hidden');
+                });
+
+                // Activate tab from URL parameter
+                if (tab.getAttribute('data-tab') === activeTab) {
+                    tab.click();
+                }
+            });
+
+            // Logout button
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                window.location.href = '<?php echo wp_logout_url(home_url()); ?>';
+            });
+
+            // Profile form submission
+            // Profile form submission
+            document.getElementById('profile-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(this);
+                formData.append('action', 'update_user_profile');
+                formData.append('security', user_profile_ajax.nonce);
+
+                fetch(user_profile_ajax.ajax_url, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('تغییرات با موفقیت ذخیره شد!');
+                        } else {
+                            alert('خطا: ' + data.data);
+                        }
+                    })
+                    .catch(error => {
+                        alert('خطا در ارتباط با سرور');
+                    });
+            });
+
+            // Password form submission
+            document.getElementById('password-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(this);
+                formData.append('action', 'change_user_password');
+                formData.append('security', user_profile_ajax.nonce);
+
+                fetch(user_profile_ajax.ajax_url, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('رمز عبور با موفقیت تغییر یافت!');
+                            this.reset();
+                        } else {
+                            alert('خطا: ' + data.data);
+                        }
+                    })
+                    .catch(error => {
+                        alert('خطا در ارتباط با سرور');
+                    });
+            });
+        });
+
+        function editReservation(id) {
+            // Redirect to reservation edit page
+            window.location.href = '<?php echo home_url('/reserve?edit='); ?>' + id;
+        }
+
+        function cancelReservation(id) {
+            if (confirm('آیا از لغو این رزرو مطمئن هستید؟')) {
+                // AJAX call to cancel reservation
+                fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams({
+                            'action': 'cancel_reservation',
+                            'reservation_id': id,
+                            'nonce': '<?php echo wp_create_nonce('cancel_reservation_nonce'); ?>'
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('رزرو با موفقیت لغو شد.');
+                            location.reload();
+                        } else {
+                            alert('خطا در لغو رزرو: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        alert('خطا در ارتباط با سرور');
+                    });
+            }
+        }
+    </script>
 </body>
 
 </html>

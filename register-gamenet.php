@@ -1,6 +1,7 @@
 <?php
 /*
 Template Name: register Game Net
+
 */
 get_header()
 ?>
@@ -40,10 +41,12 @@ get_header()
                                         <i class="fas fa-chevron-down text-gray-400 transition-transform" id="areaArrow"></i>
                                     </div>
                                     <div id="areaOptions" class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg hidden">
-                                        <div class="p-2 hover:bg-blue-50 cursor-pointer rounded-lg" data-value="one">منطقه یک</div>
-                                        <div class="p-2 hover:bg-blue-50 cursor-pointer rounded-lg" data-value="two">منطقه دو</div>
-                                        <div class="p-2 hover:bg-blue-50 cursor-pointer rounded-lg" data-value="tree">منطقه سه</div>
-                                     </div>
+                                        <div class="p-2 hover:bg-blue-50 cursor-pointer rounded-lg" data-value="north">شمال شهر</div>
+                                        <div class="p-2 hover:bg-blue-50 cursor-pointer rounded-lg" data-value="south">جنوب شهر</div>
+                                        <div class="p-2 hover:bg-blue-50 cursor-pointer rounded-lg" data-value="east">شرق شهر</div>
+                                        <div class="p-2 hover:bg-blue-50 cursor-pointer rounded-lg" data-value="west">غرب شهر</div>
+                                        <div class="p-2 hover:bg-blue-50 cursor-pointer rounded-lg" data-value="center">مرکز شهر</div>
+                                    </div>
                                     <input type="hidden" id="area" required>
                                 </div>
                             </div>
@@ -117,8 +120,8 @@ get_header()
 
                     <!-- Age and Pricing -->
                     <div class="bg-white rounded-xl p-4 sm:p-6 shadow-sm">
-                        <h4 class="text-lg sm:text-xl font-semibold mb-4 text-secondary">شرایط سنی </h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        <h4 class="text-lg sm:text-xl font-semibold mb-4 text-secondary">شرایط سنی و قیمت</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                             <div>
                                 <label class="block text-sm font-semibold mb-2 text-primary">حداقل سن *</label>
                                 <input type="number" id="minAge" required min="0" max="100" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="مثال: 12">
@@ -126,6 +129,10 @@ get_header()
                             <div>
                                 <label class="block text-sm font-semibold mb-2 text-primary">حداکثر سن</label>
                                 <input type="number" id="maxAge" min="0" max="100" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="مثال: 60">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold mb-2 text-primary">قیمت ساعتی (هزار تومان) *</label>
+                                <input type="number" id="hourlyPrice" required min="1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="مثال: 15">
                             </div>
                         </div>
                     </div>
@@ -258,6 +265,7 @@ get_header()
                 endTime: $('#endTime').val(),
                 minAge: $('#minAge').val(),
                 maxAge: $('#maxAge').val(),
+                hourlyPrice: $('#hourlyPrice').val(),
                 additionalFeatures: $('#additionalFeatures').val(),
                 registration_nonce: $('#registration_nonce').val() // این خط مهم است
             };
