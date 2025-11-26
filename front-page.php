@@ -116,7 +116,7 @@ get_header();
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <h3 class="text-xl sm:text-2xl font-bold text-center mb-6 sm:mb-8">فیلتر کردن گیم نت ها</h3>
         <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 filter-section">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
                 <!-- Gender Filter -->
                 <div>
                     <label class="block text-sm font-semibold mb-2 text-muted">جنسیت</label>
@@ -136,6 +136,28 @@ get_header();
                         <option value="12">12 سال به بالا</option>
                         <option value="15">15 سال به بالا</option>
                         <option value="18">18 سال به بالا</option>
+                    </select>
+                </div>
+
+                <!-- Area Filter -->
+                <div>
+                    <label class="block text-sm font-semibold mb-2 text-muted">منطقه</label>
+                    <select id="areaFilter" class="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                        <option value="">همه مناطق</option>
+                        <option value="north">منطقه یک</option>
+                        <option value="south">منطقه دو</option>
+                        <option value="east">منطقه سه</option>
+                    </select>
+                </div>
+
+                <!-- Price Filter -->
+                <div>
+                    <label class="block text-sm font-semibold mb-2 text-muted">قیمت (هزار تومان)</label>
+                    <select id="priceFilter" class="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                        <option value="">همه قیمت ها</option>
+                        <option value="low">کمتر از 40</option>
+                        <option value="medium">40 تا 60</option>
+                        <option value="high">بیشتر از 60</option>
                     </select>
                 </div>
 
@@ -245,10 +267,14 @@ function loadGameNets(page = 1) {
     // اضافه کردن فیلترها
     const genderFilter = document.getElementById('genderFilter').value;
     const ageFilter = document.getElementById('ageFilter').value;
-
+    const areaFilter = document.getElementById('areaFilter').value;
+    const priceFilter = document.getElementById('priceFilter').value;
+    
     if (genderFilter) formData.append('gender', genderFilter);
     if (ageFilter) formData.append('age', ageFilter);
- 
+    if (areaFilter) formData.append('area', areaFilter);
+    if (priceFilter) formData.append('price', priceFilter);
+
     // ارسال درخواست
     fetch(gameNetsAjax.ajax_url, {
         method: 'POST',
@@ -306,7 +332,7 @@ function displayGameNets(gameNets) {
         const hours = escapeHtml(gameNet.hours || 'ثبت نشده');
         const holiday = escapeHtml(gameNet.holiday || 'بدون تعطیلی');
         const bio = escapeHtml(gameNet.bio || '');
-        const address = escapeHtml(gameNet.address || '');
+
         html += `
             <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover card-stagger" style="animation-delay: ${index * 0.1}s">
                 <div class="p-4 sm:p-6">
@@ -341,7 +367,7 @@ function displayGameNets(gameNets) {
                     
                     ${bio ? `
                     <div class="mb-3 sm:mb-4">
-                        <p class="text-sm text-gray-600 line-clamp-2">${address}</p>
+                        <p class="text-sm text-gray-600 line-clamp-2">${bio}</p>
                     </div>
                     ` : ''}
 
@@ -420,8 +446,12 @@ document.getElementById('genderFilter').addEventListener('change', function() {
 document.getElementById('ageFilter').addEventListener('change', function() {
     loadGameNets(1);
 });
-
-
+document.getElementById('areaFilter').addEventListener('change', function() {
+    loadGameNets(1);
+});
+document.getElementById('priceFilter').addEventListener('change', function() {
+    loadGameNets(1);
+});
 </script>
 
 <?php get_footer(); ?>
