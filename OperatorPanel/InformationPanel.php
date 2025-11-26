@@ -251,7 +251,7 @@ $profile_picture_url = $profile_picture_id ? wp_get_attachment_image_url($profil
 
 
 
-    <div id="alertModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div id="alertModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center">
         <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4">
             <p class="textalert text-lg text-center"></p>
             <div class="flex gap-2 mt-4">

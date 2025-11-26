@@ -19,7 +19,7 @@
     <header class="gradient-bg text-text-on-dark shadow-lg">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex justify-between items-center">
-                <a class="flex items-center space-x-3 space-x-reverse" href=<?php home_url('/') ?>>
+                <a class="flex items-center space-x-3 space-x-reverse" href="https://jagame.hodecode.ir">
                     <div class="w-8 h-8 sm:w-10 sm:h-10 bg-accent rounded-lg flex items-center justify-center">
                         <span class="text-lg sm:text-2xl">🎮</span>
                     </div>
